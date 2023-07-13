@@ -400,16 +400,17 @@ class DepthChartPainter extends CustomPainter {
 
   double getSellX(int position) => position * mSellPointWidth! + mDrawWidth;
 
-  getTextPainter(String text, [Color color = Colors.white]) => TextPainter(
-      text:
-          TextSpan(text: "$text", style: TextStyle(color: color, fontSize: 10)),
-      textDirection: TextDirection.ltr);
+  getTextPainter(String text) => TextPainter(
+    text: TextSpan(
+      text: "$text",
+      style: TextStyle(color: chartColors.defaultTextColor, fontSize: 10, fontWeight: FontWeight.w300),
+    ),
+    textDirection: TextDirection.ltr,
+  );
 
-  double getBottomTextY(double textHeight) =>
-      (mPaddingBottom - textHeight) / 2 + mDrawHeight;
+  double getBottomTextY(double textHeight) => (mPaddingBottom - textHeight) / 2 + mDrawHeight;
 
-  double getY(double volume) =>
-      mDrawHeight - (mDrawHeight) * volume / mMaxVolume!;
+  double getY(double volume) => mDrawHeight - (mDrawHeight) * volume / mMaxVolume!;
 
   @override
   bool shouldRepaint(DepthChartPainter oldDelegate) {
