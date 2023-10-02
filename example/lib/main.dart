@@ -31,11 +31,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<KLineEntity>? datas;
   bool showLoading = true;
-  bool _volHidden = false;
+  bool _volHidden = true;
   MainState _mainState = MainState.MA;
-  SecondaryState _secondaryState = SecondaryState.MACD;
+  final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
-  VerticalTextAlignment _verticalTextAlignment = VerticalTextAlignment.left;
 
   ChartStyle chartStyle = ChartStyle();
   ChartColors chartColors = ChartColors();
@@ -87,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         shrinkWrap: true,
         children: <Widget>[
+          const SafeArea(bottom: false, child: SizedBox(height: 10)),
           Stack(children: <Widget>[
             KChartWidget(
               datas,
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               mainState: _mainState,
               volHidden: _volHidden,
-              secondaryState: _secondaryState,
+              secondaryStateLi: _secondaryStateLi,
               fixedLength: 2,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
             ),
@@ -187,11 +187,18 @@ class _MyHomePageState extends State<MyHomePage> {
         spacing: 10,
         runSpacing: 5,
         children: SecondaryState.values.map((e) {
+          bool isActive = _secondaryStateLi.contains(e);
           return _buildButton(
             context: context,
             title: e.name,
-            isActive: _secondaryState == e,
-            onPress: () => _secondaryState = e,
+            isActive: _secondaryStateLi.contains(e),
+            onPress: () {
+              if (isActive) {
+                _secondaryStateLi.remove(e);
+              } else {
+                _secondaryStateLi.add(e);
+              }
+            },
           );
         }).toList(),
       ),
