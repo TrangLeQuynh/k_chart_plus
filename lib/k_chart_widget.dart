@@ -1,13 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:k_chart/chart_translations.dart';
 import 'package:k_chart/extension/map_ext.dart';
 import 'package:k_chart/flutter_k_chart.dart';
+import 'renderer/base_dimension.dart';
 
 enum MainState { MA, BOLL, NONE }
 
-enum SecondaryState { MACD, KDJ, RSI, WR, CCI, NONE }
+// enum SecondaryState { MACD, KDJ, RSI, WR, CCI, NONE }
+enum SecondaryState { MACD, KDJ, RSI, WR, CCI } //no support NONE
 
 class TimeFormat {
   static const List<String> YEAR_MONTH_DAY = [yyyy, '-', mm, '-', dd];
@@ -28,7 +29,7 @@ class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
   final MainState mainState;
   final bool volHidden;
-  final SecondaryState secondaryState;
+  final List<SecondaryState> secondaryStateLi;
   final Function()? onSecondaryTap;
   final bool isLine;
   final bool isTapShowInfoDialog; //是否开启单击显示详情数据
@@ -40,6 +41,7 @@ class KChartWidget extends StatefulWidget {
   final bool materialInfoDialog; // Material风格的信息弹窗
   final Map<String, ChartTranslations> translations;
   final List<String> timeFormat;
+  final double mBaseHeight;
 
   //当屏幕滚动到尽头会调用，真为拉到屏幕右侧尽头，假为拉到屏幕左侧尽头
   final Function(bool)? onLoadMore;
@@ -63,7 +65,7 @@ class KChartWidget extends StatefulWidget {
     required this.isTrendLine,
     this.xFrontPadding = 100,
     this.mainState = MainState.MA,
-    this.secondaryState = SecondaryState.MACD,
+    this.secondaryStateLi = const [],
     this.onSecondaryTap,
     this.volHidden = false,
     this.isLine = false,
@@ -83,6 +85,7 @@ class KChartWidget extends StatefulWidget {
     this.flingCurve = Curves.decelerate,
     this.isOnDrag,
     this.verticalTextAlignment = VerticalTextAlignment.left,
+    this.mBaseHeight = 360,
   });
 
   @override
@@ -136,9 +139,15 @@ class _KChartWidgetState extends State<KChartWidget>
       mScrollX = mSelectX = 0.0;
       mScaleX = 1.0;
     }
+    final BaseDimension baseDimension = BaseDimension(
+      mBaseHeight: widget.mBaseHeight,
+      volHidden: widget.volHidden,
+      secondaryStateLi: widget.secondaryStateLi,
+    );
     final _painter = ChartPainter(
       widget.chartStyle,
       widget.chartColors,
+      baseDimension: baseDimension,
       lines: lines, //For TrendLine
       xFrontPadding: widget.xFrontPadding,
       isTrendLine: widget.isTrendLine, //For TrendLine
@@ -152,7 +161,7 @@ class _KChartWidgetState extends State<KChartWidget>
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
       mainState: widget.mainState,
       volHidden: widget.volHidden,
-      secondaryState: widget.secondaryState,
+      secondaryStateLi: widget.secondaryStateLi,
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,
@@ -166,7 +175,6 @@ class _KChartWidgetState extends State<KChartWidget>
       builder: (context, constraints) {
         mHeight = constraints.maxHeight;
         mWidth = constraints.maxWidth;
-
         return GestureDetector(
           onTapUp: (details) {
             if (!widget.isTrendLine &&
@@ -280,7 +288,7 @@ class _KChartWidgetState extends State<KChartWidget>
           child: Stack(
             children: <Widget>[
               CustomPaint(
-                size: Size(double.infinity, double.infinity),
+                size: Size(double.infinity, baseDimension.mDisplayHeight),
                 painter: _painter,
               ),
               if (widget.showInfoDialog) _buildInfoDialog()

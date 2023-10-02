@@ -33,9 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLoading = true;
   bool _volHidden = false;
   MainState _mainState = MainState.MA;
-  SecondaryState _secondaryState = SecondaryState.MACD;
+  final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
-  VerticalTextAlignment _verticalTextAlignment = VerticalTextAlignment.left;
 
   ChartStyle chartStyle = ChartStyle();
   ChartColors chartColors = ChartColors();
@@ -87,24 +86,22 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         shrinkWrap: true,
         children: <Widget>[
+          const SafeArea(bottom: false, child: SizedBox(height: 10)),
           Stack(children: <Widget>[
-            Container(
-              height: 450,
-              width: double.infinity,
-              child: KChartWidget(
-                datas,
-                chartStyle,
-                chartColors,
-                isTrendLine: false,
-                onSecondaryTap: () {
-                  print('Secondary Tap');
-                },
-                mainState: _mainState,
-                volHidden: _volHidden,
-                secondaryState: _secondaryState,
-                fixedLength: 2,
-                timeFormat: TimeFormat.YEAR_MONTH_DAY,
-              ),
+            KChartWidget(
+              datas,
+              chartStyle,
+              chartColors,
+              mBaseHeight: 360,
+              isTrendLine: false,
+              onSecondaryTap: () {
+                print('Secondary Tap');
+              },
+              mainState: _mainState,
+              volHidden: _volHidden,
+              secondaryStateLi: _secondaryStateLi,
+              fixedLength: 2,
+              timeFormat: TimeFormat.YEAR_MONTH_DAY,
             ),
             if (showLoading) Container(
               width: double.infinity,
@@ -113,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const CircularProgressIndicator(),
             ),
           ]),
+          _buildTitle(context, 'VOL'),
+          buildVolButton(),
           _buildTitle(context, 'Main State'),
           buildMainButtons(),
           _buildTitle(context, 'Secondary State'),
@@ -143,9 +142,27 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget buildVolButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: _buildButton(
+            context: context,
+            title: 'VOL',
+            isActive: !_volHidden,
+            onPress: () {
+              _volHidden = !_volHidden;
+              setState(() {});
+            }
+        ),
+      ),
+    );
+  }
+
   Widget buildMainButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Wrap(
         alignment: WrapAlignment.start,
         spacing: 10,
@@ -164,17 +181,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget buildSecondButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Wrap(
         alignment: WrapAlignment.start,
         spacing: 10,
         runSpacing: 5,
         children: SecondaryState.values.map((e) {
+          bool isActive = _secondaryStateLi.contains(e);
           return _buildButton(
             context: context,
             title: e.name,
-            isActive: _secondaryState == e,
-            onPress: () => _secondaryState = e,
+            isActive: _secondaryStateLi.contains(e),
+            onPress: () {
+              if (isActive) {
+                _secondaryStateLi.remove(e);
+              } else {
+                _secondaryStateLi.add(e);
+              }
+            },
           );
         }).toList(),
       ),
