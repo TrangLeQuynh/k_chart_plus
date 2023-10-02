@@ -1,13 +1,12 @@
 import 'dart:async' show StreamSink;
-
 import 'package:flutter/material.dart';
 import 'package:k_chart/utils/number_util.dart';
-
 import '../entity/info_window_entity.dart';
 import '../entity/k_line_entity.dart';
 import '../utils/date_format_util.dart';
 import 'base_chart_painter.dart';
 import 'base_chart_renderer.dart';
+import 'base_dimension.dart';
 import 'main_renderer.dart';
 import 'secondary_renderer.dart';
 import 'vol_renderer.dart';
@@ -48,6 +47,7 @@ class ChartPainter extends BaseChartPainter {
   final bool hideGrid;
   final bool showNowPrice;
   final VerticalTextAlignment verticalTextAlignment;
+  final BaseDimension baseDimension;
 
   ChartPainter(
     this.chartStyle,
@@ -61,6 +61,7 @@ class ChartPainter extends BaseChartPainter {
     required isLongPass,
     required selectX,
     required xFrontPadding,
+    required this.baseDimension,
     isOnTap,
     isTapShowInfoDialog,
     required this.verticalTextAlignment,
@@ -78,6 +79,7 @@ class ChartPainter extends BaseChartPainter {
             scaleX: scaleX,
             scrollX: scrollX,
             isLongPress: isLongPass,
+            baseDimension: baseDimension,
             isOnTap: isOnTap,
             isTapShowInfoDialog: isTapShowInfoDialog,
             selectX: selectX,
@@ -193,8 +195,7 @@ class ChartPainter extends BaseChartPainter {
 
       mMainRenderer.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
       mVolRenderer?.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
-      mSecondaryRenderer?.drawChart(
-          lastPoint, curPoint, lastX, curX, size, canvas);
+      mSecondaryRenderer?.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
     }
 
     if ((isLongPress == true || (isTapShowInfoDialog && isOnTap)) &&
