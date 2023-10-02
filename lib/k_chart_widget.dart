@@ -85,7 +85,7 @@ class KChartWidget extends StatefulWidget {
     this.flingCurve = Curves.decelerate,
     this.isOnDrag,
     this.verticalTextAlignment = VerticalTextAlignment.left,
-    this.mBaseHeight = 380,
+    this.mBaseHeight = 360,
   });
 
   @override

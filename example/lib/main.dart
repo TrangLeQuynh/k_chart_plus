@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<KLineEntity>? datas;
   bool showLoading = true;
-  bool _volHidden = true;
+  bool _volHidden = false;
   MainState _mainState = MainState.MA;
   final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
               datas,
               chartStyle,
               chartColors,
-              mBaseHeight: 400,
+              mBaseHeight: 360,
               isTrendLine: false,
               onSecondaryTap: () {
                 print('Secondary Tap');
