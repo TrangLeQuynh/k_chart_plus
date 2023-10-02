@@ -33,7 +33,8 @@ class ChartPainter extends BaseChartPainter {
   final double selectY; //For TrendLine
   static get maxScrollX => BaseChartPainter.maxScrollX;
   late BaseChartRenderer mMainRenderer;
-  BaseChartRenderer? mVolRenderer, mSecondaryRenderer;
+  BaseChartRenderer? mVolRenderer;
+  List<BaseChartRenderer> mSecondaryRendererList = [];
   StreamSink<InfoWindowEntity?>? sink;
   Color? upColor, dnColor;
   Color? ma5Color, ma10Color, ma30Color;
@@ -67,7 +68,7 @@ class ChartPainter extends BaseChartPainter {
     required this.verticalTextAlignment,
     mainState,
     volHidden,
-    secondaryState,
+    secondaryStateLi,
     this.sink,
     bool isLine = false,
     this.hideGrid = false,
@@ -85,7 +86,7 @@ class ChartPainter extends BaseChartPainter {
             selectX: selectX,
             mainState: mainState,
             volHidden: volHidden,
-            secondaryState: secondaryState,
+            secondaryStateLi: secondaryStateLi,
             xFrontPadding: xFrontPadding,
             isLine: isLine) {
     selectPointPaint = Paint()
@@ -127,16 +128,19 @@ class ChartPainter extends BaseChartPainter {
       mVolRenderer = VolRenderer(mVolRect!, mVolMaxValue, mVolMinValue,
           mChildPadding, fixedLength, this.chartStyle, this.chartColors);
     }
-    if (mSecondaryRect != null) {
-      mSecondaryRenderer = SecondaryRenderer(
-          mSecondaryRect!,
-          mSecondaryMaxValue,
-          mSecondaryMinValue,
+    for (int i = 0; i < mSecondaryRectList.length; ++i) {
+      mSecondaryRendererList.add(
+        SecondaryRenderer(
+          mSecondaryRectList[i].mSecondaryRect,
+          mSecondaryRectList[i].mSecondaryMaxValue,
+          mSecondaryRectList[i].mSecondaryMinValue,
           mChildPadding,
-          secondaryState,
+          mSecondaryRectList[i].state,
           fixedLength,
           chartStyle,
-          chartColors);
+          chartColors,
+        )
+      );
     }
   }
 
@@ -160,16 +164,18 @@ class ChartPainter extends BaseChartPainter {
           volRect, mBgPaint..shader = mBgGradient.createShader(volRect));
     }
 
-    if (mSecondaryRect != null) {
-      Rect secondaryRect = Rect.fromLTRB(0, mSecondaryRect!.top - mChildPadding,
-          mSecondaryRect!.width, mSecondaryRect!.bottom);
-      canvas.drawRect(secondaryRect,
-          mBgPaint..shader = mBgGradient.createShader(secondaryRect));
+    for (int i = 0; i < mSecondaryRectList.length; ++i) {
+      Rect? mSecondaryRect = mSecondaryRectList[i].mSecondaryRect;
+      Rect secondaryRect = Rect.fromLTRB(
+        0,
+        mSecondaryRect.top - mChildPadding,
+        mSecondaryRect.width,
+        mSecondaryRect.bottom
+      );
+      canvas.drawRect(secondaryRect, mBgPaint..shader = mBgGradient.createShader(secondaryRect));
     }
-    Rect dateRect =
-        Rect.fromLTRB(0, size.height - mBottomPadding, size.width, size.height);
-    canvas.drawRect(
-        dateRect, mBgPaint..shader = mBgGradient.createShader(dateRect));
+    Rect dateRect = Rect.fromLTRB(0, size.height - mBottomPadding, size.width, size.height);
+    canvas.drawRect(dateRect, mBgPaint..shader = mBgGradient.createShader(dateRect));
   }
 
   @override
@@ -177,7 +183,9 @@ class ChartPainter extends BaseChartPainter {
     if (!hideGrid) {
       mMainRenderer.drawGrid(canvas, mGridRows, mGridColumns);
       mVolRenderer?.drawGrid(canvas, mGridRows, mGridColumns);
-      mSecondaryRenderer?.drawGrid(canvas, mGridRows, mGridColumns);
+      mSecondaryRendererList.forEach((element) {
+        element.drawGrid(canvas, mGridRows, mGridColumns);
+      });
     }
   }
 
@@ -195,7 +203,9 @@ class ChartPainter extends BaseChartPainter {
 
       mMainRenderer.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
       mVolRenderer?.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
-      mSecondaryRenderer?.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
+      mSecondaryRendererList.forEach((element) {
+        element.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
+      });
     }
 
     if ((isLongPress == true || (isTapShowInfoDialog && isOnTap)) &&
@@ -213,7 +223,9 @@ class ChartPainter extends BaseChartPainter {
       mMainRenderer.drawVerticalText(canvas, textStyle, mGridRows);
     }
     mVolRenderer?.drawVerticalText(canvas, textStyle, mGridRows);
-    mSecondaryRenderer?.drawVerticalText(canvas, textStyle, mGridRows);
+    mSecondaryRendererList.forEach((element) {
+      element.drawVerticalText(canvas, textStyle, mGridRows);
+    });
   }
 
   @override
@@ -334,7 +346,9 @@ class ChartPainter extends BaseChartPainter {
     //Release to display the last data
     mMainRenderer.drawText(canvas, data, x);
     mVolRenderer?.drawText(canvas, data, x);
-    mSecondaryRenderer?.drawText(canvas, data, x);
+    mSecondaryRendererList.forEach((element) {
+      element.drawText(canvas, data, x);
+    });
   }
 
   @override
@@ -535,15 +549,22 @@ class ChartPainter extends BaseChartPainter {
   }
 
   String getDate(int? date) => dateFormat(
-      DateTime.fromMillisecondsSinceEpoch(
-          date ?? DateTime.now().millisecondsSinceEpoch),
-      mFormats);
+    DateTime.fromMillisecondsSinceEpoch(date ?? DateTime.now().millisecondsSinceEpoch),
+    mFormats,
+  );
 
   double getMainY(double y) => mMainRenderer.getY(y);
 
   /// Whether the point is in the SecondaryRect
   bool isInSecondaryRect(Offset point) {
-    return mSecondaryRect?.contains(point) ?? false;
+    bool status = false;
+    for (int i = 0; i < mSecondaryRectList.length; ++i) {
+      if (mSecondaryRectList[i].mSecondaryRect.contains(point) == true) {
+        status = true;
+        break;
+      }
+    }
+    return status;
   }
 
   /// Whether the point is in MainRect
