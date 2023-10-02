@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:k_chart/chart_translations.dart';
 import 'package:k_chart/flutter_k_chart.dart';
 
 void main() => runApp(MyApp());
@@ -14,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.deepPurple,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -33,17 +31,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<KLineEntity>? datas;
   bool showLoading = true;
-  MainState _mainState = MainState.MA;
   bool _volHidden = false;
+  MainState _mainState = MainState.MA;
   SecondaryState _secondaryState = SecondaryState.MACD;
-  bool isLine = true;
-  bool isChinese = true;
-  bool _hideGrid = false;
-  bool _showNowPrice = true;
   List<DepthEntity>? _bids, _asks;
-  bool isChangeUI = false;
-  bool _isTrendLine = false;
-  bool _priceLeft = true;
   VerticalTextAlignment _verticalTextAlignment = VerticalTextAlignment.left;
 
   ChartStyle chartStyle = ChartStyle();
@@ -57,12 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
       final parseJson = json.decode(result);
       final tick = parseJson['tick'] as Map<String, dynamic>;
       final List<DepthEntity> bids = (tick['bids'] as List<dynamic>)
-          .map<DepthEntity>(
-              (item) => DepthEntity(item[0] as double, item[1] as double))
+          .map<DepthEntity>((item) => DepthEntity(item[0] as double, item[1] as double))
           .toList();
       final List<DepthEntity> asks = (tick['asks'] as List<dynamic>)
-          .map<DepthEntity>(
-              (item) => DepthEntity(item[0] as double, item[1] as double))
+          .map<DepthEntity>((item) => DepthEntity(item[0] as double, item[1] as double))
           .toList();
       initDepth(bids, asks);
     });
@@ -94,130 +83,137 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: <Widget>[
-        Stack(children: <Widget>[
-          Container(
-            height: 450,
-            width: double.infinity,
-            child: KChartWidget(
-              datas,
-              chartStyle,
-              chartColors,
-              isLine: isLine,
-              onSecondaryTap: () {
-                print('Secondary Tap');
-              },
-              isTrendLine: _isTrendLine,
-              mainState: _mainState,
-              volHidden: _volHidden,
-              secondaryState: _secondaryState,
-              fixedLength: 2,
-              timeFormat: TimeFormat.YEAR_MONTH_DAY,
-              translations: kChartTranslations,
-              showNowPrice: _showNowPrice,
-              //`isChinese` is Deprecated, Use `translations` instead.
-              isChinese: isChinese,
-              hideGrid: _hideGrid,
-              isTapShowInfoDialog: false,
-              verticalTextAlignment: _verticalTextAlignment,
-              maDayList: [1, 100, 1000],
-            ),
-          ),
-          if (showLoading)
+    return Scaffold(
+      body: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Stack(children: <Widget>[
             Container(
-                width: double.infinity,
-                height: 450,
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator()),
-        ]),
-        buildButtons(),
-        if (_bids != null && _asks != null)
-          Container(
-            height: 230,
-            width: double.infinity,
-            child: DepthChart(_bids!, _asks!, chartColors),
-          )
-      ],
+              height: 450,
+              width: double.infinity,
+              child: KChartWidget(
+                datas,
+                chartStyle,
+                chartColors,
+                isTrendLine: false,
+                onSecondaryTap: () {
+                  print('Secondary Tap');
+                },
+                mainState: _mainState,
+                volHidden: _volHidden,
+                secondaryState: _secondaryState,
+                fixedLength: 2,
+                timeFormat: TimeFormat.YEAR_MONTH_DAY,
+              ),
+            ),
+            if (showLoading) Container(
+              width: double.infinity,
+              height: 450,
+              alignment: Alignment.center,
+              child: const CircularProgressIndicator(),
+            ),
+          ]),
+          _buildTitle(context, 'Main State'),
+          buildMainButtons(),
+          _buildTitle(context, 'Secondary State'),
+          buildSecondButtons(),
+          const SizedBox(height: 30),
+          if (_bids != null && _asks != null)
+            Container(
+              color: Colors.white,
+              height: 300,
+              width: double.infinity,
+              child: DepthChart(_bids!, _asks!, chartColors),
+            )
+        ],
+      ),
     );
   }
 
-  Widget buildButtons() {
-    return Wrap(
-      alignment: WrapAlignment.spaceEvenly,
-      children: <Widget>[
-        button("Time Mode", onPressed: () => isLine = true),
-        button("K Line Mode", onPressed: () => isLine = false),
-        button("TrendLine", onPressed: () => _isTrendLine = !_isTrendLine),
-        button("Line:MA", onPressed: () => _mainState = MainState.MA),
-        button("Line:BOLL", onPressed: () => _mainState = MainState.BOLL),
-        button("Hide Line", onPressed: () => _mainState = MainState.NONE),
-        button("Secondary Chart:MACD",
-            onPressed: () => _secondaryState = SecondaryState.MACD),
-        button("Secondary Chart:KDJ",
-            onPressed: () => _secondaryState = SecondaryState.KDJ),
-        button("Secondary Chart:RSI",
-            onPressed: () => _secondaryState = SecondaryState.RSI),
-        button("Secondary Chart:WR",
-            onPressed: () => _secondaryState = SecondaryState.WR),
-        button("Secondary Chart:CCI",
-            onPressed: () => _secondaryState = SecondaryState.CCI),
-        button("Secondary Chart:Hide",
-            onPressed: () => _secondaryState = SecondaryState.NONE),
-        button(_volHidden ? "Show Vol" : "Hide Vol",
-            onPressed: () => _volHidden = !_volHidden),
-        button("Change Language", onPressed: () => isChinese = !isChinese),
-        button(_hideGrid ? "Show Grid" : "Hide Grid",
-            onPressed: () => _hideGrid = !_hideGrid),
-        button(_showNowPrice ? "Hide Now Price" : "Show Now Price",
-            onPressed: () => _showNowPrice = !_showNowPrice),
-        button("Customize UI", onPressed: () {
-          setState(() {
-            this.isChangeUI = !this.isChangeUI;
-            if (this.isChangeUI) {
-              chartColors.selectBorderColor = Colors.red;
-              chartColors.selectFillColor = Colors.red;
-              chartColors.lineFillColor = Colors.red;
-              chartColors.kLineColor = Colors.yellow;
-            } else {
-              chartColors.selectBorderColor = Color(0xff6C7A86);
-              chartColors.selectFillColor = Color(0xff0D1722);
-              chartColors.lineFillColor = Color(0x554C86CD);
-              chartColors.kLineColor = Color(0xff4C86CD);
-            }
-          });
-        }),
-        button("Change PriceTextPaint",
-            onPressed: () => setState(() {
-              _priceLeft = !_priceLeft;
-              if (_priceLeft) {
-                _verticalTextAlignment = VerticalTextAlignment.left;
-              } else {
-                _verticalTextAlignment = VerticalTextAlignment.right;
-              }
-            })),
-      ],
-    );
-  }
-
-  Widget button(String text, {VoidCallback? onPressed}) {
-    return TextButton(
-      onPressed: () {
-        if (onPressed != null) {
-          onPressed();
-          setState(() {});
-        }
-      },
-      child: Text(text),
-      style: TextButton.styleFrom(
-        primary: Colors.white,
-        minimumSize: const Size(88, 44),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(2.0)),
+  Widget _buildTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 12, 15),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          // color: Colors.white,
+          fontWeight: FontWeight.w600,
         ),
-        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  Widget buildMainButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        spacing: 10,
+        runSpacing: 10,
+        children: MainState.values.map((e) {
+          return _buildButton(
+            context: context,
+            title: e.name,
+            isActive: _mainState == e,
+            onPress: () => _mainState = e,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget buildSecondButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        spacing: 10,
+        runSpacing: 5,
+        children: SecondaryState.values.map((e) {
+          return _buildButton(
+            context: context,
+            title: e.name,
+            isActive: _secondaryState == e,
+            onPress: () => _secondaryState = e,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildButton({
+    required BuildContext context,
+    required String title,
+    required isActive,
+    required Function onPress,
+  }) {
+    late Color? bgColor, txtColor;
+    if (isActive) {
+      bgColor = Theme.of(context).primaryColor.withOpacity(.15);
+      txtColor = Theme.of(context).primaryColor;
+    } else {
+      bgColor = Colors.transparent;
+      txtColor = Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.75);
+    }
+    return InkWell(
+      onTap: () {
+        onPress();
+        setState(() {});
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        constraints: const BoxConstraints(minWidth: 60),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: txtColor,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
