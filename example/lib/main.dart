@@ -88,23 +88,20 @@ class _MyHomePageState extends State<MyHomePage> {
         shrinkWrap: true,
         children: <Widget>[
           Stack(children: <Widget>[
-            Container(
-              height: 450,
-              width: double.infinity,
-              child: KChartWidget(
-                datas,
-                chartStyle,
-                chartColors,
-                isTrendLine: false,
-                onSecondaryTap: () {
-                  print('Secondary Tap');
-                },
-                mainState: _mainState,
-                volHidden: _volHidden,
-                secondaryState: _secondaryState,
-                fixedLength: 2,
-                timeFormat: TimeFormat.YEAR_MONTH_DAY,
-              ),
+            KChartWidget(
+              datas,
+              chartStyle,
+              chartColors,
+              mBaseHeight: 400,
+              isTrendLine: false,
+              onSecondaryTap: () {
+                print('Secondary Tap');
+              },
+              mainState: _mainState,
+              volHidden: _volHidden,
+              secondaryState: _secondaryState,
+              fixedLength: 2,
+              timeFormat: TimeFormat.YEAR_MONTH_DAY,
             ),
             if (showLoading) Container(
               width: double.infinity,
@@ -113,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const CircularProgressIndicator(),
             ),
           ]),
+          _buildTitle(context, 'VOL'),
+          buildVolButton(),
           _buildTitle(context, 'Main State'),
           buildMainButtons(),
           _buildTitle(context, 'Secondary State'),
@@ -143,9 +142,27 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget buildVolButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: _buildButton(
+            context: context,
+            title: 'VOL',
+            isActive: !_volHidden,
+            onPress: () {
+              _volHidden = !_volHidden;
+              setState(() {});
+            }
+        ),
+      ),
+    );
+  }
+
   Widget buildMainButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Wrap(
         alignment: WrapAlignment.start,
         spacing: 10,
@@ -164,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget buildSecondButtons() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Wrap(
         alignment: WrapAlignment.start,
         spacing: 10,

@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:k_chart/chart_translations.dart';
 import 'package:k_chart/extension/map_ext.dart';
 import 'package:k_chart/flutter_k_chart.dart';
+import 'renderer/base_dimension.dart';
 
 enum MainState { MA, BOLL, NONE }
 
@@ -40,6 +40,7 @@ class KChartWidget extends StatefulWidget {
   final bool materialInfoDialog; // Material风格的信息弹窗
   final Map<String, ChartTranslations> translations;
   final List<String> timeFormat;
+  final double mBaseHeight;
 
   //当屏幕滚动到尽头会调用，真为拉到屏幕右侧尽头，假为拉到屏幕左侧尽头
   final Function(bool)? onLoadMore;
@@ -83,6 +84,7 @@ class KChartWidget extends StatefulWidget {
     this.flingCurve = Curves.decelerate,
     this.isOnDrag,
     this.verticalTextAlignment = VerticalTextAlignment.left,
+    this.mBaseHeight = 380,
   });
 
   @override
@@ -136,9 +138,15 @@ class _KChartWidgetState extends State<KChartWidget>
       mScrollX = mSelectX = 0.0;
       mScaleX = 1.0;
     }
+    final BaseDimension baseDimension = BaseDimension(
+      mBaseHeight: widget.mBaseHeight,
+      volHidden: widget.volHidden,
+      secondaryState: widget.secondaryState,
+    );
     final _painter = ChartPainter(
       widget.chartStyle,
       widget.chartColors,
+      baseDimension: baseDimension,
       lines: lines, //For TrendLine
       xFrontPadding: widget.xFrontPadding,
       isTrendLine: widget.isTrendLine, //For TrendLine
@@ -166,7 +174,6 @@ class _KChartWidgetState extends State<KChartWidget>
       builder: (context, constraints) {
         mHeight = constraints.maxHeight;
         mWidth = constraints.maxWidth;
-
         return GestureDetector(
           onTapUp: (details) {
             if (!widget.isTrendLine &&
@@ -280,7 +287,7 @@ class _KChartWidgetState extends State<KChartWidget>
           child: Stack(
             children: <Widget>[
               CustomPaint(
-                size: Size(double.infinity, double.infinity),
+                size: Size(double.infinity, baseDimension.mDisplayHeight),
                 painter: _painter,
               ),
               if (widget.showInfoDialog) _buildInfoDialog()

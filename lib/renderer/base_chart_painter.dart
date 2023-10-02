@@ -1,13 +1,10 @@
 import 'dart:math';
-
-import 'package:flutter/material.dart'
-    show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
+import 'package:flutter/material.dart' show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
 import 'package:k_chart/utils/date_format_util.dart';
-
 import '../chart_style.dart' show ChartStyle;
 import '../entity/k_line_entity.dart';
 import '../k_chart_widget.dart';
-
+import 'base_dimension.dart';
 export 'package:flutter/material.dart'
     show Color, required, TextStyle, Rect, Canvas, Size, CustomPainter;
 
@@ -47,6 +44,8 @@ abstract class BaseChartPainter extends CustomPainter {
   List<String> mFormats = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn]; //格式化时间
   double xFrontPadding;
 
+  final BaseDimension baseDimension;
+
   BaseChartPainter(
     this.chartStyle, {
     this.datas,
@@ -55,6 +54,7 @@ abstract class BaseChartPainter extends CustomPainter {
     required this.isLongPress,
     required this.selectX,
     required this.xFrontPadding,
+    required this.baseDimension,
     this.isOnTap = false,
     this.mainState = MainState.MA,
     this.volHidden = false,
@@ -161,9 +161,8 @@ abstract class BaseChartPainter extends CustomPainter {
   void drawCrossLineText(Canvas canvas, Size size);
 
   void initRect(Size size) {
-    double volHeight = volHidden != true ? mDisplayHeight * 0.2 : 0;
-    double secondaryHeight =
-        secondaryState != SecondaryState.NONE ? mDisplayHeight * 0.2 : 0;
+    double volHeight = baseDimension.mVolumeHeight;
+    double secondaryHeight = baseDimension.mSecondaryHeight;
 
     double mainHeight = mDisplayHeight;
     mainHeight -= volHeight;
