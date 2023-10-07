@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLoading = true;
   bool _volHidden = false;
   MainState _mainState = MainState.MA;
+  // final Set<SecondaryState> _secondaryStateLi = <SecondaryState>{};
   final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
 
@@ -62,7 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _asks = [];
     double amount = 0.0;
     bids.sort((left, right) => left.price.compareTo(right.price));
-    //累加买入委托量
     bids.reversed.forEach((item) {
       amount += item.vol;
       item.vol = amount;
@@ -71,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     amount = 0.0;
     asks.sort((left, right) => left.price.compareTo(right.price));
-    //累加卖出委托量
     asks.forEach((item) {
       amount += item.vol;
       item.vol = amount;
@@ -99,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               mainState: _mainState,
               volHidden: _volHidden,
-              secondaryStateLi: _secondaryStateLi,
+              secondaryStateLi: _secondaryStateLi.toSet(),
               fixedLength: 2,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
             ),
@@ -243,9 +242,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getData(String period) {
-    /*
-     * 可以翻墙使用方法1加载数据，不可以翻墙使用方法2加载数据，默认使用方法1加载最新数据
-     */
     final Future<String> future = getChatDataFromInternet(period);
     //final Future<String> future = getChatDataFromJson();
     future.then((String result) {
@@ -257,7 +253,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  //获取火币数据，需要翻墙
   Future<String> getChatDataFromInternet(String? period) async {
     var url =
         'https://api.huobi.br.com/market/history/kline?period=${period ?? '1day'}&size=300&symbol=btcusdt';
@@ -271,7 +266,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return result;
   }
 
-  // 如果你不能翻墙，可以使用这个方法加载数据
   Future<String> getChatDataFromJson() async {
     return rootBundle.loadString('assets/chatData.json');
   }
