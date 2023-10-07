@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:k_chart/chart_translations.dart';
-import 'package:k_chart/extension/map_ext.dart';
 import 'package:k_chart/flutter_k_chart.dart';
 import 'renderer/base_dimension.dart';
 
@@ -29,21 +28,21 @@ class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
   final MainState mainState;
   final bool volHidden;
-  final List<SecondaryState> secondaryStateLi;
+  final Set<SecondaryState> secondaryStateLi;
   final Function()? onSecondaryTap;
   final bool isLine;
-  final bool isTapShowInfoDialog; //是否开启单击显示详情数据
+  final bool isTapShowInfoDialog; //Whether to enable click to display detailed data
   final bool hideGrid;
-  @Deprecated('Use `translations` instead.')
-  final bool isChinese;
   final bool showNowPrice;
   final bool showInfoDialog;
-  final bool materialInfoDialog; // Material风格的信息弹窗
-  final Map<String, ChartTranslations> translations;
+  final bool materialInfoDialog; // Material Style Information Popup
+  final ChartTranslations chartTranslations;
   final List<String> timeFormat;
   final double mBaseHeight;
 
-  //当屏幕滚动到尽头会调用，真为拉到屏幕右侧尽头，假为拉到屏幕左侧尽头
+  // It will be called when the screen scrolls to the end.
+  // If true, it will be scrolled to the end of the right side of the screen.
+  // If it is false, it will be scrolled to the end of the left side of the screen.
   final Function(bool)? onLoadMore;
 
   final int fixedLength;
@@ -65,17 +64,16 @@ class KChartWidget extends StatefulWidget {
     required this.isTrendLine,
     this.xFrontPadding = 100,
     this.mainState = MainState.MA,
-    this.secondaryStateLi = const [],
+    this.secondaryStateLi = const <SecondaryState>{},
     this.onSecondaryTap,
     this.volHidden = false,
     this.isLine = false,
     this.isTapShowInfoDialog = false,
     this.hideGrid = false,
-    @Deprecated('Use `translations` instead.') this.isChinese = false,
     this.showNowPrice = true,
     this.showInfoDialog = true,
     this.materialInfoDialog = true,
-    this.translations = kChartTranslations,
+    this.chartTranslations = const ChartTranslations(),
     this.timeFormat = TimeFormat.YEAR_MONTH_DAY,
     this.onLoadMore,
     this.fixedLength = 2,
@@ -161,7 +159,7 @@ class _KChartWidgetState extends State<KChartWidget>
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
       mainState: widget.mainState,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi,
+      secondaryStateLi: widget.secondaryStateLi.toList(),
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,
@@ -395,13 +393,9 @@ class _KChartWidgetState extends State<KChartWidget>
               itemExtent: 14.0,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                final translations = widget.isChinese
-                    ? kChartTranslations['zh_CN']!
-                    : widget.translations.of(context);
-
                 return _buildItem(
                   infos[index],
-                  translations.byIndex(index),
+                  widget.chartTranslations.byIndex(index),
                 );
               },
             ),
