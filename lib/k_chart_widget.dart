@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:k_chart/chart_translations.dart';
+import 'package:k_chart/components/popup_info_view.dart';
 import 'package:k_chart/flutter_k_chart.dart';
 import 'renderer/base_dimension.dart';
 
@@ -90,10 +91,9 @@ class KChartWidget extends StatefulWidget {
   _KChartWidgetState createState() => _KChartWidgetState();
 }
 
-class _KChartWidgetState extends State<KChartWidget>
-    with TickerProviderStateMixin {
+class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMixin {
+  final StreamController<InfoWindowEntity?> mInfoWindowStream = StreamController<InfoWindowEntity?>();
   double mScaleX = 1.0, mScrollX = 0.0, mSelectX = 0.0;
-  StreamController<InfoWindowEntity?>? mInfoWindowStream;
   double mHeight = 0, mWidth = 0;
   AnimationController? _controller;
   Animation<double>? aniX;
@@ -116,7 +116,6 @@ class _KChartWidgetState extends State<KChartWidget>
   @override
   void initState() {
     super.initState();
-    mInfoWindowStream = StreamController<InfoWindowEntity?>();
   }
 
   @override
@@ -126,7 +125,8 @@ class _KChartWidgetState extends State<KChartWidget>
 
   @override
   void dispose() {
-    mInfoWindowStream?.close();
+    mInfoWindowStream.sink.close();
+    mInfoWindowStream.close();
     _controller?.dispose();
     super.dispose();
   }
@@ -147,6 +147,7 @@ class _KChartWidgetState extends State<KChartWidget>
       widget.chartColors,
       baseDimension: baseDimension,
       lines: lines, //For TrendLine
+      sink: mInfoWindowStream.sink,
       xFrontPadding: widget.xFrontPadding,
       isTrendLine: widget.isTrendLine, //For TrendLine
       selectY: mSelectY, //For TrendLine
@@ -163,7 +164,6 @@ class _KChartWidgetState extends State<KChartWidget>
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,
-      sink: mInfoWindowStream?.sink,
       fixedLength: widget.fixedLength,
       maDayList: widget.maDayList,
       verticalTextAlignment: widget.verticalTextAlignment,
@@ -280,7 +280,7 @@ class _KChartWidgetState extends State<KChartWidget>
           onLongPressEnd: (details) {
             isLongPress = false;
             enableCordRecord = true;
-            mInfoWindowStream?.sink.add(null);
+            mInfoWindowStream.sink.add(null);
             notifyChanged();
           },
           child: Stack(
@@ -354,79 +354,43 @@ class _KChartWidgetState extends State<KChartWidget>
 
   Widget _buildInfoDialog() {
     return StreamBuilder<InfoWindowEntity?>(
-        stream: mInfoWindowStream?.stream,
-        builder: (context, snapshot) {
-          if ((!isLongPress && !isOnTap) ||
-              widget.isLine == true ||
-              !snapshot.hasData ||
-              snapshot.data?.kLineEntity == null) return Container();
-          KLineEntity entity = snapshot.data!.kLineEntity;
-          double upDown = entity.change ?? entity.close - entity.open;
-          double upDownPercent = entity.ratio ?? (upDown / entity.open) * 100;
-          final double? entityAmount = entity.amount;
-          infos = [
-            getDate(entity.time),
-            entity.open.toStringAsFixed(widget.fixedLength),
-            entity.high.toStringAsFixed(widget.fixedLength),
-            entity.low.toStringAsFixed(widget.fixedLength),
-            entity.close.toStringAsFixed(widget.fixedLength),
-            "${upDown > 0 ? "+" : ""}${upDown.toStringAsFixed(widget.fixedLength)}",
-            "${upDownPercent > 0 ? "+" : ''}${upDownPercent.toStringAsFixed(2)}%",
-            if (entityAmount != null) entityAmount.toInt().toString()
-          ];
-          final dialogPadding = 4.0;
-          final dialogWidth = mWidth / 3;
-          return Container(
-            margin: EdgeInsets.only(
-                left: snapshot.data!.isLeft
-                    ? dialogPadding
-                    : mWidth - dialogWidth - dialogPadding,
-                top: 25),
-            width: dialogWidth,
-            decoration: BoxDecoration(
-                color: widget.chartColors.selectFillColor,
-                border: Border.all(
-                    color: widget.chartColors.selectBorderColor, width: 0.5)),
-            child: ListView.builder(
-              padding: EdgeInsets.all(dialogPadding),
-              itemCount: infos.length,
-              itemExtent: 14.0,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return _buildItem(
-                  infos[index],
-                  widget.chartTranslations.byIndex(index),
-                );
-              },
+      stream: mInfoWindowStream.stream,
+      builder: (context, snapshot) {
+        if ((!isLongPress && !isOnTap) ||
+            widget.isLine == true ||
+            !snapshot.hasData ||
+            snapshot.data?.kLineEntity == null) return SizedBox();
+        KLineEntity entity = snapshot.data!.kLineEntity;
+        final dialogWidth = mWidth / 3;
+        if (snapshot.data!.isLeft) {
+          return Positioned(
+            top: 25,
+            left: 10.0,
+            child: PopupInfoView(
+              entity: entity,
+              width: dialogWidth,
+              chartColors: widget.chartColors,
+              chartTranslations: widget.chartTranslations,
+              materialInfoDialog: widget.materialInfoDialog,
+              timeFormat: widget.timeFormat,
+              fixedLength: widget.fixedLength,
             ),
           );
-        });
-  }
-
-  Widget _buildItem(String info, String infoName) {
-    Color color = widget.chartColors.infoWindowNormalColor;
-    if (info.startsWith("+"))
-      color = widget.chartColors.infoWindowUpColor;
-    else if (info.startsWith("-")) color = widget.chartColors.infoWindowDnColor;
-    final infoWidget = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-            child: Text("$infoName",
-                style: TextStyle(
-                    color: widget.chartColors.infoWindowTitleColor,
-                    fontSize: 10.0))),
-        Text(info, style: TextStyle(color: color, fontSize: 10.0)),
-      ],
+        }
+        return Positioned(
+          top: 25,
+          right: 10.0,
+          child: PopupInfoView(
+            entity: entity,
+            width: dialogWidth,
+            chartColors: widget.chartColors,
+            chartTranslations: widget.chartTranslations,
+            materialInfoDialog: widget.materialInfoDialog,
+            timeFormat: widget.timeFormat,
+            fixedLength: widget.fixedLength,
+          ),
+        );
+      },
     );
-    return widget.materialInfoDialog
-        ? Material(color: Colors.transparent, child: infoWidget)
-        : infoWidget;
   }
-
-  String getDate(int? date) => dateFormat(
-      DateTime.fromMillisecondsSinceEpoch(
-          date ?? DateTime.now().millisecondsSinceEpoch),
-      widget.timeFormat);
 }
