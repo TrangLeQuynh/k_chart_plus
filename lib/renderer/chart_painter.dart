@@ -146,22 +146,13 @@ class ChartPainter extends BaseChartPainter {
 
   @override
   void drawBg(Canvas canvas, Size size) {
-    Paint mBgPaint = Paint();
-    Gradient mBgGradient = LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: chartColors.bgColor,
-    );
-    Rect mainRect =
-        Rect.fromLTRB(0, 0, mMainRect.width, mMainRect.height + mTopPadding);
-    canvas.drawRect(
-        mainRect, mBgPaint..shader = mBgGradient.createShader(mainRect));
+    Paint mBgPaint = Paint()..color = chartColors.bgColor;
+    Rect mainRect = Rect.fromLTRB(0, 0, mMainRect.width, mMainRect.height + mTopPadding);
+    canvas.drawRect(mainRect, mBgPaint);
 
     if (mVolRect != null) {
-      Rect volRect = Rect.fromLTRB(
-          0, mVolRect!.top - mChildPadding, mVolRect!.width, mVolRect!.bottom);
-      canvas.drawRect(
-          volRect, mBgPaint..shader = mBgGradient.createShader(volRect));
+      Rect volRect = Rect.fromLTRB(0, mVolRect!.top - mChildPadding, mVolRect!.width, mVolRect!.bottom);
+      canvas.drawRect(volRect, mBgPaint);
     }
 
     for (int i = 0; i < mSecondaryRectList.length; ++i) {
@@ -172,10 +163,10 @@ class ChartPainter extends BaseChartPainter {
         mSecondaryRect.width,
         mSecondaryRect.bottom
       );
-      canvas.drawRect(secondaryRect, mBgPaint..shader = mBgGradient.createShader(secondaryRect));
+      canvas.drawRect(secondaryRect, mBgPaint);
     }
     Rect dateRect = Rect.fromLTRB(0, size.height - mBottomPadding, size.width, size.height);
-    canvas.drawRect(dateRect, mBgPaint..shader = mBgGradient.createShader(dateRect));
+    canvas.drawRect(dateRect, mBgPaint);
   }
 
   @override
@@ -450,7 +441,7 @@ class ChartPainter extends BaseChartPainter {
   void drawTrendLines(Canvas canvas, Size size) {
     var index = calculateSelectedX(selectX);
     Paint paintY = Paint()
-      ..color = Colors.orange
+      ..color = chartColors.trendLineColor
       ..strokeWidth = 1
       ..isAntiAlias = true;
     double x = getX(index);
@@ -463,11 +454,11 @@ class ChartPainter extends BaseChartPainter {
     canvas.drawLine(Offset(x, mTopPadding),
         Offset(x, size.height - mBottomPadding), paintY);
     Paint paintX = Paint()
-      ..color = Colors.orangeAccent
+      ..color = chartColors.trendLineColor
       ..strokeWidth = 1
       ..isAntiAlias = true;
     Paint paint = Paint()
-      ..color = Colors.orange
+      ..color = chartColors.trendLineColor
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

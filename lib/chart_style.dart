@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show Color;
 
 class ChartColors {
-  List<Color> bgColor = [Color(0xffffffff), Color(0xffffffff)];
+  Color bgColor = Color(0xffffffff);
 
   Color kLineColor = Color(0xff4C86CD); ///
   Color lineFillColor = Color(0x554C86CD); ///
@@ -27,6 +27,9 @@ class ChartColors {
   Color nowPriceUpColor = Color(0xFF14AD8F);
   Color nowPriceDnColor = Color(0xFFD5405D);
   Color nowPriceTextColor = Color(0xffffffff);
+
+  //trend color
+  Color trendLineColor = Color(0xFFF89215);
 
   ///depth color
   Color depthBuyColor = Color(0xFF14AD8F);
