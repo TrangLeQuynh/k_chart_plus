@@ -35,7 +35,7 @@ class ChartPainter extends BaseChartPainter {
   late BaseChartRenderer mMainRenderer;
   BaseChartRenderer? mVolRenderer;
   List<BaseChartRenderer> mSecondaryRendererList = [];
-  StreamSink<InfoWindowEntity?>? sink;
+  StreamSink<InfoWindowEntity?> sink;
   Color? upColor, dnColor;
   Color? ma5Color, ma10Color, ma30Color;
   Color? volColor;
@@ -56,6 +56,7 @@ class ChartPainter extends BaseChartPainter {
     required this.lines, //For TrendLine
     required this.isTrendLine, //For TrendLine
     required this.selectY, //For TrendLine
+    required this.sink,
     required datas,
     required scaleX,
     required scrollX,
@@ -69,7 +70,6 @@ class ChartPainter extends BaseChartPainter {
     mainState,
     volHidden,
     secondaryStateLi,
-    this.sink,
     bool isLine = false,
     this.hideGrid = false,
     this.showNowPrice = true,
@@ -333,7 +333,7 @@ class ChartPainter extends BaseChartPainter {
 
     dateTp.paint(canvas, Offset(x - textWidth / 2, y));
     //Long press to display the details of this data
-    sink?.add(InfoWindowEntity(point, isLeft: isLeft));
+    sink.add(InfoWindowEntity(point, isLeft: isLeft));
   }
 
   @override
