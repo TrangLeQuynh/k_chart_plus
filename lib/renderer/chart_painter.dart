@@ -309,8 +309,7 @@ class ChartPainter extends BaseChartPainter {
       tp.paint(canvas, Offset(x + w1 + w2, y - textHeight / 2));
     }
 
-    TextPainter dateTp =
-        getTextPainter(getDate(point.time), chartColors.crossTextColor);
+    TextPainter dateTp = getTextPainter(getDate(point.time), chartColors.crossTextColor);
     textWidth = dateTp.width;
     r = textHeight / 2;
     x = translateXtoX(getX(index));
@@ -447,7 +446,7 @@ class ChartPainter extends BaseChartPainter {
     tp.paint(canvas, Offset(offsetX, top));
   }
 
-//For TrendLine
+  //For TrendLine
   void drawTrendLines(Canvas canvas, Size size) {
     var index = calculateSelectedX(selectX);
     Paint paintY = Paint()
@@ -557,14 +556,15 @@ class ChartPainter extends BaseChartPainter {
 
   /// Whether the point is in the SecondaryRect
   bool isInSecondaryRect(Offset point) {
-    bool status = false;
-    for (int i = 0; i < mSecondaryRectList.length; ++i) {
-      if (mSecondaryRectList[i].mSecondaryRect.contains(point) == true) {
-        status = true;
-        break;
-      }
-    }
-    return status;
+    // bool status = false;
+    // for (int i = 0; i < mSecondaryRectList.length; ++i) {
+    //   if (mSecondaryRectList[i].mSecondaryRect.contains(point) == true) {
+    //     status = true;
+    //     break;
+    //   }
+    // }
+    // return status;
+    return false;
   }
 
   /// Whether the point is in MainRect

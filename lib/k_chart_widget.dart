@@ -175,17 +175,13 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
         mWidth = constraints.maxWidth;
         return GestureDetector(
           onTapUp: (details) {
-            if (!widget.isTrendLine &&
-                widget.onSecondaryTap != null &&
-                _painter.isInSecondaryRect(details.localPosition)) {
+            if (!widget.isTrendLine && widget.onSecondaryTap != null && _painter.isInSecondaryRect(details.localPosition)) {
               widget.onSecondaryTap!();
             }
 
-            if (!widget.isTrendLine &&
-                _painter.isInMainRect(details.localPosition)) {
+            if (!widget.isTrendLine && _painter.isInMainRect(details.localPosition)) {
               isOnTap = true;
-              if (mSelectX != details.localPosition.dx &&
-                  widget.isTapShowInfoDialog) {
+              if (mSelectX != details.localPosition.dx && widget.isTapShowInfoDialog) {
                 mSelectX = details.localPosition.dx;
                 notifyChanged();
               }
@@ -194,8 +190,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
               enableCordRecord = false;
               Offset p1 = Offset(getTrendLineX(), mSelectY);
               if (!waitingForOtherPairofCords)
-                lines.add(TrendLine(
-                    p1, Offset(-1, -1), trendLineMax!, trendLineScale!));
+                lines.add(TrendLine(p1, Offset(-1, -1), trendLineMax!, trendLineScale!));
 
               if (waitingForOtherPairofCords) {
                 var a = lines.last;
@@ -315,8 +310,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
   }
 
   void _onFling(double x) {
-    _controller = AnimationController(
-        duration: Duration(milliseconds: widget.flingTime), vsync: this);
+    _controller = AnimationController(duration: Duration(milliseconds: widget.flingTime), vsync: this);
     aniX = null;
     aniX = Tween<double>(begin: mScrollX, end: x * widget.flingRatio + mScrollX)
         .animate(CurvedAnimation(
