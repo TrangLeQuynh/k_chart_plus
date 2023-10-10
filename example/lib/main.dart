@@ -115,14 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
           buildMainButtons(),
           _buildTitle(context, 'Secondary State'),
           buildSecondButtons(),
-          const SizedBox(height: 30),
-          if (_bids != null && _asks != null)
-            Container(
-              color: Colors.white,
-              height: 300,
-              width: double.infinity,
-              child: DepthChart(_bids!, _asks!, chartColors),
-            )
+          // const SizedBox(height: 30),
+          // if (_bids != null && _asks != null)
+          //   Container(
+          //     color: Colors.white,
+          //     height: 300,
+          //     width: double.infinity,
+          //     child: DepthChart(_bids!, _asks!, chartColors),
+          //   )
         ],
       ),
     );
