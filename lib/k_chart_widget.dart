@@ -160,7 +160,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
       mainState: widget.mainState,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi.toList(),
+      secondaryStateLi: widget.secondaryStateLi,
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,

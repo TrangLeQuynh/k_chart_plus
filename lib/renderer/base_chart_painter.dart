@@ -13,7 +13,7 @@ abstract class BaseChartPainter extends CustomPainter {
   List<KLineEntity>? datas;
   MainState mainState;
 
-  List<SecondaryState> secondaryStateLi;
+  Set<SecondaryState> secondaryStateLi;
 
   bool volHidden;
   bool isTapShowInfoDialog;
@@ -58,7 +58,7 @@ abstract class BaseChartPainter extends CustomPainter {
     this.mainState = MainState.MA,
     this.volHidden = false,
     this.isTapShowInfoDialog = false,
-    this.secondaryStateLi = const [],
+    this.secondaryStateLi = const <SecondaryState>{},
     this.isLine = false,
   }) {
     mItemCount = datas?.length ?? 0;
@@ -182,7 +182,9 @@ abstract class BaseChartPainter extends CustomPainter {
         mWidth,
         mMainRect.bottom + volHeight + i * secondaryHeight + secondaryHeight
       );
-      mSecondaryRectList.add(SecondaryRect(secondaryStateLi[i], mSecondaryRect));
+      mSecondaryRectList.add(
+        SecondaryRect(secondaryStateLi.elementAt(i), mSecondaryRect)
+      );
     }
   }
 
