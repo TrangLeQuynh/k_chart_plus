@@ -7,8 +7,8 @@ import 'renderer/base_dimension.dart';
 
 enum MainState { MA, BOLL, NONE }
 
-// enum SecondaryState { MACD, KDJ, RSI, WR, CCI, NONE }
-enum SecondaryState { MACD, KDJ, RSI, WR, CCI } //no support NONE
+enum SecondaryState { MACD, KDJ, RSI, WR, CCI, NONE }
+// enum SecondaryState { MACD, KDJ, RSI, WR, CCI } //no support NONE
 
 class TimeFormat {
   static const List<String> YEAR_MONTH_DAY = [yyyy, '-', mm, '-', dd];
@@ -29,7 +29,7 @@ class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
   final MainState mainState;
   final bool volHidden;
-  final Set<SecondaryState> secondaryStateLi;
+  final SecondaryState secondaryState;
   final Function()? onSecondaryTap;
   final bool isLine;
   final bool isTapShowInfoDialog; //Whether to enable click to display detailed data
@@ -65,7 +65,7 @@ class KChartWidget extends StatefulWidget {
     required this.isTrendLine,
     this.xFrontPadding = 100,
     this.mainState = MainState.MA,
-    this.secondaryStateLi = const <SecondaryState>{},
+    this.secondaryState = SecondaryState.NONE,
     this.onSecondaryTap,
     this.volHidden = false,
     this.isLine = false,
@@ -140,7 +140,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi,
+      secondaryState: widget.secondaryState,
     );
     final _painter = ChartPainter(
       widget.chartStyle,
@@ -160,7 +160,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
       mainState: widget.mainState,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi,
+      secondaryState: widget.secondaryState,
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,

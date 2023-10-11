@@ -33,8 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLoading = true;
   bool _volHidden = false;
   MainState _mainState = MainState.MA;
+  SecondaryState _secondaryState = SecondaryState.MACD;
   // final Set<SecondaryState> _secondaryStateLi = <SecondaryState>{};
-  final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
 
   ChartStyle chartStyle = ChartStyle();
@@ -98,7 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               mainState: _mainState,
               volHidden: _volHidden,
-              secondaryStateLi: _secondaryStateLi.toSet(),
+              // secondaryStateLi: _secondaryStateLi.toSet(),
+              secondaryState: SecondaryState.MACD,
               fixedLength: 2,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
             ),
@@ -186,17 +187,19 @@ class _MyHomePageState extends State<MyHomePage> {
         spacing: 10,
         runSpacing: 5,
         children: SecondaryState.values.map((e) {
-          bool isActive = _secondaryStateLi.contains(e);
+          if (e == SecondaryState.NONE) return SizedBox();
+          bool isActive = _secondaryState == e;
           return _buildButton(
             context: context,
             title: e.name,
-            isActive: _secondaryStateLi.contains(e),
+            isActive: isActive,
             onPress: () {
               if (isActive) {
-                _secondaryStateLi.remove(e);
+                _secondaryState = SecondaryState.NONE;
               } else {
-                _secondaryStateLi.add(e);
+                _secondaryState = e;
               }
+              setState(() {});
             },
           );
         }).toList(),
