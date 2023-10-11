@@ -13,11 +13,11 @@ class BaseDimension {
   BaseDimension({
     required double mBaseHeight,
     required bool volHidden,
-    required Set<SecondaryState> secondaryStateLi,
+    required SecondaryState secondaryState,
   }) {
     _mBaseHeight = mBaseHeight;
     _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
-    _mSecondaryHeight = _mBaseHeight * 0.2;
-    _mDisplayHeight = _mBaseHeight + _mVolumeHeight + (_mSecondaryHeight * secondaryStateLi.length);
+    _mSecondaryHeight = secondaryState != SecondaryState.NONE ? _mBaseHeight * 0.2 : 0;
+    _mDisplayHeight = _mBaseHeight + _mVolumeHeight + _mSecondaryHeight;
   }
 }
