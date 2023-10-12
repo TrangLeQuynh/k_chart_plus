@@ -3,6 +3,7 @@ import 'package:k_chart/chart_style.dart';
 import 'package:k_chart/chart_translations.dart';
 import '../entity/k_line_entity.dart';
 import '../utils/date_format_util.dart';
+import '../utils/number_util.dart';
 
 class PopupInfoView extends StatelessWidget {
   final KLineEntity entity;
@@ -57,6 +58,7 @@ class PopupInfoView extends StatelessWidget {
         _buildItem(chartTranslations.close, entity.close.toStringAsFixed(fixedLength)),
         _buildColorItem(chartTranslations.changeAmount, upDown.toStringAsFixed(fixedLength), upDown > 0),
         _buildColorItem(chartTranslations.change, '${upDownPercent.toStringAsFixed(2)}%', upDownPercent > 0),
+        _buildItem(chartTranslations.vol, NumberUtil.format(entity.vol)),
         if (entityAmount != null) _buildItem(chartTranslations.amount, entityAmount.toInt().toString()),
       ],
     );
