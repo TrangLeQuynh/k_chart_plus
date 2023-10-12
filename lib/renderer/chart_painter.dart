@@ -128,14 +128,15 @@ class ChartPainter extends BaseChartPainter {
       mVolRenderer = VolRenderer(mVolRect!, mVolMaxValue, mVolMinValue,
           mChildPadding, fixedLength, this.chartStyle, this.chartColors);
     }
+    mSecondaryRendererList.clear();
     for (int i = 0; i < mSecondaryRectList.length; ++i) {
       mSecondaryRendererList.add(
         SecondaryRenderer(
-          mSecondaryRectList[i].mSecondaryRect,
-          mSecondaryRectList[i].mSecondaryMaxValue,
-          mSecondaryRectList[i].mSecondaryMinValue,
+          mSecondaryRectList[i].mRect,
+          mSecondaryRectList[i].mMaxValue,
+          mSecondaryRectList[i].mMinValue,
           mChildPadding,
-          mSecondaryRectList[i].state,
+          secondaryStateLi.elementAt(i),
           fixedLength,
           chartStyle,
           chartColors,
@@ -156,7 +157,7 @@ class ChartPainter extends BaseChartPainter {
     }
 
     for (int i = 0; i < mSecondaryRectList.length; ++i) {
-      Rect? mSecondaryRect = mSecondaryRectList[i].mSecondaryRect;
+      Rect? mSecondaryRect = mSecondaryRectList[i].mRect;
       Rect secondaryRect = Rect.fromLTRB(
         0,
         mSecondaryRect.top - mChildPadding,
@@ -545,17 +546,10 @@ class ChartPainter extends BaseChartPainter {
   double getMainY(double y) => mMainRenderer.getY(y);
 
   /// Whether the point is in the SecondaryRect
-  bool isInSecondaryRect(Offset point) {
-    // bool status = false;
-    // for (int i = 0; i < mSecondaryRectList.length; ++i) {
-    //   if (mSecondaryRectList[i].mSecondaryRect.contains(point) == true) {
-    //     status = true;
-    //     break;
-    //   }
-    // }
-    // return status;
-    return false;
-  }
+  // bool isInSecondaryRect(Offset point) {
+  //   // return mSecondaryRect.contains(point) == true);
+  //   return false;
+  // }
 
   /// Whether the point is in MainRect
   bool isInMainRect(Offset point) {

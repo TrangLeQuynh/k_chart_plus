@@ -93,9 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
               chartColors,
               mBaseHeight: 360,
               isTrendLine: false,
-              onSecondaryTap: () {
-                print('Secondary Tap');
-              },
               mainState: _mainState,
               volHidden: _volHidden,
               secondaryStateLi: _secondaryStateLi.toSet(),
