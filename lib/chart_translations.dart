@@ -7,6 +7,7 @@ class ChartTranslations {
   final String changeAmount;
   final String change;
   final String amount;
+  final String vol;
 
   const ChartTranslations({
     this.date = 'Date',
@@ -17,28 +18,6 @@ class ChartTranslations {
     this.changeAmount = 'Change',
     this.change = 'Change%',
     this.amount = 'Amount',
+    this.vol = 'Volume',
   });
-
-  String byIndex(int index) {
-    switch (index) {
-      case 0:
-        return date;
-      case 1:
-        return open;
-      case 2:
-        return high;
-      case 3:
-        return low;
-      case 4:
-        return close;
-      case 5:
-        return changeAmount;
-      case 6:
-        return change;
-      case 7:
-        return amount;
-    }
-
-    throw UnimplementedError();
-  }
 }
