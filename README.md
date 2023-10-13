@@ -1,27 +1,37 @@
-# k_chart
+# K Chart Package
+
+## Feature
+
 Maybe this is the best k chart in Flutter.Support drag,scale,long press,fling.And easy to use.
 
-## display
+|Example1|Example2|
+|:-------------------------:|:-------------------------:|
+|![](assets/example_1.png)  |  ![](assets/example_2.png)|
 
-#### image
+## Installation
 
-![demo 1](assets/example_1.png)
-![demo 2](assets/example_2.png)
+First, add `k_chart` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
-## Getting Started
-#### Install
+```yaml
 k_chart:
     git:
       url: https://github.com/TrangLeQuynh/k_chart
+      ref: dev #name branch
 ```
-#### Usage
+
+> If you don't want to support selecting multiple secondary states, you need to use: ```ref: single```
+
+
+
+## Usage
 
 **When you change the data, you must call this:**
 ```dart
 DataUtil.calculate(datas); //This function has some optional parameters: n is BOLL N-day closing price. k is BOLL param.
 ```
 
-use k line chart:
+### Use K line chart
+
 ```dart
 KChartWidget(
     chartStyle, // Required for styling purposes
@@ -39,19 +49,75 @@ KChartWidget(
     volHidden: false,// hide volume
     showNowPrice: true,// show now price
     isOnDrag: (isDrag){},// true is on Drag.Don't load data while Draging.
-    onSecondaryTap:(){},// on secondary rect taped.
     isTrendLine: false, // You can use Trendline by long-pressing and moving your finger after setting true to isTrendLine property. 
     xFrontPadding: 100 // padding in front
 ),
 ```
-use depth chart:
+### Use Depth chart
+
 ```dart
 DepthChart(_bids, _asks, chartColors) //Note: Datas must be an ordered list，
 ```
 
-#### Thanks
-[gwhcn/flutter_k_chart](https://github.com/gwhcn/flutter_k_chart)
-[OpenFlutter/k_chart](https://github.com/OpenFlutter/k_chart)
+### Dark | Light Theme
 
-#### Other
-Maybe there are some bugs in this k chart,or you want new indicators,you can create a pull request.I will happy to accept it and I hope we can make it better.
+`ChartColor` helped to set the color for the chart. Use `extension` to edit the colors that need to be changed
+
+```dart
+ChartColors init() {
+    ThemeData themeData = Theme.of(navigationService.getContext());
+    bgColor = themeData.colorScheme.background;
+    defaultTextColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xff60738E);
+
+    selectBorderColor = themeData.textTheme.bodyMedium?.color ?? Colors.black54;
+    selectFillColor =  themeData.colorScheme.background;
+
+    gridColor = themeData.dividerColor ?? const Color(0xff4c5c74);
+
+    infoWindowNormalColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+    infoWindowTitleColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+
+    hCrossColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+    vCrossColor = themeData.disabledColor.withOpacity(.1);
+    crossTextColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+
+    maxColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+    minColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
+    return this;
+}
+```
+
+
+Apply in k line chart:
+
+```dart
+
+KChartWidget(
+    data,
+    ChartStyle(),
+    ChartColors().init(), ///custom chart color
+    chartTranslations: ChartTranslations(
+        date: 'Date'
+        open: 'Open',
+        high: 'High',
+        low: 'Low',
+        close: 'Close'
+        changeAmount: 'Change',
+        change: 'Change%',
+        amount: 'Amount',
+        vol: 'Volume',
+    ),
+    mBaseHeight: 360,
+    isTrendLine: false,
+    mainState: mainState,
+    secondaryStateLi: secondaryStates,
+    fixedLength: 2,
+    timeFormat: TimeFormat.YEAR_MONTH_DAY,
+);
+```
+
+### Thanks
+
+[gwhcn/flutter_k_chart](https://github.com/gwhcn/flutter_k_chart)
+
+[OpenFlutter/k_chart](https://github.com/OpenFlutter/k_chart)
