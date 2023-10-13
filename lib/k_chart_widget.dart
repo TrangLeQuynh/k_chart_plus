@@ -30,7 +30,7 @@ class KChartWidget extends StatefulWidget {
   final MainState mainState;
   final bool volHidden;
   final Set<SecondaryState> secondaryStateLi;
-  final Function()? onSecondaryTap;
+  // final Function()? onSecondaryTap;
   final bool isLine;
   final bool isTapShowInfoDialog; //Whether to enable click to display detailed data
   final bool hideGrid;
@@ -66,7 +66,7 @@ class KChartWidget extends StatefulWidget {
     this.xFrontPadding = 100,
     this.mainState = MainState.MA,
     this.secondaryStateLi = const <SecondaryState>{},
-    this.onSecondaryTap,
+    // this.onSecondaryTap,
     this.volHidden = false,
     this.isLine = false,
     this.isTapShowInfoDialog = false,
@@ -175,9 +175,9 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
         mWidth = constraints.maxWidth;
         return GestureDetector(
           onTapUp: (details) {
-            if (!widget.isTrendLine && widget.onSecondaryTap != null && _painter.isInSecondaryRect(details.localPosition)) {
-              widget.onSecondaryTap!();
-            }
+            // if (!widget.isTrendLine && widget.onSecondaryTap != null && _painter.isInSecondaryRect(details.localPosition)) {
+            //   widget.onSecondaryTap!();
+            // }
 
             if (!widget.isTrendLine && _painter.isInMainRect(details.localPosition)) {
               isOnTap = true;
