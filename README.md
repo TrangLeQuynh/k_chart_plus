@@ -16,7 +16,7 @@ First, add `k_chart` as a [dependency in your pubspec.yaml file](https://flutter
 k_chart:
     git:
       url: https://github.com/TrangLeQuynh/k_chart
-      ref: dev #name branch
+      ref: dev #branch name
 ```
 
 > If you don't want to support selecting multiple secondary states, you need to use: ```ref: single```
@@ -64,7 +64,8 @@ DepthChart(_bids, _asks, chartColors) //Note: Datas must be an ordered list，
 `ChartColor` helped to set the color for the chart. Use `extension` to edit the colors that need to be changed
 
 ```dart
-ChartColors init() {
+extension CustomChartColors on ChartColors {
+  ChartColors init() {
     ThemeData themeData = Theme.of(navigationService.getContext());
     bgColor = themeData.colorScheme.background;
     defaultTextColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xff60738E);
@@ -84,6 +85,7 @@ ChartColors init() {
     maxColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
     minColor = themeData.textTheme.bodyMedium?.color ?? const Color(0xffffffff);
     return this;
+  }
 }
 ```
 
