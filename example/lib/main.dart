@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:k_chart/flutter_k_chart.dart';
+import 'package:k_chart_plus/k_chart_plus.dart';
 
 void main() => runApp(MyApp());
 
