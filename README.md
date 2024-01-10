@@ -10,12 +10,12 @@ Maybe this is the best k chart in Flutter.Support drag,scale,long press,fling.An
 
 ## Installation
 
-First, add `k_chart` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
+First, add `k_chart_plus` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ```yaml
-k_chart:
+k_chart_plus:
     git:
-      url: https://github.com/TrangLeQuynh/k_chart
+      url: https://github.com/TrangLeQuynh/k_chart_plus
       ref: dev #branch name
 ```
 
