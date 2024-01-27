@@ -33,7 +33,9 @@ class ChartColors {
 
   ///depth color
   Color depthBuyColor = Color(0xFF14AD8F);
+  Color depthBuyPathColor = Color(0x3314AD8F);
   Color depthSellColor = Color(0xFFD5405D);
+  Color depthSellPathColor = Color(0x33D5405D);
 
   ///value border color after selection
   Color selectBorderColor = Color(0xFF222223);
@@ -46,7 +48,7 @@ class ChartColors {
 
   ///color of annotation content
   Color infoWindowNormalColor = Color(0xFF222223);
-  Color infoWindowTitleColor = Color(0xFF222223); //0xFF707070
+  Color infoWindowTitleColor = Color(0xFF4D4D4E); //0xFF707070
   Color infoWindowUpColor = Color(0xFF14AD8F);
   Color infoWindowDnColor = Color(0xFFD5405D);
 
