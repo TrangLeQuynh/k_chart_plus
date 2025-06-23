@@ -7,6 +7,7 @@ class KLineEntity extends KEntity {
   late double close;
   late double vol;
   late double? amount;
+  // late double? turnover;
   double? change;
   double? ratio;
   int? time;

@@ -233,6 +233,9 @@ abstract class BaseChartPainter extends CustomPainter {
     } else if (mainState == MainState.BOLL) {
       maxPrice = max(item.up ?? 0, item.high);
       minPrice = min(item.dn ?? 0, item.low);
+    } else if (mainState == MainState.SAR) {
+      maxPrice = max(item.sar ?? 0, item.high);
+      minPrice = min(item.sar ?? 0, item.low);
     } else {
       maxPrice = item.high;
       minPrice = item.low;

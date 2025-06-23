@@ -81,7 +81,7 @@ class PopupInfoView extends StatelessWidget {
 
   Widget _buildItem(String label, String info, {Color? textColor}) {
     final infoWidget = Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
+      padding: const EdgeInsets.only(bottom: 3.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,

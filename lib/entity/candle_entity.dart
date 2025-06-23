@@ -7,6 +7,9 @@ mixin CandleEntity {
 
   List<double>? maValueList;
 
+  // stopAndReverse
+  double? sar;
+
 //  上轨线
   double? up;
 
