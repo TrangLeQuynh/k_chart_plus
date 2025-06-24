@@ -164,7 +164,7 @@ class ChartColors {
 }
 
 class ChartStyle {
-  double topPadding = 30.0;
+  double topPadding = 20.0;
 
   double bottomPadding = 20.0;
 
