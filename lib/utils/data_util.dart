@@ -3,10 +3,13 @@ import 'dart:math';
 import '../entity/index.dart';
 
 class DataUtil {
-  static calculate(List<KLineEntity> dataList,
-      [List<int> maDayList = const [5, 10, 20], int n = 20, k = 2]) {
+  static calculate(List<KLineEntity> dataList, [List<int> maDayList = const [5, 10, 20], int n = 20, k = 2]) {
+    /// calculate main state
     calcMA(dataList, maDayList);
     calcBOLL(dataList, n, k);
+    calcSAR(dataList);
+
+    /// calculate secondary state
     calcVolumeMA(dataList);
     calcKDJ(dataList);
     calcMACD(dataList);
@@ -17,7 +20,6 @@ class DataUtil {
 
   static calcMA(List<KLineEntity> dataList, List<int> maDayList) {
     List<double> ma = List<double>.filled(maDayList.length, 0);
-
     if (dataList.isNotEmpty) {
       for (int i = 0; i < dataList.length; i++) {
         KLineEntity entity = dataList[i];
@@ -31,11 +33,70 @@ class DataUtil {
           } else if (i >= maDayList[j]) {
             ma[j] -= dataList[i - maDayList[j]].close;
             entity.maValueList?[j] = ma[j] / maDayList[j];
-          } else {
-            entity.maValueList?[j] = 0;
           }
         }
       }
+    }
+  }
+
+  static void calcSAR(List<KLineEntity> dataList) {
+    const List<double> params = [2, 2, 20];//calcParams default
+    final startAf = params[0] / 100;
+    final step = params[1] / 100;
+    final maxAf = params[2] / 100;
+
+    // Acceleration factor
+    double af = startAf;
+    // Extreme point
+    double ep = -100;
+    // Determine trend direction — false: downtrend
+    bool isIncreasing = false;
+    double sar = 0;
+
+    for (int i = 0; i < dataList.length; ++i) {
+      // the previous period SAR
+      final preSar = sar;
+      final high = dataList[i].high;
+      final low = dataList[i].low;
+
+      if (isIncreasing) {
+        // Uptrend
+        if (ep == -100 || ep < high) {
+          // Reinitialize parameters
+          ep = high;
+          af = min(af + step, maxAf);
+        }
+        sar = preSar + af * (ep - preSar);
+        final lowMin = min(dataList[max(1, i) - 1].low, low);
+        if (sar > dataList[i].low) {
+          sar = ep;
+          // Reinitialize parameters
+          af = startAf;
+          ep = -100;
+          isIncreasing = !isIncreasing;
+        } else if (sar > lowMin) {
+          sar = lowMin;
+        }
+      } else {
+        if (ep == -100 || ep > low) {
+          // Reinitialize parameters
+          ep = low;
+          af = min(af + step, maxAf);
+        }
+        sar = preSar + af * (ep - preSar);
+        final highMax = max(dataList[max(1, i) - 1].high, high);
+        if (sar < dataList[i].high) {
+          sar = ep;
+          // Reinitialize parameters
+          af = 0;
+          ep = -100;
+          isIncreasing = !isIncreasing;
+        } else if (sar < highMax) {
+          sar = highMax;
+        }
+      }
+
+      dataList[i].sar = sar;
     }
   }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../entity/candle_entity.dart';
 import '../k_chart_widget.dart' show MainState;
 import 'base_chart_renderer.dart';
@@ -92,6 +91,11 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
                 style: getTextStyle(this.chartColors.ma30Color)),
         ],
       );
+    } else if (state == MainState.SAR) {
+      span = TextSpan(
+        text: "SAR:${format(data.sar)}",
+        style: getTextStyle(this.chartColors.ma10Color),
+      );
     }
     if (span == null) return;
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
@@ -123,6 +127,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
         drawMaLine(lastPoint, curPoint, canvas, lastX, curX);
       } else if (state == MainState.BOLL) {
         drawBollLine(lastPoint, curPoint, canvas, lastX, curX);
+      } else if (state == MainState.SAR) {
+        drawSAR(lastPoint, curPoint, canvas, lastX, curX);
       }
     }
   }
@@ -208,6 +214,21 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       drawLine(lastPoint.dn, curPoint.dn, canvas, lastX, curX,
           this.chartColors.ma30Color);
     }
+  }
+
+  void drawSAR(CandleEntity lastPoint, CandleEntity curPoint, Canvas canvas, double lastX, double curX) {
+    final sar = curPoint.sar;
+    if (sar == null) return;
+    final halfHL = (curPoint.high + curPoint.low) / 2;
+    late final color;
+    if (sar == halfHL) {
+      color = this.chartColors.avgColor;
+    } else if (sar < halfHL) {
+      color = this.chartColors.upColor;
+    } else {
+      color = this.chartColors.dnColor;
+    }
+    drawCircle(canvas, curX, sar, color);
   }
 
   void drawCandle(CandleEntity curPoint, Canvas canvas, double curX) {

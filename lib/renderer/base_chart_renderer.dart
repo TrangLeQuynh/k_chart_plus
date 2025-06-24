@@ -68,6 +68,17 @@ abstract class BaseChartRenderer<T> {
         Offset(lastX, lastY), Offset(curX, curY), chartPaint..color = color);
   }
 
+  void drawCircle(Canvas canvas, double curX, double curY, Color color) {
+    canvas.drawCircle(
+      Offset(curX, getY(curY)),
+      2.0,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = .8
+        ..color = color,
+    );
+  }
+
   TextStyle getTextStyle(Color color) {
     return TextStyle(fontSize: 10.0, color: color);
   }
