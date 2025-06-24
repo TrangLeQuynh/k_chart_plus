@@ -34,8 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<KLineEntity>? datas;
   bool showLoading = true;
   bool _volHidden = false;
-  MainState _mainState = MainState.MA;
   // final Set<SecondaryState> _secondaryStateLi = <SecondaryState>{};
+  final List<MainState> _mainStateLi = [];
   final List<SecondaryState> _secondaryStateLi = [];
   List<DepthEntity>? _bids, _asks;
 
@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
               chartColors,
               mBaseHeight: 360,
               isTrendLine: false,
-              mainState: _mainState,
+              mainStateLi: _mainStateLi.toSet(),
               volHidden: _volHidden,
               secondaryStateLi: _secondaryStateLi.toSet(),
               fixedLength: 2,
@@ -172,11 +172,18 @@ class _MyHomePageState extends State<MyHomePage> {
         spacing: 10,
         runSpacing: 10,
         children: MainState.values.map((e) {
+          bool isActive = _mainStateLi.contains(e);
           return _buildButton(
             context: context,
             title: e.name,
-            isActive: _mainState == e,
-            onPress: () => _mainState = e,
+            isActive: isActive,
+            onPress: () {
+              if (isActive) {
+                _mainStateLi.remove(e);
+              } else {
+                _mainStateLi.add(e);
+              }
+            },
           );
         }).toList(),
       ),

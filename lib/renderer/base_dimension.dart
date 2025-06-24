@@ -19,6 +19,7 @@ class BaseDimension {
   double get mVolumeHeight => _mVolumeHeight;
   // getter the secondary height
   double get mSecondaryHeight => _mSecondaryHeight;
+
   // getter the total height
   double get mDisplayHeight => _mDisplayHeight;
 
@@ -31,12 +32,13 @@ class BaseDimension {
     required double mBaseHeight,
     required bool volHidden,
     required Set<SecondaryState> secondaryStateLi,
+    required Set<MainState> mainStateLi,
   }) {
     _mBaseHeight = mBaseHeight;
     _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
     _mSecondaryHeight = _mBaseHeight * 0.2;
     _mDisplayHeight = _mBaseHeight +
         _mVolumeHeight +
-        (_mSecondaryHeight * secondaryStateLi.length);
+        _mSecondaryHeight * secondaryStateLi.length;
   }
 }

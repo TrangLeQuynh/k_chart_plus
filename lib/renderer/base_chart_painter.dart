@@ -13,7 +13,8 @@ export 'package:flutter/material.dart'
 abstract class BaseChartPainter extends CustomPainter {
   static double maxScrollX = 0.0;
   List<KLineEntity>? datas; // data of chart
-  MainState mainState;
+
+  Set<MainState> mainStateLi;//MainState mainState;
 
   Set<SecondaryState> secondaryStateLi;
 
@@ -24,6 +25,7 @@ abstract class BaseChartPainter extends CustomPainter {
   bool isOnTap;
   bool isLine;
 
+  late Rect mMainLabelRect;
   /// Rectangle box of main chart
   late Rect mMainRect;
 
@@ -67,7 +69,7 @@ abstract class BaseChartPainter extends CustomPainter {
     required this.xFrontPadding,
     required this.baseDimension,
     this.isOnTap = false,
-    this.mainState = MainState.MA,
+    this.mainStateLi = const<MainState>{},
     this.volHidden = false,
     this.isTapShowInfoDialog = false,
     this.secondaryStateLi = const <SecondaryState>{},
@@ -115,7 +117,7 @@ abstract class BaseChartPainter extends CustomPainter {
   /// paint chart
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
+    // canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
     mDisplayHeight = size.height - mTopPadding - mBottomPadding;
     mWidth = size.width;
     initRect(size);
@@ -226,20 +228,21 @@ abstract class BaseChartPainter extends CustomPainter {
 
   /// compute maximum and minimum value
   void getMainMaxMinValue(KLineEntity item, int i) {
-    double maxPrice, minPrice;
-    if (mainState == MainState.MA) {
-      maxPrice = max(item.high, _findMaxMA(item.maValueList ?? [0]));
-      minPrice = min(item.low, _findMinMA(item.maValueList ?? [0]));
-    } else if (mainState == MainState.BOLL) {
-      maxPrice = max(item.up ?? 0, item.high);
-      minPrice = min(item.dn ?? 0, item.low);
-    } else if (mainState == MainState.SAR) {
-      maxPrice = max(item.sar ?? 0, item.high);
-      minPrice = min(item.sar ?? 0, item.low);
-    } else {
-      maxPrice = item.high;
-      minPrice = item.low;
+    double maxPrice = item.high;
+    double minPrice = item.low;
+    for (int i = 0; i < mainStateLi.length; ++i) {
+      if (mainStateLi.elementAt(i) == MainState.MA) {
+        maxPrice = max(maxPrice, _findMaxMA(item.maValueList ?? [0]));
+        minPrice = min(minPrice, _findMinMA(item.maValueList ?? [0]));
+      } else if (mainStateLi.elementAt(i) == MainState.BOLL) {
+        maxPrice = max(maxPrice, item.up ?? 0);
+        minPrice = min(minPrice, item.dn ?? 0);
+      } else if (mainStateLi.elementAt(i) == MainState.SAR) {
+        maxPrice = max(maxPrice, item.sar ?? 0);
+        minPrice = min(minPrice, item.sar ?? 0);
+      }
     }
+
     mMainMaxValue = max(mMainMaxValue, maxPrice);
     mMainMinValue = min(mMainMinValue, minPrice);
 
