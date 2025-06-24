@@ -13,7 +13,7 @@ Maybe this is the best k chart in Flutter.Support drag,scale,long press,fling.An
 First, add `k_chart_plus` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ```yaml
-k_chart_plus: ^1.0.2
+k_chart_plus: ^1.0.3
 ```
 
 > If you don't want to support selecting multiple secondary states, you need to use: 
@@ -42,7 +42,7 @@ KChartWidget(
     datas,// Required，Data must be an ordered list，(history=>now)
     mBaseHeight: 360, //height of chart (not contain Vol and Secondary) 
     isLine: isLine,// Decide whether it is k-line or time-sharing
-    mainState: _mainState,// Decide what the main view shows
+    mainState: _mainStateLi,// Decide what the main view shows
     secondaryStateLi: _secondaryStateLi,// Decide what the sub view shows
     fixedLength: 2,// Displayed decimal precision
     timeFormat: TimeFormat.YEAR_MONTH_DAY,

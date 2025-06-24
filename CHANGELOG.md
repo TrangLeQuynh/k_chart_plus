@@ -1,3 +1,8 @@
+## [1.0.3]
+
+* Support stopAndReverse
+* Support multiple main state selection
+
 ## [1.0.2]
 
 * Refactor docs

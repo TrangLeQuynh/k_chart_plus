@@ -98,20 +98,20 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
         );
       }
       if (span == null) return;
-      TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
+      TextPainter tp =
+          TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
 
       Offset offset = Offset(x, chartRect.top - topPadding + i * 12);
 
       canvas.drawRect(
-        Rect.fromLTRB(
-          offset.dx - 2,
-          offset.dy - 2,
-          tp.width + offset.dx + 2,
-          tp.height + offset.dy + 2,
-        ),
-        Paint()..color = this.chartColors.bgColor
-      );
+          Rect.fromLTRB(
+            offset.dx - 2,
+            offset.dy - 2,
+            tp.width + offset.dx + 2,
+            tp.height + offset.dy + 2,
+          ),
+          Paint()..color = this.chartColors.bgColor);
 
       tp.paint(canvas, offset);
     }
@@ -137,6 +137,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       drawPolyline(lastPoint.close, curPoint.close, canvas, lastX, curX);
     } else {
       drawCandle(curPoint, canvas, curX);
+
       /// draw chart main state
       for (int i = 0; i < stateLi.length; ++i) {
         if (stateLi[i] == MainState.MA) {
@@ -233,7 +234,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     }
   }
 
-  void drawSAR(CandleEntity lastPoint, CandleEntity curPoint, Canvas canvas, double lastX, double curX) {
+  void drawSAR(CandleEntity lastPoint, CandleEntity curPoint, Canvas canvas,
+      double lastX, double curX) {
     final sar = curPoint.sar;
     if (sar == null) return;
     final halfHL = (curPoint.high + curPoint.low) / 2;

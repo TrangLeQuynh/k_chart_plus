@@ -3,7 +3,8 @@ import 'dart:math';
 import '../entity/index.dart';
 
 class DataUtil {
-  static calculate(List<KLineEntity> dataList, [List<int> maDayList = const [5, 10, 20], int n = 20, k = 2]) {
+  static calculate(List<KLineEntity> dataList,
+      [List<int> maDayList = const [5, 10, 20], int n = 20, k = 2]) {
     /// calculate main state
     calcMA(dataList, maDayList);
     calcBOLL(dataList, n, k);
@@ -40,7 +41,7 @@ class DataUtil {
   }
 
   static void calcSAR(List<KLineEntity> dataList) {
-    const List<double> params = [2, 2, 20];//calcParams default
+    const List<double> params = [2, 2, 20]; //calcParams default
     final startAf = params[0] / 100;
     final step = params[1] / 100;
     final maxAf = params[2] / 100;
