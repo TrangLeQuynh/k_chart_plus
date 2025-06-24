@@ -14,7 +14,7 @@ abstract class BaseChartPainter extends CustomPainter {
   static double maxScrollX = 0.0;
   List<KLineEntity>? datas; // data of chart
 
-  Set<MainState> mainStateLi;//MainState mainState;
+  Set<MainState> mainStateLi; //MainState mainState;
 
   Set<SecondaryState> secondaryStateLi;
 
@@ -26,6 +26,7 @@ abstract class BaseChartPainter extends CustomPainter {
   bool isLine;
 
   late Rect mMainLabelRect;
+
   /// Rectangle box of main chart
   late Rect mMainRect;
 
@@ -69,7 +70,7 @@ abstract class BaseChartPainter extends CustomPainter {
     required this.xFrontPadding,
     required this.baseDimension,
     this.isOnTap = false,
-    this.mainStateLi = const<MainState>{},
+    this.mainStateLi = const <MainState>{},
     this.volHidden = false,
     this.isTapShowInfoDialog = false,
     this.secondaryStateLi = const <SecondaryState>{},
@@ -77,7 +78,8 @@ abstract class BaseChartPainter extends CustomPainter {
   }) {
     mItemCount = datas?.length ?? 0;
     mPointWidth = this.chartStyle.pointWidth;
-    mTopPadding = this.chartStyle.topPadding + baseDimension.totalLabelHeight;// space to display text of main chart
+    mTopPadding = this.chartStyle.topPadding +
+        baseDimension.totalLabelHeight; // space to display text of main chart
     mBottomPadding = this.chartStyle.bottomPadding;
     mChildPadding = this.chartStyle.childPadding;
     mGridRows = this.chartStyle.gridRows;
@@ -336,10 +338,10 @@ abstract class BaseChartPainter extends CustomPainter {
               min(mSecondaryRectList[index].mMinValue, item.cci!);
         }
         break;
-      default:
-        mSecondaryRectList[index].mMaxValue = 0;
-        mSecondaryRectList[index].mMinValue = 0;
-        break;
+      // default:
+      //   mSecondaryRectList[index].mMaxValue = 0;
+      //   mSecondaryRectList[index].mMinValue = 0;
+      //   break;
     }
   }
 

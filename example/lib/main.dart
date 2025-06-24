@@ -224,12 +224,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }) {
     late Color? bgColor, txtColor;
     if (isActive) {
-      bgColor = Theme.of(context).primaryColor.withOpacity(.15);
+      bgColor = Theme.of(context).primaryColor.withAlpha(30);
       txtColor = Theme.of(context).primaryColor;
     } else {
       bgColor = Colors.transparent;
-      txtColor =
-          Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(.75);
+      txtColor = Theme.of(context).textTheme.bodyMedium?.color;
     }
     return InkWell(
       onTap: () {
