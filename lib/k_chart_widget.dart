@@ -5,10 +5,9 @@ import 'package:k_chart_plus/components/popup_info_view.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
 import 'renderer/base_dimension.dart';
 
-enum MainState { MA, BOLL, SAR, NONE }
+enum MainState { MA, BOLL, SAR }
 
-// enum SecondaryState { MACD, KDJ, RSI, WR, CCI, NONE }
-enum SecondaryState { MACD, KDJ, RSI, WR, CCI } //no support NONE
+enum SecondaryState { MACD, KDJ, RSI, WR, CCI }
 
 class TimeFormat {
   static const List<String> YEAR_MONTH_DAY = [yyyy, '-', mm, '-', dd];
@@ -27,7 +26,7 @@ class TimeFormat {
 
 class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
-  final MainState mainState;
+  final Set<MainState> mainStateLi;
   final bool volHidden;
   final Set<SecondaryState> secondaryStateLi;
   // final Function()? onSecondaryTap;
@@ -65,7 +64,7 @@ class KChartWidget extends StatefulWidget {
     this.chartColors, {
     required this.isTrendLine,
     this.xFrontPadding = 100,
-    this.mainState = MainState.MA,
+    this.mainStateLi = const <MainState>{},
     this.secondaryStateLi = const <SecondaryState>{},
     // this.onSecondaryTap,
     this.volHidden = false,
@@ -144,6 +143,7 @@ class _KChartWidgetState extends State<KChartWidget>
       mBaseHeight: widget.mBaseHeight,
       volHidden: widget.volHidden,
       secondaryStateLi: widget.secondaryStateLi,
+      mainStateLi: widget.mainStateLi,
     );
     final _painter = ChartPainter(
       widget.chartStyle,
@@ -161,7 +161,7 @@ class _KChartWidgetState extends State<KChartWidget>
       isLongPass: isLongPress,
       isOnTap: isOnTap,
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
-      mainState: widget.mainState,
+      mainStateLi: widget.mainStateLi,
       volHidden: widget.volHidden,
       secondaryStateLi: widget.secondaryStateLi,
       isLine: widget.isLine,

@@ -13,7 +13,7 @@ double? trendLineContentRec;
 class MainRenderer extends BaseChartRenderer<CandleEntity> {
   late double mCandleWidth;
   late double mCandleLineWidth;
-  MainState state;
+  List<MainState> stateLi;
   bool isLine;
 
   //绘制的内容区域
@@ -32,7 +32,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       double maxValue,
       double minValue,
       double topPadding,
-      this.state,
+      this.stateLi,
       this.isLine,
       int fixedLength,
       this.chartStyle,
@@ -65,42 +65,56 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     }
     scaleY = _contentRect.height / (maxValue - minValue);
   }
-
   @override
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
-    TextSpan? span;
-    if (state == MainState.MA) {
-      span = TextSpan(
-        children: _createMATextSpan(data),
+    for (int i = 0; i < stateLi.length; ++i) {
+      TextSpan? span;
+      if (stateLi[i] == MainState.MA) {
+        span = TextSpan(
+          children: _createMATextSpan(data),
+        );
+      } else if (stateLi[i] == MainState.BOLL) {
+        span = TextSpan(
+          children: [
+            if (data.up != 0)
+              TextSpan(
+                  text: "BOLL:${format(data.mb)}    ",
+                  style: getTextStyle(this.chartColors.ma5Color)),
+            if (data.mb != 0)
+              TextSpan(
+                  text: "UB:${format(data.up)}    ",
+                  style: getTextStyle(this.chartColors.ma10Color)),
+            if (data.dn != 0)
+              TextSpan(
+                  text: "LB:${format(data.dn)}    ",
+                  style: getTextStyle(this.chartColors.ma30Color)),
+          ],
+        );
+      } else if (stateLi[i] == MainState.SAR) {
+        span = TextSpan(
+          text: "SAR:${format(data.sar)}",
+          style: getTextStyle(this.chartColors.sarColor),
+        );
+      }
+      if (span == null) return;
+      TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
+      tp.layout();
+
+      Offset offset = Offset(x, chartRect.top - topPadding + i * 12);
+
+      canvas.drawRect(
+        Rect.fromLTRB(
+          offset.dx - 2,
+          offset.dy - 2,
+          tp.width + offset.dx + 2,
+          tp.height + offset.dy + 2,
+        ),
+        Paint()..color = this.chartColors.bgColor
       );
-    } else if (state == MainState.BOLL) {
-      span = TextSpan(
-        children: [
-          if (data.up != 0)
-            TextSpan(
-                text: "BOLL:${format(data.mb)}    ",
-                style: getTextStyle(this.chartColors.ma5Color)),
-          if (data.mb != 0)
-            TextSpan(
-                text: "UB:${format(data.up)}    ",
-                style: getTextStyle(this.chartColors.ma10Color)),
-          if (data.dn != 0)
-            TextSpan(
-                text: "LB:${format(data.dn)}    ",
-                style: getTextStyle(this.chartColors.ma30Color)),
-        ],
-      );
-    } else if (state == MainState.SAR) {
-      span = TextSpan(
-        text: "SAR:${format(data.sar)}",
-        style: getTextStyle(this.chartColors.ma10Color),
-      );
+
+      tp.paint(canvas, offset);
     }
-    if (span == null) return;
-    TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
-    tp.layout();
-    tp.paint(canvas, Offset(x, chartRect.top - topPadding));
   }
 
   List<InlineSpan> _createMATextSpan(CandleEntity data) {
@@ -123,12 +137,15 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       drawPolyline(lastPoint.close, curPoint.close, canvas, lastX, curX);
     } else {
       drawCandle(curPoint, canvas, curX);
-      if (state == MainState.MA) {
-        drawMaLine(lastPoint, curPoint, canvas, lastX, curX);
-      } else if (state == MainState.BOLL) {
-        drawBollLine(lastPoint, curPoint, canvas, lastX, curX);
-      } else if (state == MainState.SAR) {
-        drawSAR(lastPoint, curPoint, canvas, lastX, curX);
+      /// draw chart main state
+      for (int i = 0; i < stateLi.length; ++i) {
+        if (stateLi[i] == MainState.MA) {
+          drawMaLine(lastPoint, curPoint, canvas, lastX, curX);
+        } else if (stateLi[i] == MainState.BOLL) {
+          drawBollLine(lastPoint, curPoint, canvas, lastX, curX);
+        } else if (stateLi[i] == MainState.SAR) {
+          drawSAR(lastPoint, curPoint, canvas, lastX, curX);
+        }
       }
     }
   }
@@ -299,8 +316,9 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
           Offset(chartRect.width, rowSpace * i + topPadding), gridPaint);
     }
     double columnSpace = chartRect.width / gridColumns;
+
     for (int i = 0; i <= columnSpace; i++) {
-      canvas.drawLine(Offset(columnSpace * i, topPadding / 3),
+      canvas.drawLine(Offset(columnSpace * i, 0),
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }
   }
