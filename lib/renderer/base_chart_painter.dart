@@ -36,7 +36,7 @@ abstract class BaseChartPainter extends CustomPainter {
   List<RenderRect> mSecondaryRectList = [];
   late double mDisplayHeight, mWidth;
   // padding
-  double mTopPadding = 30.0, mBottomPadding = 20.0, mChildPadding = 12.0;
+  double mTopPadding = 20.0, mBottomPadding = 20.0, mChildPadding = 12.0;
   // grid: rows - columns
   int mGridRows = 4, mGridColumns = 4;
   int mStartIndex = 0, mStopIndex = 0;
@@ -77,7 +77,7 @@ abstract class BaseChartPainter extends CustomPainter {
   }) {
     mItemCount = datas?.length ?? 0;
     mPointWidth = this.chartStyle.pointWidth;
-    mTopPadding = this.chartStyle.topPadding;
+    mTopPadding = this.chartStyle.topPadding + baseDimension.totalLabelHeight;// space to display text of main chart
     mBottomPadding = this.chartStyle.bottomPadding;
     mChildPadding = this.chartStyle.childPadding;
     mGridRows = this.chartStyle.gridRows;
@@ -117,7 +117,7 @@ abstract class BaseChartPainter extends CustomPainter {
   /// paint chart
   @override
   void paint(Canvas canvas, Size size) {
-    // canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
+    canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
     mDisplayHeight = size.height - mTopPadding - mBottomPadding;
     mWidth = size.width;
     initRect(size);
@@ -184,7 +184,7 @@ abstract class BaseChartPainter extends CustomPainter {
 
     double mainHeight = mDisplayHeight;
     mainHeight -= volHeight;
-    mainHeight -= (secondaryHeight * secondaryStateLi.length);
+    mainHeight -= baseDimension.totalSecondaryHeight;
 
     mMainRect = Rect.fromLTRB(0, mTopPadding, mWidth, mTopPadding + mainHeight);
 

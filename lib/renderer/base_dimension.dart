@@ -10,6 +10,11 @@ class BaseDimension {
   // default: 0
   // the height of a secondary chart
   double _mSecondaryHeight = 0;
+  double _totalSecondaryHeight = 0;
+
+  double _mLabelHeight = 12;
+  double _totalLabelHeight = 12;
+
   // total height of chart: _mBaseHeight + _mVolumeHeight + (_mSecondaryHeight * n)
   // n : number of secondary charts
   //
@@ -17,8 +22,13 @@ class BaseDimension {
 
   // getter the vol height
   double get mVolumeHeight => _mVolumeHeight;
+
   // getter the secondary height
   double get mSecondaryHeight => _mSecondaryHeight;
+  double get totalSecondaryHeight => _totalSecondaryHeight;
+
+  double get mLabelHeight => _mLabelHeight;
+  double get totalLabelHeight => _totalLabelHeight;
 
   // getter the total height
   double get mDisplayHeight => _mDisplayHeight;
@@ -37,8 +47,12 @@ class BaseDimension {
     _mBaseHeight = mBaseHeight;
     _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
     _mSecondaryHeight = _mBaseHeight * 0.2;
+    _totalSecondaryHeight = _mSecondaryHeight * secondaryStateLi.length;
+    _totalLabelHeight = _mLabelHeight * mainStateLi.length;
+
     _mDisplayHeight = _mBaseHeight +
         _mVolumeHeight +
-        _mSecondaryHeight * secondaryStateLi.length;
+        _totalSecondaryHeight +
+        _totalLabelHeight;
   }
 }

@@ -65,7 +65,6 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     }
     scaleY = _contentRect.height / (maxValue - minValue);
   }
-
   @override
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
@@ -101,7 +100,20 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       if (span == null) return;
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
-      tp.paint(canvas, Offset(x, chartRect.top - topPadding - i * 12));
+
+      Offset offset = Offset(x, chartRect.top - topPadding + i * 12);
+
+      canvas.drawRect(
+        Rect.fromLTRB(
+          offset.dx - 2,
+          offset.dy - 2,
+          tp.width + offset.dx + 2,
+          tp.height + offset.dy + 2,
+        ),
+        Paint()..color = this.chartColors.bgColor
+      );
+
+      tp.paint(canvas, offset);
     }
   }
 
@@ -304,8 +316,9 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
           Offset(chartRect.width, rowSpace * i + topPadding), gridPaint);
     }
     double columnSpace = chartRect.width / gridColumns;
+
     for (int i = 0; i <= columnSpace; i++) {
-      canvas.drawLine(Offset(columnSpace * i, topPadding / 3),
+      canvas.drawLine(Offset(columnSpace * i, 0),
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }
   }
