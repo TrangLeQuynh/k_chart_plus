@@ -3,9 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:k_chart_plus/chart_translations.dart';
 import 'package:k_chart_plus/components/popup_info_view.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
+import 'indicator/indicator_template.dart';
 import 'renderer/base_dimension.dart';
 
-enum MainState { MA, BOLL, SAR }
+///
+enum MainState {
+  MA(MAIndicator()),
+  BOLL(BOLLIndicator()),
+  SAR(SARIndicator());
+
+  final IndicatorTemplate indicator;
+  const MainState(this.indicator);
+}
 
 enum SecondaryState { MACD, KDJ, RSI, WR, CCI }
 
@@ -168,7 +177,6 @@ class _KChartWidgetState extends State<KChartWidget>
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,
       fixedLength: widget.fixedLength,
-      maDayList: widget.maDayList,
       verticalTextAlignment: widget.verticalTextAlignment,
     );
 

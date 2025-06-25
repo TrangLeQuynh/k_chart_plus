@@ -66,7 +66,8 @@ abstract class BaseChartRenderer<T> {
         Offset(lastX, lastY), Offset(curX, curY), chartPaint..color = color);
   }
 
-  void drawCircle(Canvas canvas, double curX, double curY, Color color) {
+  void drawCircle(Canvas canvas, double curX, double? curY, Color color) {
+    if (curY == null) return;
     canvas.drawCircle(
       Offset(curX, getY(curY)),
       2.0,

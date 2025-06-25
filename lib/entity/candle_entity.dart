@@ -1,23 +1,17 @@
-// ignore_for_file: non_constant_identifier_names,library_prefixes,unused_import,camel_case_types
+import 'package:k_chart_plus/indicator/indicator_template.dart';
+
 mixin CandleEntity {
   late double open;
   late double high;
   late double low;
   late double close;
 
+  // movingAverage
   List<double>? maValueList;
 
   // stopAndReverse
   double? sar;
 
-//  上轨线
-  double? up;
-
-//  中轨线
-  double? mb;
-
-//  下轨线
-  double? dn;
-
-  double? BOLLMA;
+  // bollingerBands
+  Boll? boll;
 }

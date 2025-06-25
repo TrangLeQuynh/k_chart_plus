@@ -1,14 +1,15 @@
 import 'dart:math';
 
+import 'package:k_chart_plus/k_chart_plus.dart';
+
 import '../entity/index.dart';
 
 class DataUtil {
-  static calculate(List<KLineEntity> dataList,
-      [List<int> maDayList = const [5, 10, 20], int n = 20, k = 2]) {
+  static calculate(List<KLineEntity> dataList) {
     /// calculate main state
-    calcMA(dataList, maDayList);
-    calcBOLL(dataList, n, k);
-    calcSAR(dataList);
+    MainState.MA.indicator.calc(dataList);// calcMA(dataList, maDayList);
+    MainState.SAR.indicator.calc(dataList);// calcBOLL(dataList, 20, 2);;
+    MainState.BOLL.indicator.calc(dataList);// calcSAR(dataList);
 
     /// calculate secondary state
     calcVolumeMA(dataList);
@@ -18,125 +19,125 @@ class DataUtil {
     calcWR(dataList);
     calcCCI(dataList);
   }
+  //
+  // static calcMA(List<KLineEntity> dataList, List<int> maDayList) {
+  //   List<double> ma = List<double>.filled(maDayList.length, 0);
+  //   if (dataList.isNotEmpty) {
+  //     for (int i = 0; i < dataList.length; i++) {
+  //       KLineEntity entity = dataList[i];
+  //       final closePrice = entity.close;
+  //       entity.maValueList = List<double>.filled(maDayList.length, 0);
+  //
+  //       for (int j = 0; j < maDayList.length; j++) {
+  //         ma[j] += closePrice;
+  //         if (i == maDayList[j] - 1) {
+  //           entity.maValueList?[j] = ma[j] / maDayList[j];
+  //         } else if (i >= maDayList[j]) {
+  //           ma[j] -= dataList[i - maDayList[j]].close;
+  //           entity.maValueList?[j] = ma[j] / maDayList[j];
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
-  static calcMA(List<KLineEntity> dataList, List<int> maDayList) {
-    List<double> ma = List<double>.filled(maDayList.length, 0);
-    if (dataList.isNotEmpty) {
-      for (int i = 0; i < dataList.length; i++) {
-        KLineEntity entity = dataList[i];
-        final closePrice = entity.close;
-        entity.maValueList = List<double>.filled(maDayList.length, 0);
-
-        for (int j = 0; j < maDayList.length; j++) {
-          ma[j] += closePrice;
-          if (i == maDayList[j] - 1) {
-            entity.maValueList?[j] = ma[j] / maDayList[j];
-          } else if (i >= maDayList[j]) {
-            ma[j] -= dataList[i - maDayList[j]].close;
-            entity.maValueList?[j] = ma[j] / maDayList[j];
-          }
-        }
-      }
-    }
-  }
-
-  static void calcSAR(List<KLineEntity> dataList) {
-    const List<double> params = [2, 2, 20]; //calcParams default
-    final startAf = params[0] / 100;
-    final step = params[1] / 100;
-    final maxAf = params[2] / 100;
-
-    // Acceleration factor
-    double af = startAf;
-    // Extreme point
-    double ep = -100;
-    // Determine trend direction — false: downtrend
-    bool isIncreasing = false;
-    double sar = 0;
-
-    for (int i = 0; i < dataList.length; ++i) {
-      // the previous period SAR
-      final preSar = sar;
-      final high = dataList[i].high;
-      final low = dataList[i].low;
-
-      if (isIncreasing) {
-        // Uptrend
-        if (ep == -100 || ep < high) {
-          // Reinitialize parameters
-          ep = high;
-          af = min(af + step, maxAf);
-        }
-        sar = preSar + af * (ep - preSar);
-        final lowMin = min(dataList[max(1, i) - 1].low, low);
-        if (sar > dataList[i].low) {
-          sar = ep;
-          // Reinitialize parameters
-          af = startAf;
-          ep = -100;
-          isIncreasing = !isIncreasing;
-        } else if (sar > lowMin) {
-          sar = lowMin;
-        }
-      } else {
-        if (ep == -100 || ep > low) {
-          // Reinitialize parameters
-          ep = low;
-          af = min(af + step, maxAf);
-        }
-        sar = preSar + af * (ep - preSar);
-        final highMax = max(dataList[max(1, i) - 1].high, high);
-        if (sar < dataList[i].high) {
-          sar = ep;
-          // Reinitialize parameters
-          af = 0;
-          ep = -100;
-          isIncreasing = !isIncreasing;
-        } else if (sar < highMax) {
-          sar = highMax;
-        }
-      }
-
-      dataList[i].sar = sar;
-    }
-  }
-
-  static void calcBOLL(List<KLineEntity> dataList, int n, int k) {
-    _calcBOLLMA(n, dataList);
-    for (int i = 0; i < dataList.length; i++) {
-      KLineEntity entity = dataList[i];
-      if (i >= n) {
-        double md = 0;
-        for (int j = i - n + 1; j <= i; j++) {
-          double c = dataList[j].close;
-          double m = entity.BOLLMA!;
-          double value = c - m;
-          md += value * value;
-        }
-        md = md / (n - 1);
-        md = sqrt(md);
-        entity.mb = entity.BOLLMA!;
-        entity.up = entity.mb! + k * md;
-        entity.dn = entity.mb! - k * md;
-      }
-    }
-  }
-
-  static void _calcBOLLMA(int day, List<KLineEntity> dataList) {
-    double ma = 0;
-    for (int i = 0; i < dataList.length; i++) {
-      KLineEntity entity = dataList[i];
-      ma += entity.close;
-      if (i == day - 1) {
-        entity.BOLLMA = ma / day;
-      } else if (i >= day) {
-        ma -= dataList[i - day].close;
-        entity.BOLLMA = ma / day;
-      } else {
-        entity.BOLLMA = null;
-      }
-    }
-  }
+  // static void calcSAR(List<KLineEntity> dataList) {
+  //   const List<double> params = [2, 2, 20]; //calcParams default
+  //   final startAf = params[0] / 100;
+  //   final step = params[1] / 100;
+  //   final maxAf = params[2] / 100;
+  //
+  //   // Acceleration factor
+  //   double af = startAf;
+  //   // Extreme point
+  //   double ep = -100;
+  //   // Determine trend direction — false: downtrend
+  //   bool isIncreasing = false;
+  //   double sar = 0;
+  //
+  //   for (int i = 0; i < dataList.length; ++i) {
+  //     // the previous period SAR
+  //     final preSar = sar;
+  //     final high = dataList[i].high;
+  //     final low = dataList[i].low;
+  //
+  //     if (isIncreasing) {
+  //       // Uptrend
+  //       if (ep == -100 || ep < high) {
+  //         // Reinitialize parameters
+  //         ep = high;
+  //         af = min(af + step, maxAf);
+  //       }
+  //       sar = preSar + af * (ep - preSar);
+  //       final lowMin = min(dataList[max(1, i) - 1].low, low);
+  //       if (sar > dataList[i].low) {
+  //         sar = ep;
+  //         // Reinitialize parameters
+  //         af = startAf;
+  //         ep = -100;
+  //         isIncreasing = !isIncreasing;
+  //       } else if (sar > lowMin) {
+  //         sar = lowMin;
+  //       }
+  //     } else {
+  //       if (ep == -100 || ep > low) {
+  //         // Reinitialize parameters
+  //         ep = low;
+  //         af = min(af + step, maxAf);
+  //       }
+  //       sar = preSar + af * (ep - preSar);
+  //       final highMax = max(dataList[max(1, i) - 1].high, high);
+  //       if (sar < dataList[i].high) {
+  //         sar = ep;
+  //         // Reinitialize parameters
+  //         af = 0;
+  //         ep = -100;
+  //         isIncreasing = !isIncreasing;
+  //       } else if (sar < highMax) {
+  //         sar = highMax;
+  //       }
+  //     }
+  //
+  //     dataList[i].sar = sar;
+  //   }
+  // }
+  //
+  // static void calcBOLL(List<KLineEntity> dataList, int n, int k) {
+  //   _calcBOLLMA(n, dataList);
+  //   for (int i = 0; i < dataList.length; i++) {
+  //     KLineEntity entity = dataList[i];
+  //     if (i >= n) {
+  //       double md = 0;
+  //       for (int j = i - n + 1; j <= i; j++) {
+  //         double c = dataList[j].close;
+  //         double m = entity.BOLLMA!;
+  //         double value = c - m;
+  //         md += value * value;
+  //       }
+  //       md = md / (n - 1);
+  //       md = sqrt(md);
+  //       entity.mb = entity.BOLLMA!;
+  //       entity.up = entity.mb! + k * md;
+  //       entity.dn = entity.mb! - k * md;
+  //     }
+  //   }
+  // }
+  //
+  // static void _calcBOLLMA(int day, List<KLineEntity> dataList) {
+  //   double ma = 0;
+  //   for (int i = 0; i < dataList.length; i++) {
+  //     KLineEntity entity = dataList[i];
+  //     ma += entity.close;
+  //     if (i == day - 1) {
+  //       entity.BOLLMA = ma / day;
+  //     } else if (i >= day) {
+  //       ma -= dataList[i - day].close;
+  //       entity.BOLLMA = ma / day;
+  //     } else {
+  //       entity.BOLLMA = null;
+  //     }
+  //   }
+  // }
 
   static void calcMACD(List<KLineEntity> dataList) {
     double ema12 = 0;

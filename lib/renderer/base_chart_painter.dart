@@ -233,16 +233,9 @@ abstract class BaseChartPainter extends CustomPainter {
     double maxPrice = item.high;
     double minPrice = item.low;
     for (int i = 0; i < mainStateLi.length; ++i) {
-      if (mainStateLi.elementAt(i) == MainState.MA) {
-        maxPrice = max(maxPrice, _findMaxMA(item.maValueList ?? [0]));
-        minPrice = min(minPrice, _findMinMA(item.maValueList ?? [0]));
-      } else if (mainStateLi.elementAt(i) == MainState.BOLL) {
-        maxPrice = max(maxPrice, item.up ?? 0);
-        minPrice = min(minPrice, item.dn ?? 0);
-      } else if (mainStateLi.elementAt(i) == MainState.SAR) {
-        maxPrice = max(maxPrice, item.sar ?? 0);
-        minPrice = min(minPrice, item.sar ?? 0);
-      }
+      final value = mainStateLi.elementAt(i).indicator.getMaxMinValue(item, minPrice, maxPrice);
+      minPrice = value.$1;
+      maxPrice = value.$2;
     }
 
     mMainMaxValue = max(mMainMaxValue, maxPrice);
@@ -261,24 +254,6 @@ abstract class BaseChartPainter extends CustomPainter {
       mMainMaxValue = max(mMainMaxValue, item.close);
       mMainMinValue = min(mMainMinValue, item.close);
     }
-  }
-
-  // find maximum of the MA
-  double _findMaxMA(List<double> a) {
-    double result = double.minPositive;
-    for (double i in a) {
-      result = max(result, i);
-    }
-    return result;
-  }
-
-  // find minimum of the MA
-  double _findMinMA(List<double> a) {
-    double result = double.maxFinite;
-    for (double i in a) {
-      result = min(result, i == 0 ? double.maxFinite : i);
-    }
-    return result;
   }
 
   // get the maximum and minimum of the Vol value

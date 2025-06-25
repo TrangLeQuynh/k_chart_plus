@@ -22,6 +22,11 @@ class ChartColors {
   Color lineFillInsideColor;
 
   /// color: ma5, ma10, ma30, up, down, vol, macd, diff, dea, k, d, j, rsi
+  late List<Color> maColors;
+  Color ubColor;
+  Color lbColor;
+  Color bollColor;
+
   Color ma5Color;
   Color ma10Color;
   Color ma30Color;
@@ -88,14 +93,10 @@ class ChartColors {
 
   /// get MA color via index
   Color getMAColor(int index) {
-    switch (index % 3) {
-      case 1:
-        return ma10Color;
-      case 2:
-        return ma30Color;
-      default:
-        return ma5Color;
+    if (index >= maColors.length) {
+      return ma5Color;
     }
+    return maColors[index];
   }
 
   /// constructor chart color
@@ -109,7 +110,17 @@ class ChartColors {
     ///
     this.lineFillInsideColor = const Color(0x00000000),
 
+    this.maColors = const [
+      Color(0xffE5B767),
+      Color(0xff1FD1AC),
+      Color(0xffB48CE3),
+      Color(0xffE11D74),
+    ],
+
     ///
+    this.ubColor = const Color(0xFFFFC634),
+    this.lbColor = const Color(0xFFFFC634),
+    this.bollColor = const Color(0xFFF7931A),
     this.ma5Color = const Color(0xffE5B767),
     this.ma10Color = const Color(0xff1FD1AC),
     this.ma30Color = const Color(0xffB48CE3),

@@ -41,7 +41,6 @@ class ChartPainter extends BaseChartPainter {
   Color? volColor;
   Color? macdColor, difColor, deaColor, jColor;
   int fixedLength;
-  List<int> maDayList;
   final ChartColors chartColors;
   late Paint selectPointPaint, selectorBorderPaint, nowPricePaint;
   final ChartStyle chartStyle;
@@ -74,7 +73,6 @@ class ChartPainter extends BaseChartPainter {
     this.hideGrid = false,
     this.showNowPrice = true,
     this.fixedLength = 2,
-    this.maDayList = const [5, 10, 20],
   }) : super(chartStyle,
             datas: datas,
             scaleX: scaleX,
@@ -122,7 +120,6 @@ class ChartPainter extends BaseChartPainter {
       this.chartColors,
       this.scaleX,
       verticalTextAlignment,
-      maDayList,
     );
     if (mVolRect != null) {
       mVolRenderer = VolRenderer(mVolRect!, mVolMaxValue, mVolMinValue,
