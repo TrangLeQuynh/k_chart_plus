@@ -1,6 +1,6 @@
 part of '../indicator_template.dart';
 
-class SARIndicator extends IndicatorTemplate<double> {
+class SARIndicator extends IndicatorTemplate<CandleEntity> {
   const SARIndicator(): super(
     name: 'stopAndReverse',
     shortName: 'SAR',
