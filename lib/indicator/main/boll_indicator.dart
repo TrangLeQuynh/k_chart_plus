@@ -7,7 +7,7 @@ class Boll {
   double? BOLLMA;
 }
 
-class BOLLIndicator extends IndicatorTemplate<double> {
+class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
   const BOLLIndicator(): super(
     name: 'bollingerBands',
     shortName: 'BOLL',

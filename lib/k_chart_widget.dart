@@ -16,7 +16,17 @@ enum MainState {
   const MainState(this.indicator);
 }
 
-enum SecondaryState { MACD, KDJ, RSI, WR, CCI }
+// enum SecondaryState { MACD, KDJ, RSI, WR, CCI }
+enum SecondaryState {
+  MACD(MACDIndicator()),
+  KDJ(KDJIndicator()),
+  RSI(RSIIndicator()),
+  WR(WRIndicator()),
+  CCI(CCIIndicator());
+
+  final IndicatorTemplate indicator;
+  const SecondaryState(this.indicator);
+}
 
 class TimeFormat {
   static const List<String> YEAR_MONTH_DAY = [yyyy, '-', mm, '-', dd];

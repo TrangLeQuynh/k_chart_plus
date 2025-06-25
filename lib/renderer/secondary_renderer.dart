@@ -84,70 +84,9 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
 
   @override
   void drawText(Canvas canvas, MACDEntity data, double x) {
-    List<TextSpan>? children;
-    switch (state) {
-      case SecondaryState.MACD:
-        children = [
-          TextSpan(
-              text: "MACD(12,26,9)    ",
-              style: getTextStyle(this.chartColors.defaultTextColor)),
-          if (data.macd != 0)
-            TextSpan(
-                text: "MACD:${format(data.macd)}    ",
-                style: getTextStyle(this.chartColors.macdColor)),
-          if (data.dif != 0)
-            TextSpan(
-                text: "DIF:${format(data.dif)}    ",
-                style: getTextStyle(this.chartColors.difColor)),
-          if (data.dea != 0)
-            TextSpan(
-                text: "DEA:${format(data.dea)}    ",
-                style: getTextStyle(this.chartColors.deaColor)),
-        ];
-        break;
-      case SecondaryState.KDJ:
-        children = [
-          TextSpan(
-              text: "KDJ(9,1,3)    ",
-              style: getTextStyle(this.chartColors.defaultTextColor)),
-          if (data.macd != 0)
-            TextSpan(
-                text: "K:${format(data.k)}    ",
-                style: getTextStyle(this.chartColors.kColor)),
-          if (data.dif != 0)
-            TextSpan(
-                text: "D:${format(data.d)}    ",
-                style: getTextStyle(this.chartColors.dColor)),
-          if (data.dea != 0)
-            TextSpan(
-                text: "J:${format(data.j)}    ",
-                style: getTextStyle(this.chartColors.jColor)),
-        ];
-        break;
-      case SecondaryState.RSI:
-        children = [
-          TextSpan(
-              text: "RSI(14):${format(data.rsi)}    ",
-              style: getTextStyle(this.chartColors.rsiColor)),
-        ];
-        break;
-      case SecondaryState.WR:
-        children = [
-          TextSpan(
-              text: "WR(14):${format(data.r)}    ",
-              style: getTextStyle(this.chartColors.rsiColor)),
-        ];
-        break;
-      case SecondaryState.CCI:
-        children = [
-          TextSpan(
-              text: "CCI(14):${format(data.cci)}    ",
-              style: getTextStyle(this.chartColors.rsiColor)),
-        ];
-        break;
-    }
-    TextPainter tp = TextPainter(
-        text: TextSpan(children: children), textDirection: TextDirection.ltr);
+    TextSpan? span = state.indicator.drawFigure(data, fixedLength, this.chartColors);
+    if (span == null) return;
+    TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
     tp.layout();
     tp.paint(canvas, Offset(x, chartRect.top - topPadding));
   }

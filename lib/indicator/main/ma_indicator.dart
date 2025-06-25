@@ -1,6 +1,6 @@
 part of '../indicator_template.dart';
 
-class MAIndicator extends IndicatorTemplate<double> {
+class MAIndicator extends IndicatorTemplate<CandleEntity> {
   const MAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
     name: 'movingAverage',
     shortName: 'MA',
@@ -13,6 +13,7 @@ class MAIndicator extends IndicatorTemplate<double> {
     double minValue = minV;
     double maxValue = maxV;
     for (double value in entity.maValueList!) {
+      if (value == 0) continue;
       minValue = min(value, minValue); // min(result, i == 0 ? double.maxFinite : i);
       maxValue = max(value, maxValue);
     }
