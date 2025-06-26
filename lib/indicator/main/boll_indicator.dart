@@ -29,14 +29,14 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision) {
     if (entity.boll == null) return null;
     Boll value = entity.boll!;
     return TextSpan(
       children: [
         if (value.mid != null && value.mid != 0)
           TextSpan(
-            text: "BOLL:${value.mid!.toStringAsFixed(precision)}    ",
+            text: "BOLL:${formatNumber(value.mid!, precision)}    ",
             style: TextStyle(
               fontSize: 10,
               color: chartColors.bollColor,
@@ -44,7 +44,7 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
           ),
         if (value.up != null && value.up != 0)
           TextSpan(
-            text: "UB:${value.up!.toStringAsFixed(precision)}    ",
+            text: "UB:${formatNumber(value.up!, precision)}    ",
             style: TextStyle(
               fontSize: 10,
               color: chartColors.ubColor,
@@ -52,7 +52,7 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
           ),
         if (value.dn != null && value.dn != 0)
           TextSpan(
-            text: "LB:${value.dn!.toStringAsFixed(precision)} ",
+            text: "LB:${formatNumber(value.dn!, precision)} ",
             style: TextStyle(
               fontSize: 10,
               color: chartColors.lbColor,
@@ -62,37 +62,44 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, ChartColors chartColors) {
+  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
     if (lastPoint.boll == null || curPoint.boll == null) return [];
     List<FigureItem> li = [];
-    /// BOLL
-    li.add(
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.bollColor,
-        curY: curPoint.boll!.mid,
-        lastY: lastPoint.boll!.mid,
-      ),
-    );
+    if (curPoint.boll!.mid != null && lastPoint.boll!.mid != null) {
+      /// BOLL
+      li.add(
+        FigureItem(
+          type: FigureType.line,
+          color: chartColors.bollColor,
+          cur: Offset(curX, getY(curPoint.boll!.mid!)),
+          last: Offset(lastX, getY(lastPoint.boll!.mid!)),
+        ),
+      );
+    }
 
-    /// UB
-    li.add(
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.ubColor,
-        curY: curPoint.boll!.up,
-        lastY: lastPoint.boll!.up,
-      ),
-    );
-    /// LB
-    li.add(
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.lbColor,
-        curY: curPoint.boll!.dn,
-        lastY: lastPoint.boll!.dn,
-      ),
-    );
+    if (curPoint.boll!.up != null && lastPoint.boll!.up != null) {
+      /// UB
+      li.add(
+        FigureItem(
+          type: FigureType.line,
+          color: chartColors.ubColor,
+          cur: Offset(curX, getY(curPoint.boll!.up!)),
+          last: Offset(lastX, getY(lastPoint.boll!.up!)),
+        ),
+      );
+    }
+
+    if (curPoint.boll!.dn != null && lastPoint.boll!.dn != null) {
+      /// LB
+      li.add(
+        FigureItem(
+          type: FigureType.line,
+          color: chartColors.lbColor,
+          cur: Offset(curX, getY(curPoint.boll!.dn!)),
+          last: Offset(lastX, getY(lastPoint.boll!.dn!)),
+        ),
+      );
+    }
 
     return li;
   }

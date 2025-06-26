@@ -17,11 +17,11 @@ class SARIndicator extends IndicatorTemplate<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision) {
     double? value = entity.sar;
     if (value == null) return null;
     return TextSpan(
-      text: "SAR: ${value.toStringAsFixed(precision)}",
+      text: "SAR: ${formatNumber(value, precision)}",
       style: TextStyle(
         fontSize: 10,
         color: chartColors.sarColor,
@@ -30,7 +30,7 @@ class SARIndicator extends IndicatorTemplate<CandleEntity> {
   }
 
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, ChartColors chartColors) {
+  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
     final sar = curPoint.sar;
     if (sar == null) return [];
     final halfHL = (curPoint.high + curPoint.low) / 2;
@@ -43,7 +43,7 @@ class SARIndicator extends IndicatorTemplate<CandleEntity> {
       color = chartColors.dnColor;
     }
     return [
-      FigureItem(type: FigureType.circle, color: color, curY: sar),
+      FigureItem(type: FigureType.circle, color: color, cur: Offset(curX, getY(sar))),
     ];
   }
 

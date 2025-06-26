@@ -267,57 +267,9 @@ abstract class BaseChartPainter extends CustomPainter {
   // compute maximum and minimum of secondary value
   getSecondaryMaxMinValue(int index, KLineEntity item) {
     SecondaryState secondaryState = secondaryStateLi.elementAt(index);
-    switch (secondaryState) {
-      // MACD
-      case SecondaryState.MACD:
-        if (item.macd != null) {
-          mSecondaryRectList[index].mMaxValue = max(
-              mSecondaryRectList[index].mMaxValue,
-              max(item.macd!, max(item.dif!, item.dea!)));
-          mSecondaryRectList[index].mMinValue = min(
-              mSecondaryRectList[index].mMinValue,
-              min(item.macd!, min(item.dif!, item.dea!)));
-        }
-        break;
-      // KDJ
-      case SecondaryState.KDJ:
-        if (item.d != null) {
-          mSecondaryRectList[index].mMaxValue = max(
-              mSecondaryRectList[index].mMaxValue,
-              max(item.k!, max(item.d!, item.j!)));
-          mSecondaryRectList[index].mMinValue = min(
-              mSecondaryRectList[index].mMinValue,
-              min(item.k!, min(item.d!, item.j!)));
-        }
-        break;
-      // RSI
-      case SecondaryState.RSI:
-        if (item.rsi != null) {
-          mSecondaryRectList[index].mMaxValue =
-              max(mSecondaryRectList[index].mMaxValue, item.rsi!);
-          mSecondaryRectList[index].mMinValue =
-              min(mSecondaryRectList[index].mMinValue, item.rsi!);
-        }
-        break;
-      // WR
-      case SecondaryState.WR:
-        mSecondaryRectList[index].mMaxValue = 0;
-        mSecondaryRectList[index].mMinValue = -100;
-        break;
-      // CCI
-      case SecondaryState.CCI:
-        if (item.cci != null) {
-          mSecondaryRectList[index].mMaxValue =
-              max(mSecondaryRectList[index].mMaxValue, item.cci!);
-          mSecondaryRectList[index].mMinValue =
-              min(mSecondaryRectList[index].mMinValue, item.cci!);
-        }
-        break;
-      // default:
-      //   mSecondaryRectList[index].mMaxValue = 0;
-      //   mSecondaryRectList[index].mMinValue = 0;
-      //   break;
-    }
+    final value = secondaryState.indicator.getMaxMinValue(item, mSecondaryRectList[index].mMinValue, mSecondaryRectList[index].mMaxValue);
+    mSecondaryRectList[index].mMinValue = value.$1;
+    mSecondaryRectList[index].mMaxValue = value.$2;
   }
 
   // translate x

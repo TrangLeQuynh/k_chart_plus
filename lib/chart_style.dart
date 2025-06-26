@@ -11,85 +11,85 @@ import 'package:flutter/material.dart' show Color;
 ///
 class ChartColors {
   /// the background color of base chart
-  Color bgColor;
+  final Color bgColor;
 
-  Color kLineColor;
-
-  ///
-  Color lineFillColor;
+  final Color kLineColor;
 
   ///
-  Color lineFillInsideColor;
+  final Color lineFillColor;
+
+  ///
+  final Color lineFillInsideColor;
 
   /// color: ma5, ma10, ma30, up, down, vol, macd, diff, dea, k, d, j, rsi
-  late List<Color> maColors;
-  Color ubColor;
-  Color lbColor;
-  Color bollColor;
+  final List<Color> maColors;
+  final Color ubColor;
+  final Color lbColor;
+  final Color bollColor;
 
-  Color ma5Color;
-  Color ma10Color;
-  Color ma30Color;
-  Color upColor;
-  Color dnColor;
-  Color volColor;
+  final Color ma5Color;
+  final Color ma10Color;
+  final Color ma30Color;
+  final Color upColor;
+  final Color dnColor;
+  final Color volColor;
 
-  Color macdColor;
-  Color difColor;
-  Color deaColor;
+  final Color macdColor;
+  final Color difColor;
+  final Color deaColor;
 
-  Color kColor;
-  Color dColor;
-  Color jColor;
-  Color rsiColor;
+  final Color kColor;
+  final Color dColor;
+  final Color jColor;
+  final Color rsiColor;
 
-  Color sarColor;
-  Color avgColor;
+  final Color sarColor;
+  final Color avgColor;
 
   /// default text color: apply for text at grid
-  Color defaultTextColor;
+  final Color defaultTextColor;
 
   /// color of the current price
-  Color nowPriceUpColor;
-  Color nowPriceDnColor;
-  Color nowPriceTextColor;
+  final Color nowPriceUpColor;
+  final Color nowPriceDnColor;
+  final Color nowPriceTextColor;
 
   /// trend color
-  Color trendLineColor;
+  final Color trendLineColor;
 
   /// depth color
-  Color depthBuyColor; //upColor
-  Color depthBuyPathColor;
-  Color depthSellColor; //dnColor
-  Color depthSellPathColor;
+  final Color depthBuyColor; //upColor
+  final Color depthBuyPathColor;
+  final Color depthSellColor; //dnColor
+  final Color depthSellPathColor;
 
   ///value border color after selection
-  Color selectBorderColor;
+  final Color selectBorderColor;
 
   ///background color when value selected
-  Color selectFillColor;
+  final Color selectFillColor;
 
   ///color of grid
-  Color gridColor;
+  final Color gridColor;
 
   ///color of annotation content
-  Color infoWindowNormalColor;
-  Color infoWindowTitleColor;
-  Color infoWindowUpColor;
-  Color infoWindowDnColor;
+  final Color infoWindowNormalColor;
+  final Color infoWindowTitleColor;
+  final Color infoWindowUpColor;
+  final Color infoWindowDnColor;
 
   /// color of the horizontal cross line
-  Color hCrossColor;
+  final Color hCrossColor;
 
   /// color of the vertical cross line
-  Color vCrossColor;
+  final Color vCrossColor;
 
   /// text color
-  Color crossTextColor;
+  final Color crossTextColor;
 
   ///The color of the maximum and minimum values in the current display
-  Color maxColor;
-  Color minColor;
+  final Color maxColor;
+  final Color minColor;
 
   /// get MA color via index
   Color getMAColor(int index) {
@@ -100,7 +100,7 @@ class ChartColors {
   }
 
   /// constructor chart color
-  ChartColors({
+  const ChartColors({
     this.bgColor = const Color(0xffffffff),
     this.kLineColor = const Color(0xff4C86CD),
 
@@ -175,37 +175,39 @@ class ChartColors {
 }
 
 class ChartStyle {
-  double topPadding = 20.0;
+  final double topPadding = 20.0;
 
-  double bottomPadding = 20.0;
+  final double bottomPadding = 20.0;
 
-  double childPadding = 12.0;
+  final double childPadding = 12.0;
 
   ///point-to-point distance
-  double pointWidth = 11.0;
+  final double pointWidth = 11.0;
 
   ///candle width
-  double candleWidth = 8.5;
-  double candleLineWidth = 1.0;
+  final double candleWidth = 8.5;
+  final double candleLineWidth = 1.0;
 
   ///vol column width
-  double volWidth = 8.5;
+  final double volWidth = 8.5;
 
   ///macd column width
-  double macdWidth = 1.2;
+  final double macdWidth = 1.2;
 
   ///vertical-horizontal cross line width
-  double vCrossWidth = 8.5;
-  double hCrossWidth = 0.5;
+  final double vCrossWidth = 8.5;
+  final double hCrossWidth = 0.5;
 
   ///(line length - space line - thickness) of the current price
-  double nowPriceLineLength = 4.5;
-  double nowPriceLineSpan = 3.5;
-  double nowPriceLineWidth = 1;
+  final double nowPriceLineLength = 4.5;
+  final double nowPriceLineSpan = 3.5;
+  final double nowPriceLineWidth = 1;
 
-  int gridRows = 4;
-  int gridColumns = 4;
+  final int gridRows = 4;
+  final int gridColumns = 4;
 
   ///customize the time below
-  List<String>? dateTimeFormat;
+  final List<String>? dateTimeFormat;
+
+  const ChartStyle([this.dateTimeFormat]);
 }

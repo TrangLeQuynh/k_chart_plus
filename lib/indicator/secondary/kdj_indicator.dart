@@ -9,11 +9,23 @@ class KDJIndicator extends IndicatorTemplate<MACDEntity> {
 
   @override
   (double, double) getMaxMinValue(MACDEntity entity, double minV, double maxV) {
+    if (entity.k != null) {
+      minV = min(minV, entity.k!);
+      maxV = max(maxV, entity.k!);
+    }
+    if (entity.d != null) {
+      minV = min(minV, entity.d!);
+      maxV = max(maxV, entity.d!);
+    }
+    if (entity.j != null) {
+      minV = min(minV, entity.j!);
+      maxV = max(maxV, entity.j!);
+    }
     return (minV, maxV);
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision) {
     return TextSpan(
       children: [
         TextSpan(
@@ -39,9 +51,27 @@ class KDJIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, ChartColors chartColors) {
-    List<FigureItem> li = [];
-    return li;
+  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
+    return [
+      if (curPoint.k != null || lastPoint.k != null) FigureItem(
+        type: FigureType.line,
+        color: chartColors.kColor,
+        cur: Offset(curX, getY(curPoint.k!)),
+        last: Offset(lastX, getY(lastPoint.k!)),
+      ),
+      if (curPoint.d != null || lastPoint.d != null) FigureItem(
+        type: FigureType.line,
+        color: chartColors.dColor,
+        cur: Offset(curX, getY(curPoint.d!)),
+        last: Offset(lastX, getY(lastPoint.d!)),
+      ),
+      if (curPoint.j != null || lastPoint.j != null) FigureItem(
+        type: FigureType.line,
+        color: chartColors.jColor,
+        cur: Offset(curX, getY(curPoint.j!)),
+        last: Offset(lastX, getY(lastPoint.j!)),
+      ),
+    ];
   }
 
   @override

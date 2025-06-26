@@ -5,15 +5,28 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
     name: 'movingAverageConvergenceDivergence',
     shortName: 'MACD',
     calcParams: const [12, 26, 9],
+    chartStyle: const ChartStyle(),
   );
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
+    if (entity.macd != null) {
+      minV = min(minV, entity.macd!);
+      maxV = max(maxV, entity.macd!);
+    }
+    if (entity.dea != null) {
+      minV = min(minV, entity.dea!);
+      maxV = max(maxV, entity.dea!);
+    }
+    if (entity.dif != null) {
+      minV = min(minV, entity.dif!);
+      maxV = max(maxV, entity.dif!);
+    }
     return (minV, maxV);
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision) {
     return TextSpan(
       children: [
         TextSpan(
@@ -39,9 +52,76 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
 
+  // void drawMACD(MACDEntity curPoint, Canvas canvas, double curX, MACDEntity lastPoint, double lastX) {
+  //   final macd = curPoint.macd ?? 0;
+  //   double macdY = getY(macd);
+  //   double r = mMACDWidth / 2;
+  //   double zeroy = getY(0);
+  //   if (macd > 0) {
+  //     canvas.drawRect(Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
+  //         chartPaint..color = this.chartColors.upColor);
+  //   } else {
+  //     canvas.drawRect(Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
+  //         chartPaint..color = this.chartColors.dnColor);
+  //   }
+  //   if (lastPoint.dif != 0) {
+  //     drawLine(lastPoint.dif, curPoint.dif, canvas, lastX, curX,
+  //         this.chartColors.difColor);
+  //   }
+  //   if (lastPoint.dea != 0) {
+  //     drawLine(lastPoint.dea, curPoint.dea, canvas, lastX, curX,
+  //         this.chartColors.deaColor);
+  //   }
+  // }
+
+
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, ChartColors chartColors) {
+  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
+    final mMACDWidth = chartStyle!.macdWidth;
+    final macd = curPoint.macd ?? 0;
+    double macdY = getY(macd);
+    double r = mMACDWidth / 2;
+    double zeroy = getY(0);
+
     List<FigureItem> li = [];
+    if (macd > 0) {
+      li.add(
+        FigureItem(
+          type: FigureType.rect,
+          color: chartColors.upColor,
+          rect: Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
+        ),
+      );
+
+    } else {
+      li.add(
+        FigureItem(
+          type: FigureType.rect,
+          color: chartColors.dnColor,
+          rect: Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
+        ),
+      );
+    }
+    if (lastPoint.dif != null && lastPoint.dif != 0 && curPoint.dif != null) {
+      li.add(
+        FigureItem(
+          type: FigureType.line,
+          color: chartColors.difColor,
+          cur: Offset(curX, getY(curPoint.dif!)),
+          last: Offset(lastX, getY(lastPoint.dif!)),
+        ),
+      );
+    }
+    if (lastPoint.dea != null && lastPoint.dea != 0 && curPoint.dea != null) {
+      li.add(
+        FigureItem(
+          type: FigureType.line,
+          color: chartColors.deaColor,
+          cur: Offset(curX, getY(curPoint.dea!)),
+          last: Offset(lastX, getY(lastPoint.dea!)),
+        ),
+      );
+    }
     return li;
   }
 

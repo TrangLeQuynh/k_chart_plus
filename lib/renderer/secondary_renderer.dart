@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:k_chart_plus/indicator/indicator_template.dart';
 import '../entity/macd_entity.dart';
 import '../k_chart_widget.dart' show SecondaryState;
 import 'base_chart_renderer.dart';
@@ -32,59 +33,15 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX,
       double curX, Size size, Canvas canvas) {
-    switch (state) {
-      case SecondaryState.MACD:
-        drawMACD(curPoint, canvas, curX, lastPoint, lastX);
-        break;
-      case SecondaryState.KDJ:
-        drawLine(lastPoint.k, curPoint.k, canvas, lastX, curX,
-            this.chartColors.kColor);
-        drawLine(lastPoint.d, curPoint.d, canvas, lastX, curX,
-            this.chartColors.dColor);
-        drawLine(lastPoint.j, curPoint.j, canvas, lastX, curX,
-            this.chartColors.jColor);
-        break;
-      case SecondaryState.RSI:
-        drawLine(lastPoint.rsi, curPoint.rsi, canvas, lastX, curX,
-            this.chartColors.rsiColor);
-        break;
-      case SecondaryState.WR:
-        drawLine(lastPoint.r, curPoint.r, canvas, lastX, curX,
-            this.chartColors.rsiColor);
-        break;
-      case SecondaryState.CCI:
-        drawLine(lastPoint.cci, curPoint.cci, canvas, lastX, curX,
-            this.chartColors.rsiColor);
-        break;
-    }
-  }
-
-  void drawMACD(MACDEntity curPoint, Canvas canvas, double curX,
-      MACDEntity lastPoint, double lastX) {
-    final macd = curPoint.macd ?? 0;
-    double macdY = getY(macd);
-    double r = mMACDWidth / 2;
-    double zeroy = getY(0);
-    if (macd > 0) {
-      canvas.drawRect(Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
-          chartPaint..color = this.chartColors.upColor);
-    } else {
-      canvas.drawRect(Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
-          chartPaint..color = this.chartColors.dnColor);
-    }
-    if (lastPoint.dif != 0) {
-      drawLine(lastPoint.dif, curPoint.dif, canvas, lastX, curX,
-          this.chartColors.difColor);
-    }
-    if (lastPoint.dea != 0) {
-      drawLine(lastPoint.dea, curPoint.dea, canvas, lastX, curX,
-          this.chartColors.deaColor);
+    List<FigureItem> figures = state.indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
+    for (int j = 0; j < figures.length; ++j) {
+      drawFigureItem(figures[j], canvas);
     }
   }
 
   @override
   void drawText(Canvas canvas, MACDEntity data, double x) {
-    TextSpan? span = state.indicator.drawFigure(data, fixedLength, this.chartColors);
+    TextSpan? span = state.indicator.drawFigure(data, fixedLength);
     if (span == null) return;
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
     tp.layout();
