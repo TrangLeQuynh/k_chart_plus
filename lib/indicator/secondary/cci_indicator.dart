@@ -9,11 +9,15 @@ class CCIIndicator extends IndicatorTemplate<MACDEntity> {
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
+    if (entity.cci != null) {
+      minV = min(minV, entity.cci!);
+      maxV = max(maxV, entity.cci!);
+    }
     return (minV, maxV);
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision) {
     if (entity.cci == null) return null;
     return TextSpan(
       text: "CCI(14):${formatNumber(entity.cci!, precision)}",
@@ -21,9 +25,16 @@ class CCIIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, ChartColors chartColors) {
-    List<FigureItem> li = [];
-    return li;
+  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
+    if (curPoint.cci == null || lastPoint.cci == null) return [];
+    return [
+      FigureItem(
+        type: FigureType.line,
+        color: chartColors.rsiColor,
+        cur: Offset(curX, getY(curPoint.cci!)),
+        last: Offset(lastX, getY(lastPoint.cci!)),
+      ),
+    ];
   }
 
   @override

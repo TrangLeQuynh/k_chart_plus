@@ -13,21 +13,25 @@ part 'secondary/kdj_indicator.dart';
 part 'secondary/rsi_indicator.dart';
 part 'secondary/wr_indicator.dart';
 
+typedef GetYFunction= double Function(double y);
+
 enum FigureType {
-  line, circle
+  line, circle, rect
 }
 
 class FigureItem {
   FigureType type;
-  double? lastY;
-  double? curY;
+  Offset? cur;
+  Offset? last;
   Color color;
+  Rect? rect;
 
   FigureItem({
     required this.type,
     required this.color,
-    required this.curY,
-    this.lastY,
+    this.cur,
+    this.last,
+    this.rect,
   });
 }
 
@@ -38,19 +42,24 @@ abstract class IndicatorTemplate<T> {
 
   final List<int> calcParams;
 
+  final ChartColors chartColors;
+  final ChartStyle? chartStyle;
+
   const IndicatorTemplate({
     required this.name,
     required this.shortName,
     required this.calcParams,
+    this.chartColors = const ChartColors(),
+    this.chartStyle,
   });
 
   /// record.$1 : min value
   /// record.$2: max value
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV);
 
-  TextSpan? drawFigure(T value, int precision, ChartColors chartColor);
+  TextSpan? drawFigure(T value, int precision);
 
-  List<FigureItem> drawChart(T lastPoint, T curPoint, ChartColors chartColors);
+  List<FigureItem> drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY);
 
   void calc(List<KLineEntity> dataList);
 

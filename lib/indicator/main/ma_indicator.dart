@@ -21,13 +21,13 @@ class MAIndicator extends IndicatorTemplate<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision) {
     List<InlineSpan> result = [];
     if (entity.maValueList?.isEmpty ?? true) return null;
     for (int i = 0; i < (entity.maValueList!.length); i++) {
       if (entity.maValueList?[i] != 0) {
         var item = TextSpan(
-          text: "MA${calcParams[i]}:${entity.maValueList![i].toStringAsFixed(precision)}    ",
+          text: "MA${calcParams[i]}:${formatNumber(entity.maValueList![i], precision)}    ",
           style: TextStyle(
             fontSize: 10,
             color: chartColors.getMAColor(i),
@@ -41,7 +41,7 @@ class MAIndicator extends IndicatorTemplate<CandleEntity> {
 
 
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, ChartColors chartColors) {
+  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
     if (curPoint.maValueList == null ||
         lastPoint.maValueList == null ||
         curPoint.maValueList!.length != lastPoint.maValueList!.length) {
@@ -54,8 +54,8 @@ class MAIndicator extends IndicatorTemplate<CandleEntity> {
           FigureItem(
             type: FigureType.line,
             color: chartColors.getMAColor(i),
-            lastY: lastPoint.maValueList![i],
-            curY: curPoint.maValueList![i],
+            cur: Offset(curX, getY(curPoint.maValueList![i])),
+            last: Offset(lastX, getY(lastPoint.maValueList![i])),
           )
         );
       }

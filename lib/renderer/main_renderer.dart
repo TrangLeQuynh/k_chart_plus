@@ -68,7 +68,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
     for (int i = 0; i < stateLi.length; ++i) {
-      TextSpan? span = stateLi[i].indicator.drawFigure(data, fixedLength, this.chartColors);
+      TextSpan? span = stateLi[i].indicator.drawFigure(data, fixedLength);
       if (span == null) return;
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
@@ -98,16 +98,9 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
       /// draw chart main state
       for (int i = 0; i < stateLi.length; ++i) {
-        List<FigureItem> figures = stateLi[i].indicator.drawChart(lastPoint, curPoint, this.chartColors);
+        List<FigureItem> figures = stateLi[i].indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
         for (int j = 0; j < figures.length; ++j) {
-          switch(figures[j].type) {
-            case FigureType.line:
-              drawLine(figures[j].lastY, figures[j].curY, canvas, lastX, curX, figures[j].color);
-              break;
-            case FigureType.circle:
-              drawCircle(canvas, curX, figures[j].curY, figures[j].color);
-              break;
-          }
+          drawFigureItem(figures[j], canvas);
         }
       }
     }

@@ -13,11 +13,15 @@ class RSIIndicator extends IndicatorTemplate<MACDEntity> {
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
+    if (entity.rsi != null) {
+      minV = min(minV, entity.rsi!);
+      maxV = max(maxV, entity.rsi!);
+    }
     return (minV, maxV);
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision) {
     if (entity.rsi == null) return null;
     return TextSpan(
       text: "RSI(14):${formatNumber(entity.rsi!, precision)}",
@@ -25,9 +29,16 @@ class RSIIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, ChartColors chartColors) {
-    List<FigureItem> li = [];
-    return li;
+  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
+    if (curPoint.rsi == null || lastPoint.rsi == null) return [];
+    return [
+      FigureItem(
+        type: FigureType.line,
+        color: chartColors.rsiColor,
+        cur: Offset(curX, getY(curPoint.rsi!)),
+        last: Offset(lastX, getY(lastPoint.rsi!)),
+      ),
+    ];
   }
 
   @override

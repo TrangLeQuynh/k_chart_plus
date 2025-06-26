@@ -9,11 +9,11 @@ class WRIndicator extends IndicatorTemplate<MACDEntity> {
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
-    return (minV, maxV);
+    return (-100, 0);
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision) {
     if (entity.r == null) return null;
     return TextSpan(
       text: "WR(14):${formatNumber(entity.r!, precision)}",
@@ -21,9 +21,16 @@ class WRIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, ChartColors chartColors) {
-    List<FigureItem> li = [];
-    return li;
+  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
+    if (curPoint.r == null || lastPoint.r == null) return [];
+    return [
+      FigureItem(
+        type: FigureType.line,
+        color: chartColors.rsiColor,
+        cur: Offset(curX, getY(curPoint.r!)),
+        last: Offset(lastX, getY(lastPoint.r!)),
+      ),
+    ];
   }
 
   @override

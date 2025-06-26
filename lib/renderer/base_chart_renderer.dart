@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:k_chart_plus/indicator/indicator_template.dart';
 
 export '../chart_style.dart';
 
@@ -66,16 +67,31 @@ abstract class BaseChartRenderer<T> {
         Offset(lastX, lastY), Offset(curX, curY), chartPaint..color = color);
   }
 
-  void drawCircle(Canvas canvas, double curX, double? curY, Color color) {
-    if (curY == null) return;
-    canvas.drawCircle(
-      Offset(curX, getY(curY)),
-      2.0,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .8
-        ..color = color,
-    );
+  void drawFigureItem(FigureItem value, Canvas canvas) {
+    switch(value.type) {
+      case FigureType.line:
+        if (value.last != null && value.cur != null) {
+          canvas.drawLine(value.cur!, value.last!, chartPaint..color = value.color);
+        }
+        break;
+      case FigureType.circle:
+        if (value.cur != null) {
+          canvas.drawCircle(
+            value.cur!,
+            2.0,
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = .8
+              ..color = value.color,
+          );
+        }
+        break;
+      case FigureType.rect:
+        if (value.rect != null) {
+          canvas.drawRect(value.rect!, chartPaint..color = value.color);
+        }
+        break;
+    }
   }
 
   TextStyle getTextStyle(Color color) {
