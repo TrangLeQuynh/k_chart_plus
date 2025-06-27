@@ -4,8 +4,8 @@ part of '../indicator_template.dart';
  * RSI
  * RSI = SUM(MAX(CLOSE - REF(CLOSE,1),0),N) / SUM(ABS(CLOSE - REF(CLOSE,1)),N) × 100
  */
-class RSIIndicator extends IndicatorTemplate<MACDEntity> {
-  const RSIIndicator(): super(
+class RSIIndicator extends SecondaryIndicator<MACDEntity> {
+  RSIIndicator(): super(
     name: 'relativeStrengthIndex',
     shortName: 'RSI',
     calcParams: const [6, 12, 24],
@@ -37,6 +37,7 @@ class RSIIndicator extends IndicatorTemplate<MACDEntity> {
         color: chartColors.rsiColor,
         cur: Offset(curX, getY(curPoint.rsi!)),
         last: Offset(lastX, getY(lastPoint.rsi!)),
+        paint: _linePaint,
       ),
     ];
   }

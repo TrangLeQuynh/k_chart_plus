@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
-class KDJIndicator extends IndicatorTemplate<MACDEntity> {
-  const KDJIndicator(): super(
+class KDJIndicator extends SecondaryIndicator<MACDEntity> {
+  KDJIndicator(): super(
     name: 'stoch',
     shortName: 'KDJ',
     calcParams: const [9, 3, 3],
@@ -58,18 +58,21 @@ class KDJIndicator extends IndicatorTemplate<MACDEntity> {
         color: chartColors.kColor,
         cur: Offset(curX, getY(curPoint.k!)),
         last: Offset(lastX, getY(lastPoint.k!)),
+        paint: _linePaint,
       ),
       if (curPoint.d != null || lastPoint.d != null) FigureItem(
         type: FigureType.line,
         color: chartColors.dColor,
         cur: Offset(curX, getY(curPoint.d!)),
         last: Offset(lastX, getY(lastPoint.d!)),
+        paint: _linePaint,
       ),
       if (curPoint.j != null || lastPoint.j != null) FigureItem(
         type: FigureType.line,
         color: chartColors.jColor,
         cur: Offset(curX, getY(curPoint.j!)),
         last: Offset(lastX, getY(lastPoint.j!)),
+        paint: _linePaint,
       ),
     ];
   }

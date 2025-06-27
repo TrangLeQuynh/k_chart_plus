@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
-class CCIIndicator extends IndicatorTemplate<MACDEntity> {
-  const CCIIndicator(): super(
+class CCIIndicator extends SecondaryIndicator<MACDEntity> {
+  CCIIndicator(): super(
     name: 'commodityChannelIndex',
     shortName: 'CCI',
     calcParams: const [20],
@@ -33,6 +33,7 @@ class CCIIndicator extends IndicatorTemplate<MACDEntity> {
         color: chartColors.rsiColor,
         cur: Offset(curX, getY(curPoint.cci!)),
         last: Offset(lastX, getY(lastPoint.cci!)),
+        paint: _linePaint,
       ),
     ];
   }

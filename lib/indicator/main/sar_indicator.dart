@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
-class SARIndicator extends IndicatorTemplate<CandleEntity> {
-  const SARIndicator(): super(
+class SARIndicator extends MainIndicator<CandleEntity> {
+  SARIndicator(): super(
     name: 'stopAndReverse',
     shortName: 'SAR',
     calcParams: const [2, 2, 20],
@@ -43,7 +43,12 @@ class SARIndicator extends IndicatorTemplate<CandleEntity> {
       color = chartColors.dnColor;
     }
     return [
-      FigureItem(type: FigureType.circle, color: color, cur: Offset(curX, getY(sar))),
+      FigureItem(
+        type: FigureType.circle,
+        color: color,
+        cur: Offset(curX, getY(sar)),
+        paint: _linePaint,
+      ),
     ];
   }
 

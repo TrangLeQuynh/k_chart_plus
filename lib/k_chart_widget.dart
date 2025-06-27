@@ -6,28 +6,6 @@ import 'package:k_chart_plus/k_chart_plus.dart';
 import 'indicator/indicator_template.dart';
 import 'renderer/base_dimension.dart';
 
-///
-enum MainState {
-  MA(MAIndicator()),
-  BOLL(BOLLIndicator()),
-  SAR(SARIndicator());
-
-  final IndicatorTemplate indicator;
-  const MainState(this.indicator);
-}
-
-// enum SecondaryState { MACD, KDJ, RSI, WR, CCI }
-enum SecondaryState {
-  MACD(MACDIndicator()),
-  KDJ(KDJIndicator()),
-  RSI(RSIIndicator()),
-  WR(WRIndicator()),
-  CCI(CCIIndicator());
-
-  final IndicatorTemplate indicator;
-  const SecondaryState(this.indicator);
-}
-
 class TimeFormat {
   static const List<String> YEAR_MONTH_DAY = [yyyy, '-', mm, '-', dd];
   static const List<String> YEAR_MONTH_DAY_WITH_HOUR = [
@@ -45,9 +23,9 @@ class TimeFormat {
 
 class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
-  final Set<MainState> mainStateLi;
+  final List<IndicatorTemplate> mainIndicators; ///warning only using MA, BOLL, SAR
   final bool volHidden;
-  final Set<SecondaryState> secondaryStateLi;
+  final List<IndicatorTemplate> secondaryIndicators; ///SecondaryState { MACD, KDJ, RSI, WR, CCI }
   // final Function()? onSecondaryTap;
   final bool isLine;
   final bool
@@ -83,8 +61,8 @@ class KChartWidget extends StatefulWidget {
     this.chartColors, {
     required this.isTrendLine,
     this.xFrontPadding = 100,
-    this.mainStateLi = const <MainState>{},
-    this.secondaryStateLi = const <SecondaryState>{},
+    this.mainIndicators = const [],
+    this.secondaryIndicators = const [],
     // this.onSecondaryTap,
     this.volHidden = false,
     this.isLine = false,
@@ -161,8 +139,8 @@ class _KChartWidgetState extends State<KChartWidget>
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi,
-      mainStateLi: widget.mainStateLi,
+      secondaryStateLi: widget.secondaryIndicators,
+      mainStateLi: widget.mainIndicators,
     );
     final _painter = ChartPainter(
       widget.chartStyle,
@@ -180,9 +158,9 @@ class _KChartWidgetState extends State<KChartWidget>
       isLongPass: isLongPress,
       isOnTap: isOnTap,
       isTapShowInfoDialog: widget.isTapShowInfoDialog,
-      mainStateLi: widget.mainStateLi,
+      mainIndicators: widget.mainIndicators,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryStateLi,
+      secondaryIndicators: widget.secondaryIndicators,
       isLine: widget.isLine,
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,

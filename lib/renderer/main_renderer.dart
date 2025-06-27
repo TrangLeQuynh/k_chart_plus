@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 import '../entity/candle_entity.dart';
-import '../k_chart_widget.dart' show MainState;
 import 'base_chart_renderer.dart';
 
 enum VerticalTextAlignment { left, right }
@@ -14,7 +13,7 @@ double? trendLineContentRec;
 class MainRenderer extends BaseChartRenderer<CandleEntity> {
   late double mCandleWidth;
   late double mCandleLineWidth;
-  List<MainState> stateLi;
+  List<MainIndicator> indicatorLi;
   bool isLine;
 
   //绘制的内容区域
@@ -32,7 +31,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       double maxValue,
       double minValue,
       double topPadding,
-      this.stateLi,
+      this.indicatorLi,
       this.isLine,
       int fixedLength,
       this.chartStyle,
@@ -67,8 +66,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   @override
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
-    for (int i = 0; i < stateLi.length; ++i) {
-      TextSpan? span = stateLi[i].indicator.drawFigure(data, fixedLength);
+    for (int i = 0; i < indicatorLi.length; ++i) {
+      TextSpan? span = indicatorLi[i].drawFigure(data, fixedLength);
       if (span == null) return;
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
@@ -97,8 +96,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       drawCandle(curPoint, canvas, curX);
 
       /// draw chart main state
-      for (int i = 0; i < stateLi.length; ++i) {
-        List<FigureItem> figures = stateLi[i].indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
+      for (int i = 0; i < indicatorLi.length; ++i) {
+        List<FigureItem> figures = indicatorLi[i].drawChart(lastPoint, curPoint, lastX, curX, getY);
         for (int j = 0; j < figures.length; ++j) {
           drawFigureItem(figures[j], canvas);
         }

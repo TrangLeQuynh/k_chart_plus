@@ -1,3 +1,5 @@
+import 'package:k_chart_plus/indicator/indicator_template.dart';
+
 import '../k_chart_widget.dart';
 
 /// Base Dimension
@@ -41,8 +43,8 @@ class BaseDimension {
   BaseDimension({
     required double mBaseHeight,
     required bool volHidden,
-    required Set<SecondaryState> secondaryStateLi,
-    required Set<MainState> mainStateLi,
+    required List<IndicatorTemplate> secondaryStateLi,
+    required List<IndicatorTemplate> mainStateLi,
   }) {
     _mBaseHeight = mBaseHeight;
     _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;

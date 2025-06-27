@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
-class WRIndicator extends IndicatorTemplate<MACDEntity> {
-  const WRIndicator(): super(
+class WRIndicator extends SecondaryIndicator<MACDEntity> {
+  WRIndicator(): super(
     name: 'volumeRatio',
     shortName: 'WR',
     calcParams: const [26, 6],
@@ -29,6 +29,7 @@ class WRIndicator extends IndicatorTemplate<MACDEntity> {
         color: chartColors.rsiColor,
         cur: Offset(curX, getY(curPoint.r!)),
         last: Offset(lastX, getY(lastPoint.r!)),
+        paint: _linePaint,
       ),
     ];
   }

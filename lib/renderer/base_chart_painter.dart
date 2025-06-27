@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart'
     show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
+import 'package:k_chart_plus/indicator/indicator_template.dart';
 import 'package:k_chart_plus/utils/date_format_util.dart';
 import '../chart_style.dart' show ChartStyle;
 import '../entity/k_line_entity.dart';
@@ -14,9 +15,9 @@ abstract class BaseChartPainter extends CustomPainter {
   static double maxScrollX = 0.0;
   List<KLineEntity>? datas; // data of chart
 
-  Set<MainState> mainStateLi; //MainState mainState;
+  List<MainIndicator> mainIndicators;
 
-  Set<SecondaryState> secondaryStateLi;
+  List<SecondaryIndicator> secondaryIndicators;
 
   bool volHidden;
   bool isTapShowInfoDialog;
@@ -70,10 +71,10 @@ abstract class BaseChartPainter extends CustomPainter {
     required this.xFrontPadding,
     required this.baseDimension,
     this.isOnTap = false,
-    this.mainStateLi = const <MainState>{},
+    this.mainIndicators = const [],
     this.volHidden = false,
     this.isTapShowInfoDialog = false,
-    this.secondaryStateLi = const <SecondaryState>{},
+    this.secondaryIndicators = const [],
     this.isLine = false,
   }) {
     mItemCount = datas?.length ?? 0;
@@ -196,7 +197,7 @@ abstract class BaseChartPainter extends CustomPainter {
     }
 
     mSecondaryRectList.clear();
-    for (int i = 0; i < secondaryStateLi.length; ++i) {
+    for (int i = 0; i < mainIndicators.length; ++i) {
       mSecondaryRectList.add(RenderRect(
         Rect.fromLTRB(
             0,
@@ -232,8 +233,8 @@ abstract class BaseChartPainter extends CustomPainter {
   void getMainMaxMinValue(KLineEntity item, int i) {
     double maxPrice = item.high;
     double minPrice = item.low;
-    for (int i = 0; i < mainStateLi.length; ++i) {
-      final value = mainStateLi.elementAt(i).indicator.getMaxMinValue(item, minPrice, maxPrice);
+    for (int i = 0; i < mainIndicators.length; ++i) {
+      final value = mainIndicators[i].getMaxMinValue(item, minPrice, maxPrice);
       minPrice = value.$1;
       maxPrice = value.$2;
     }
@@ -266,8 +267,8 @@ abstract class BaseChartPainter extends CustomPainter {
 
   // compute maximum and minimum of secondary value
   getSecondaryMaxMinValue(int index, KLineEntity item) {
-    SecondaryState secondaryState = secondaryStateLi.elementAt(index);
-    final value = secondaryState.indicator.getMaxMinValue(item, mSecondaryRectList[index].mMinValue, mSecondaryRectList[index].mMaxValue);
+    SecondaryIndicator indicator = secondaryIndicators[index];
+    final value = indicator.getMaxMinValue(item, mSecondaryRectList[index].mMinValue, mSecondaryRectList[index].mMaxValue);
     mSecondaryRectList[index].mMinValue = value.$1;
     mSecondaryRectList[index].mMaxValue = value.$2;
   }

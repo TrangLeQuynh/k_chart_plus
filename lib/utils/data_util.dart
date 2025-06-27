@@ -1,24 +1,23 @@
 import 'dart:math';
 
+import 'package:k_chart_plus/indicator/indicator_template.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
 
 import '../entity/index.dart';
 
 class DataUtil {
-  static calculate(List<KLineEntity> dataList) {
+  static calculate(List<KLineEntity> dataList, List<MainIndicator> mainLi, List<SecondaryIndicator> secondaryLi) {
     /// calculate main state
-    MainState.MA.indicator.calc(dataList);// calcMA(dataList, maDayList);
-    MainState.SAR.indicator.calc(dataList);// calcBOLL(dataList, 20, 2);;
-    MainState.BOLL.indicator.calc(dataList);// calcSAR(dataList);
+    mainLi.forEach((e) {
+      e.calc(dataList);
+    });
 
-    /// calculate secondary state
     calcVolumeMA(dataList);
 
-    SecondaryState.KDJ.indicator.calc(dataList);// calcKDJ(dataList);
-    SecondaryState.MACD.indicator.calc(dataList);// calcMACD(dataList);
-    SecondaryState.RSI.indicator.calc(dataList);// calcRSI(dataList);
-    SecondaryState.WR.indicator.calc(dataList);// calcWR(dataList);
-    SecondaryState.CCI.indicator.calc(dataList);// calcCCI(dataList);
+    /// calculate secondary state
+    secondaryLi.forEach((e) {
+      e.calc(dataList);
+    });
   }
   //
   // static calcMA(List<KLineEntity> dataList, List<int> maDayList) {

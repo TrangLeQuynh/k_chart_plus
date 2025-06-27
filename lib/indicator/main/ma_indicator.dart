@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
-class MAIndicator extends IndicatorTemplate<CandleEntity> {
-  const MAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
+class MAIndicator extends MainIndicator<CandleEntity> {
+  MAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
     name: 'movingAverage',
     shortName: 'MA',
     calcParams: calcParams,
@@ -56,6 +56,7 @@ class MAIndicator extends IndicatorTemplate<CandleEntity> {
             color: chartColors.getMAColor(i),
             cur: Offset(curX, getY(curPoint.maValueList![i])),
             last: Offset(lastX, getY(lastPoint.maValueList![i])),
+            paint: _linePaint,
           )
         );
       }
