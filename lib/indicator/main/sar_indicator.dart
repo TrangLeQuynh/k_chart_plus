@@ -30,9 +30,9 @@ class SARIndicator extends MainIndicator<CandleEntity> {
   }
 
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
     final sar = curPoint.sar;
-    if (sar == null) return [];
+    if (sar == null) return;
     final halfHL = (curPoint.high + curPoint.low) / 2;
     late final color;
     if (sar == halfHL) {
@@ -42,14 +42,11 @@ class SARIndicator extends MainIndicator<CandleEntity> {
     } else {
       color = chartColors.dnColor;
     }
-    return [
-      FigureItem(
-        type: FigureType.circle,
-        color: color,
-        cur: Offset(curX, getY(sar)),
-        paint: _linePaint,
-      ),
-    ];
+    canvas.drawCircle(
+      Offset(curX, getY(sar)),
+      2.0,
+      _linePaint..color = color,
+    );
   }
 
   @override

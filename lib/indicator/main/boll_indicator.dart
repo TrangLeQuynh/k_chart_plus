@@ -62,49 +62,34 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    if (lastPoint.boll == null || curPoint.boll == null) return [];
-    List<FigureItem> li = [];
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    if (lastPoint.boll == null || curPoint.boll == null) return;
     if (curPoint.boll!.mid != null && lastPoint.boll!.mid != null) {
       /// BOLL
-      li.add(
-        FigureItem(
-          type: FigureType.line,
-          color: chartColors.bollColor,
-          cur: Offset(curX, getY(curPoint.boll!.mid!)),
-          last: Offset(lastX, getY(lastPoint.boll!.mid!)),
-          paint: _linePaint,
-        ),
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.boll!.mid!)),
+        Offset(lastX, getY(lastPoint.boll!.mid!)),
+        _linePaint..color = chartColors.bollColor,
       );
     }
 
     if (curPoint.boll!.up != null && lastPoint.boll!.up != null) {
       /// UB
-      li.add(
-        FigureItem(
-          type: FigureType.line,
-          color: chartColors.ubColor,
-          cur: Offset(curX, getY(curPoint.boll!.up!)),
-          last: Offset(lastX, getY(lastPoint.boll!.up!)),
-          paint: _linePaint,
-        ),
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.boll!.up!)),
+        Offset(lastX, getY(lastPoint.boll!.up!)),
+        _linePaint..color = chartColors.ubColor,
       );
     }
 
     if (curPoint.boll!.dn != null && lastPoint.boll!.dn != null) {
       /// LB
-      li.add(
-        FigureItem(
-          type: FigureType.line,
-          color: chartColors.lbColor,
-          cur: Offset(curX, getY(curPoint.boll!.dn!)),
-          last: Offset(lastX, getY(lastPoint.boll!.dn!)),
-          paint: _linePaint,
-        ),
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.boll!.dn!)),
+        Offset(lastX, getY(lastPoint.boll!.dn!)),
+        _linePaint..color = chartColors.lbColor,
       );
     }
-
-    return li;
   }
 
   @override

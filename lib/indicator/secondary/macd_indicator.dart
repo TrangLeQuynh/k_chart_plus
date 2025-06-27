@@ -9,10 +9,6 @@ part of '../indicator_template.dart';
  * ⒋最后用DIFF减DEA，得MACD。MACD通常绘制成围绕零轴线波动的柱形图。MACD柱状大于0涨颜色，小于0跌颜色。
  */
 class MACDIndicator extends SecondaryIndicator<MACDEntity> {
-  final Paint _rectPaint = Paint()
-    ..isAntiAlias = true
-    ..filterQuality = FilterQuality.high
-    ..style = PaintingStyle.fill;
 
   MACDIndicator(): super(
     name: 'movingAverageConvergenceDivergence',
@@ -20,6 +16,11 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
     calcParams: const [12, 26, 9],
     chartStyle: const ChartStyle(),
   );
+
+  final Paint _rectPaint = Paint()
+    ..isAntiAlias = true
+    ..filterQuality = FilterQuality.high
+    ..strokeWidth = 1.0;
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -66,88 +67,89 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    final mMACDWidth = chartStyle!.macdWidth;
-    final macd = curPoint.macd ?? 0;
-    double macdY = getY(macd);
-    double r = mMACDWidth / 2;
-    double zeroy = getY(0);
-
-    List<FigureItem> li = [];
-    if (macd > 0) {
-      li.add(
-        FigureItem(
-          type: FigureType.rect,
-          color: chartColors.upColor,
-          rect: Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
-          paint: _linePaint,
-        ),
-      );
-
-    } else {
-      li.add(
-        FigureItem(
-          type: FigureType.rect,
-          color: chartColors.dnColor,
-          rect: Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
-          paint: _linePaint,
-        ),
-      );
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    final prevMacd = lastPoint.macd;
+    final macd = curPoint.macd;
+    if (curPoint.macd != null) {
+      final mMACDWidth = chartStyle!.macdWidth;
+      double r = mMACDWidth / 2;
+      double zeroy = getY(0);
+      double macdY = getY(macd!);
+      _rectPaint.style = (prevMacd == null || prevMacd <= macd) ? PaintingStyle.stroke : PaintingStyle.fill;
+      if (macd > 0) {
+        canvas.drawRect(
+          Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
+          _rectPaint
+            ..color = chartColors.upColor,
+        );
+      } else {
+        canvas.drawRect(
+          Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
+          _rectPaint
+            ..color = chartColors.dnColor,
+        );
+      }
     }
     if (lastPoint.dif != null && lastPoint.dif != 0 && curPoint.dif != null) {
-      li.add(
-        FigureItem(
-          type: FigureType.line,
-          color: chartColors.difColor,
-          cur: Offset(curX, getY(curPoint.dif!)),
-          last: Offset(lastX, getY(lastPoint.dif!)),
-          paint: _linePaint,
-        ),
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.dif!)),
+        Offset(lastX, getY(lastPoint.dif!)),
+        _linePaint..color = chartColors.difColor,
       );
     }
     if (lastPoint.dea != null && lastPoint.dea != 0 && curPoint.dea != null) {
-      li.add(
-        FigureItem(
-          type: FigureType.line,
-          color: chartColors.deaColor,
-          cur: Offset(curX, getY(curPoint.dea!)),
-          last: Offset(lastX, getY(lastPoint.dea!)),
-          paint: _linePaint,
-        ),
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.dea!)),
+        Offset(lastX, getY(lastPoint.dea!)),
+        _linePaint..color = chartColors.deaColor,
       );
     }
-    return li;
   }
 
   @override
   void calc(List<KLineEntity> dataList) {
-    double ema12 = 0;
-    double ema26 = 0;
+    final params = calcParams;
+    double closeSum = 0;
+    double emaShort = 0;
+    double emaLong = 0;
     double dif = 0;
+    double difSum = 0;
     double dea = 0;
-    double macd = 0;
+    final maxPeriod = max(params[0], params[1]);
 
     for (int i = 0; i < dataList.length; i++) {
       KLineEntity entity = dataList[i];
-      final closePrice = entity.close;
-      if (i == 0) {
-        ema12 = closePrice;
-        ema26 = closePrice;
-      } else {
-        // EMA（12） = 前一日EMA（12） X 11/13 + 今日收盘价 X 2/13
-        ema12 = ema12 * 11 / 13 + closePrice * 2 / 13;
-        // EMA（26） = 前一日EMA（26） X 25/27 + 今日收盘价 X 2/27
-        ema26 = ema26 * 25 / 27 + closePrice * 2 / 27;
+      final close = entity.close;
+      closeSum += close;
+      if (i >= params[0] - 1) {
+        if (i > params[0] - 1) {
+          emaShort = (2 * close + (params[0] - 1) * emaShort) / (params[0] + 1);
+        } else {
+          emaShort = closeSum / params[0];
+        }
       }
-      // DIF = EMA（12） - EMA（26） 。
-      // 今日DEA = （前一日DEA X 8/10 + 今日DIF X 2/10）
-      // 用（DIF-DEA）*2即为MACD柱状图。
-      dif = ema12 - ema26;
-      dea = dea * 8 / 10 + dif * 2 / 10;
-      macd = (dif - dea) * 2;
-      entity.dif = dif;
-      entity.dea = dea;
-      entity.macd = macd;
+
+      if (i >= params[1] - 1) {
+        if (i > params[1] - 1) {
+          emaLong = (2 * close + (params[1] - 1) * emaLong) / (params[1] + 1);
+        } else {
+          emaLong = closeSum / params[1];
+        }
+      }
+      if (i >= maxPeriod - 1) {
+        dif = emaShort - emaLong;
+        entity.dif = dif;
+        difSum += dif;
+        if (i >= maxPeriod + params[2] - 2) {
+          if (i > maxPeriod + params[2] - 2) {
+            dea = (dif * 2 + dea * (params[2] - 1)) / (params[2] + 1);
+          } else {
+            dea = difSum / params[2];
+          }
+          entity.macd = (dif - dea) * 2;
+          entity.dea = dea;
+        }
+      }
     }
   }
 }

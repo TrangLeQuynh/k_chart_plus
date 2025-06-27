@@ -21,17 +21,13 @@ class WRIndicator extends SecondaryIndicator<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    if (curPoint.r == null || lastPoint.r == null) return [];
-    return [
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.rsiColor,
-        cur: Offset(curX, getY(curPoint.r!)),
-        last: Offset(lastX, getY(lastPoint.r!)),
-        paint: _linePaint,
-      ),
-    ];
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    if (curPoint.r == null || lastPoint.r == null) return;
+    canvas.drawLine(
+      Offset(curX, getY(curPoint.r!)),
+      Offset(lastX, getY(lastPoint.r!)),
+      _linePaint..color = chartColors.rsiColor,
+    );
   }
 
   @override
