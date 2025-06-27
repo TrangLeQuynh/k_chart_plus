@@ -51,30 +51,28 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    return [
-      if (curPoint.k != null || lastPoint.k != null) FigureItem(
-        type: FigureType.line,
-        color: chartColors.kColor,
-        cur: Offset(curX, getY(curPoint.k!)),
-        last: Offset(lastX, getY(lastPoint.k!)),
-        paint: _linePaint,
-      ),
-      if (curPoint.d != null || lastPoint.d != null) FigureItem(
-        type: FigureType.line,
-        color: chartColors.dColor,
-        cur: Offset(curX, getY(curPoint.d!)),
-        last: Offset(lastX, getY(lastPoint.d!)),
-        paint: _linePaint,
-      ),
-      if (curPoint.j != null || lastPoint.j != null) FigureItem(
-        type: FigureType.line,
-        color: chartColors.jColor,
-        cur: Offset(curX, getY(curPoint.j!)),
-        last: Offset(lastX, getY(lastPoint.j!)),
-        paint: _linePaint,
-      ),
-    ];
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    if (curPoint.k != null || lastPoint.k != null) {
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.k!)),
+        Offset(lastX, getY(lastPoint.k!)),
+        _linePaint..color = chartColors.kColor,
+      );
+    }
+    if (curPoint.d != null || lastPoint.d != null) {
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.d!)),
+        Offset(lastX, getY(lastPoint.d!)),
+        _linePaint..color = chartColors.dColor,
+      );
+    }
+    if (curPoint.j != null || lastPoint.j != null) {
+      canvas.drawLine(
+        Offset(curX, getY(curPoint.j!)),
+        Offset(lastX, getY(lastPoint.j!)),
+        _linePaint..color = chartColors.jColor,
+      );
+    }
   }
 
   @override

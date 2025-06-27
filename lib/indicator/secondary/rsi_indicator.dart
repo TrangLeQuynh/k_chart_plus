@@ -29,17 +29,13 @@ class RSIIndicator extends SecondaryIndicator<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    if (curPoint.rsi == null || lastPoint.rsi == null) return [];
-    return [
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.rsiColor,
-        cur: Offset(curX, getY(curPoint.rsi!)),
-        last: Offset(lastX, getY(lastPoint.rsi!)),
-        paint: _linePaint,
-      ),
-    ];
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    if (curPoint.rsi == null || lastPoint.rsi == null) return;
+    canvas.drawLine(
+      Offset(curX, getY(curPoint.rsi!)),
+      Offset(lastX, getY(lastPoint.rsi!)),
+      _linePaint..color = chartColors.rsiColor,
+    );
   }
 
   @override

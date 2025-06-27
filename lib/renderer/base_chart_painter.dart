@@ -197,7 +197,7 @@ abstract class BaseChartPainter extends CustomPainter {
     }
 
     mSecondaryRectList.clear();
-    for (int i = 0; i < mainIndicators.length; ++i) {
+    for (int i = 0; i < secondaryIndicators.length; ++i) {
       mSecondaryRectList.add(RenderRect(
         Rect.fromLTRB(
             0,

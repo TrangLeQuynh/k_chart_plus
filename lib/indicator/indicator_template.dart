@@ -15,28 +15,6 @@ part 'secondary/wr_indicator.dart';
 
 typedef GetYFunction= double Function(double y);
 
-enum FigureType {
-  line, circle, rect
-}
-
-class FigureItem {
-  FigureType type;
-  Offset? cur;
-  Offset? last;
-  Color color;
-  Rect? rect;
-  Paint paint;
-
-  FigureItem({
-    required this.type,
-    required this.color,
-    required this.paint,
-    this.cur,
-    this.last,
-    this.rect,
-  });
-}
-
 abstract class IndicatorTemplate<T> {
   final String name;
 
@@ -68,10 +46,11 @@ abstract class IndicatorTemplate<T> {
 
   TextSpan? drawFigure(T value, int precision);
 
-  List<FigureItem> drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY);
+  void drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas);
 
   void calc(List<KLineEntity> dataList);
 
+  /// text format
   TextStyle getTextStyle(Color? color) {
     return TextStyle(fontSize: 10, color: color);
   }

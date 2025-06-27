@@ -122,8 +122,15 @@ class ChartPainter extends BaseChartPainter {
       verticalTextAlignment,
     );
     if (mVolRect != null) {
-      mVolRenderer = VolRenderer(mVolRect!, mVolMaxValue, mVolMinValue,
-          mChildPadding, fixedLength, this.chartStyle, this.chartColors);
+      mVolRenderer = VolRenderer(
+        mVolRect!,
+        mVolMaxValue,
+        mVolMinValue,
+        mChildPadding,
+        fixedLength,
+        this.chartStyle,
+        this.chartColors,
+      );
     }
     mSecondaryRendererList.clear();
     for (int i = 0; i < mSecondaryRectList.length; ++i) {
@@ -135,7 +142,7 @@ class ChartPainter extends BaseChartPainter {
         secondaryIndicators[i],
         fixedLength,
         chartStyle,
-        chartColors,
+        chartColors
       ));
     }
   }

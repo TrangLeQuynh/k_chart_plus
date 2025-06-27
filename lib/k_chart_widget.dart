@@ -23,9 +23,9 @@ class TimeFormat {
 
 class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
-  final List<IndicatorTemplate> mainIndicators; ///warning only using MA, BOLL, SAR
+  final List<MainIndicator> mainIndicators; ///warning only using MA, BOLL, SAR
   final bool volHidden;
-  final List<IndicatorTemplate> secondaryIndicators; ///SecondaryState { MACD, KDJ, RSI, WR, CCI }
+  final List<SecondaryIndicator> secondaryIndicators; ///SecondaryState { MACD, KDJ, RSI, WR, CCI }
   // final Function()? onSecondaryTap;
   final bool isLine;
   final bool
@@ -139,8 +139,8 @@ class _KChartWidgetState extends State<KChartWidget>
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
       volHidden: widget.volHidden,
-      secondaryStateLi: widget.secondaryIndicators,
-      mainStateLi: widget.mainIndicators,
+      secondaryIndicators: widget.secondaryIndicators,
+      mainIndicators: widget.mainIndicators,
     );
     final _painter = ChartPainter(
       widget.chartStyle,

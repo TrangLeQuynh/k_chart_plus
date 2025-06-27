@@ -41,27 +41,21 @@ class MAIndicator extends MainIndicator<CandleEntity> {
 
 
   @override
-  List<FigureItem> drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
     if (curPoint.maValueList == null ||
         lastPoint.maValueList == null ||
         curPoint.maValueList!.length != lastPoint.maValueList!.length) {
-      return [];
+      return;
     }
-    List<FigureItem> li = [];
     for (int i = 0; i < curPoint.maValueList!.length; i++) {
       if (lastPoint.maValueList?[i] != 0) {
-        li.add(
-          FigureItem(
-            type: FigureType.line,
-            color: chartColors.getMAColor(i),
-            cur: Offset(curX, getY(curPoint.maValueList![i])),
-            last: Offset(lastX, getY(lastPoint.maValueList![i])),
-            paint: _linePaint,
-          )
+        canvas.drawLine(
+          Offset(curX, getY(curPoint.maValueList![i])),
+          Offset(lastX, getY(lastPoint.maValueList![i])),
+          _linePaint..color = chartColors.getMAColor(i),
         );
       }
     }
-    return li;
   }
 
   @override

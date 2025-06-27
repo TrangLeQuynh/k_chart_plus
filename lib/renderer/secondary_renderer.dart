@@ -32,10 +32,7 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX,
       double curX, Size size, Canvas canvas) {
-    List<FigureItem> figures = indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
-    for (int j = 0; j < figures.length; ++j) {
-      drawFigureItem(figures[j], canvas);
-    }
+    indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas);
   }
 
   @override

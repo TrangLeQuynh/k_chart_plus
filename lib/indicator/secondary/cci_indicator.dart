@@ -25,17 +25,13 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity> {
     );
   }
   @override
-  List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
-    if (curPoint.cci == null || lastPoint.cci == null) return [];
-    return [
-      FigureItem(
-        type: FigureType.line,
-        color: chartColors.rsiColor,
-        cur: Offset(curX, getY(curPoint.cci!)),
-        last: Offset(lastX, getY(lastPoint.cci!)),
-        paint: _linePaint,
-      ),
-    ];
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+    if (curPoint.cci == null || lastPoint.cci == null) return;
+    canvas.drawLine(
+      Offset(curX, getY(curPoint.cci!)),
+      Offset(lastX, getY(lastPoint.cci!)),
+      _linePaint..color = chartColors.rsiColor,
+    );
   }
 
   @override

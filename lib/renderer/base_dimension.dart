@@ -43,14 +43,14 @@ class BaseDimension {
   BaseDimension({
     required double mBaseHeight,
     required bool volHidden,
-    required List<IndicatorTemplate> secondaryStateLi,
-    required List<IndicatorTemplate> mainStateLi,
+    required List<SecondaryIndicator> secondaryIndicators,
+    required List<MainIndicator> mainIndicators,
   }) {
     _mBaseHeight = mBaseHeight;
     _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
     _mSecondaryHeight = _mBaseHeight * 0.2;
-    _totalSecondaryHeight = _mSecondaryHeight * secondaryStateLi.length;
-    _totalLabelHeight = _mLabelHeight * mainStateLi.length;
+    _totalSecondaryHeight = _mSecondaryHeight * secondaryIndicators.length;
+    _totalLabelHeight = _mLabelHeight * mainIndicators.length;
 
     _mDisplayHeight = _mBaseHeight +
         _mVolumeHeight +
