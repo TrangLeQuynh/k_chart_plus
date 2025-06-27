@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 import '../entity/macd_entity.dart';
-import '../k_chart_widget.dart' show SecondaryState;
 import 'base_chart_renderer.dart';
 
 class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   late double mMACDWidth;
-  SecondaryState state;
+  SecondaryIndicator indicator;
   final ChartStyle chartStyle;
   final ChartColors chartColors;
 
@@ -15,7 +14,7 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
       double maxValue,
       double minValue,
       double topPadding,
-      this.state,
+      this.indicator,
       int fixedLength,
       this.chartStyle,
       this.chartColors)
@@ -33,7 +32,7 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX,
       double curX, Size size, Canvas canvas) {
-    List<FigureItem> figures = state.indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
+    List<FigureItem> figures = indicator.drawChart(lastPoint, curPoint, lastX, curX, getY);
     for (int j = 0; j < figures.length; ++j) {
       drawFigureItem(figures[j], canvas);
     }
@@ -41,7 +40,7 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
 
   @override
   void drawText(Canvas canvas, MACDEntity data, double x) {
-    TextSpan? span = state.indicator.drawFigure(data, fixedLength);
+    TextSpan? span = indicator.drawFigure(data, fixedLength);
     if (span == null) return;
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
     tp.layout();

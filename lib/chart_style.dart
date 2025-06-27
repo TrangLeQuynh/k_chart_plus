@@ -192,7 +192,7 @@ class ChartStyle {
   final double volWidth = 8.5;
 
   ///macd column width
-  final double macdWidth = 1.2;
+  final double macdWidth = 8.5;
 
   ///vertical-horizontal cross line width
   final double vCrossWidth = 8.5;

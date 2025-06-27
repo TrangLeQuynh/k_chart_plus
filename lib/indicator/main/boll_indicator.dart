@@ -7,8 +7,8 @@ class Boll {
   double? BOLLMA;
 }
 
-class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
-  const BOLLIndicator(): super(
+class BOLLIndicator extends MainIndicator<CandleEntity> {
+  BOLLIndicator(): super(
     name: 'bollingerBands',
     shortName: 'BOLL',
     calcParams: const [20, 2],
@@ -73,6 +73,7 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
           color: chartColors.bollColor,
           cur: Offset(curX, getY(curPoint.boll!.mid!)),
           last: Offset(lastX, getY(lastPoint.boll!.mid!)),
+          paint: _linePaint,
         ),
       );
     }
@@ -85,6 +86,7 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
           color: chartColors.ubColor,
           cur: Offset(curX, getY(curPoint.boll!.up!)),
           last: Offset(lastX, getY(lastPoint.boll!.up!)),
+          paint: _linePaint,
         ),
       );
     }
@@ -97,6 +99,7 @@ class BOLLIndicator extends IndicatorTemplate<CandleEntity> {
           color: chartColors.lbColor,
           cur: Offset(curX, getY(curPoint.boll!.dn!)),
           last: Offset(lastX, getY(lastPoint.boll!.dn!)),
+          paint: _linePaint,
         ),
       );
     }

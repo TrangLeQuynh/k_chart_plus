@@ -1,7 +1,20 @@
 part of '../indicator_template.dart';
 
-class MACDIndicator extends IndicatorTemplate<MACDEntity> {
-  const MACDIndicator(): super(
+/**
+ * MACD：参数快线移动平均、慢线移动平均、移动平均，
+ * 默认参数值12、26、9。
+ * 公式：⒈首先分别计算出收盘价12日指数平滑移动平均线与26日指数平滑移动平均线，分别记为EMA(12）与EMA(26）。
+ * ⒉求这两条指数平滑移动平均线的差，即：DIFF = EMA(SHORT) － EMA(LONG)。
+ * ⒊再计算DIFF的M日的平均的指数平滑移动平均线，记为DEA。
+ * ⒋最后用DIFF减DEA，得MACD。MACD通常绘制成围绕零轴线波动的柱形图。MACD柱状大于0涨颜色，小于0跌颜色。
+ */
+class MACDIndicator extends SecondaryIndicator<MACDEntity> {
+  final Paint _rectPaint = Paint()
+    ..isAntiAlias = true
+    ..filterQuality = FilterQuality.high
+    ..style = PaintingStyle.fill;
+
+  MACDIndicator(): super(
     name: 'movingAverageConvergenceDivergence',
     shortName: 'MACD',
     calcParams: const [12, 26, 9],
@@ -52,29 +65,6 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
     );
   }
 
-  // void drawMACD(MACDEntity curPoint, Canvas canvas, double curX, MACDEntity lastPoint, double lastX) {
-  //   final macd = curPoint.macd ?? 0;
-  //   double macdY = getY(macd);
-  //   double r = mMACDWidth / 2;
-  //   double zeroy = getY(0);
-  //   if (macd > 0) {
-  //     canvas.drawRect(Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
-  //         chartPaint..color = this.chartColors.upColor);
-  //   } else {
-  //     canvas.drawRect(Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
-  //         chartPaint..color = this.chartColors.dnColor);
-  //   }
-  //   if (lastPoint.dif != 0) {
-  //     drawLine(lastPoint.dif, curPoint.dif, canvas, lastX, curX,
-  //         this.chartColors.difColor);
-  //   }
-  //   if (lastPoint.dea != 0) {
-  //     drawLine(lastPoint.dea, curPoint.dea, canvas, lastX, curX,
-  //         this.chartColors.deaColor);
-  //   }
-  // }
-
-
   @override
   List<FigureItem> drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY) {
     final mMACDWidth = chartStyle!.macdWidth;
@@ -90,6 +80,7 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
           type: FigureType.rect,
           color: chartColors.upColor,
           rect: Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
+          paint: _linePaint,
         ),
       );
 
@@ -99,6 +90,7 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
           type: FigureType.rect,
           color: chartColors.dnColor,
           rect: Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
+          paint: _linePaint,
         ),
       );
     }
@@ -109,6 +101,7 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
           color: chartColors.difColor,
           cur: Offset(curX, getY(curPoint.dif!)),
           last: Offset(lastX, getY(lastPoint.dif!)),
+          paint: _linePaint,
         ),
       );
     }
@@ -119,6 +112,7 @@ class MACDIndicator extends IndicatorTemplate<MACDEntity> {
           color: chartColors.deaColor,
           cur: Offset(curX, getY(curPoint.dea!)),
           last: Offset(lastX, getY(lastPoint.dea!)),
+          paint: _linePaint,
         ),
       );
     }

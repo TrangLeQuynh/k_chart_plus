@@ -25,10 +25,12 @@ class FigureItem {
   Offset? last;
   Color color;
   Rect? rect;
+  Paint paint;
 
   FigureItem({
     required this.type,
     required this.color,
+    required this.paint,
     this.cur,
     this.last,
     this.rect,
@@ -45,13 +47,20 @@ abstract class IndicatorTemplate<T> {
   final ChartColors chartColors;
   final ChartStyle? chartStyle;
 
-  const IndicatorTemplate({
+  /// painter
+  final Paint _linePaint = Paint()
+    ..isAntiAlias = true
+    ..filterQuality = FilterQuality.high
+    ..strokeWidth = 1.0;
+
+  IndicatorTemplate({
     required this.name,
     required this.shortName,
     required this.calcParams,
     this.chartColors = const ChartColors(),
     this.chartStyle,
   });
+
 
   /// record.$1 : min value
   /// record.$2: max value
@@ -70,4 +79,24 @@ abstract class IndicatorTemplate<T> {
   String formatNumber(double value, int precision) {
     return value.toStringAsFixed(precision);
   }
+}
+
+abstract class MainIndicator<T> extends IndicatorTemplate<T> {
+  MainIndicator({
+    required super.name,
+    required super.shortName,
+    required super.calcParams,
+    super.chartColors,
+    super.chartStyle,
+  });
+}
+
+abstract class SecondaryIndicator<T> extends IndicatorTemplate<T> {
+  SecondaryIndicator({
+    required super.name,
+    required super.shortName,
+    required super.calcParams,
+    super.chartColors,
+    super.chartStyle,
+  });
 }
