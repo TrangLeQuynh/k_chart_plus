@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:decimal/decimal.dart';
+import 'package:intl/intl.dart';
 
 class NumberUtil {
   static String format(double n) {
@@ -40,6 +42,22 @@ class NumberUtil {
       return false;
     } else {
       return true;
+    }
+  }
+
+  static String? formatNumber(dynamic value, int precision, [String pattern = '#,##0']) {
+    try {
+      String number = Decimal.parse(value.toString()).toString(); // avoid scientific notation format e-10
+      List<String> parts = number.split('.');
+      String integerPart = NumberFormat(pattern, 'en_US').format(num.parse(parts.first));
+      if (parts.length == 1 || precision == 0) {
+        return integerPart;
+      }
+      String fractionalPart = parts.last.padRight(precision, '0');
+      fractionalPart = fractionalPart.substring(0, precision);
+      return '$integerPart.$fractionalPart';
+    } catch(e) {
+      return null;
     }
   }
 }

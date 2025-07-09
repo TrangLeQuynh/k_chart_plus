@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:k_chart_plus/k_chart_plus.dart';
 
 export '../chart_style.dart';
 
@@ -42,7 +43,7 @@ abstract class BaseChartRenderer<T> {
     if (n == null || n.isNaN) {
       return "0.00";
     } else {
-      return n.toStringAsFixed(fixedLength);
+      return NumberUtil.formatNumber(n, fixedLength) ?? "0.00";
     }
   }
 
