@@ -53,20 +53,39 @@ class PopupInfoView extends StatelessWidget {
       children: [
         _buildItem(chartTranslations.date, getDate(entity.time)),
         _buildItem(
-            chartTranslations.open, entity.open.toStringAsFixed(fixedLength)),
+          chartTranslations.open,
+          NumberUtil.formatNumber(entity.open, fixedLength) ?? '--',
+        ),
         _buildItem(
-            chartTranslations.high, entity.high.toStringAsFixed(fixedLength)),
+          chartTranslations.high,
+          NumberUtil.formatNumber(entity.high, fixedLength) ?? '--',
+        ),
         _buildItem(
-            chartTranslations.low, entity.low.toStringAsFixed(fixedLength)),
+          chartTranslations.low,
+          NumberUtil.formatNumber(entity.low, fixedLength) ?? '--',
+        ),
         _buildItem(
-            chartTranslations.close, entity.close.toStringAsFixed(fixedLength)),
-        _buildColorItem(chartTranslations.changeAmount,
-            upDown.toStringAsFixed(fixedLength), upDown > 0),
-        _buildColorItem(chartTranslations.change,
-            '${upDownPercent.toStringAsFixed(2)}%', upDownPercent > 0),
-        _buildItem(chartTranslations.vol, NumberUtil.format(entity.vol)),
-        if (entityAmount != null)
-          _buildItem(chartTranslations.amount, entityAmount.toInt().toString()),
+          chartTranslations.close,
+          NumberUtil.formatNumber(entity.close, fixedLength) ?? '--',
+        ),
+        _buildColorItem(
+          chartTranslations.changeAmount,
+          NumberUtil.formatNumber(upDown, fixedLength) ?? '--',
+          upDown > 0,
+        ),
+        _buildColorItem(
+          chartTranslations.change,
+          '${upDownPercent.toStringAsFixed(2)}%',
+          upDownPercent > 0,
+        ),
+        _buildItem(
+          chartTranslations.vol,
+          NumberUtil.format(entity.vol),
+        ),
+        if (entityAmount != null) _buildItem(
+          chartTranslations.amount,
+          entityAmount.toInt().toString(),
+        ),
       ],
     );
   }

@@ -354,12 +354,12 @@ class ChartPainter extends BaseChartPainter {
     if (x < mWidth / 2) {
       //draw right
       TextPainter tp = getTextPainter(
-          "── " + mMainLowMinValue.toStringAsFixed(fixedLength),
+          "── " + (NumberUtil.formatNumber(mMainLowMinValue, fixedLength) ?? ''),
           chartColors.minColor);
       tp.paint(canvas, Offset(x, y - tp.height / 2));
     } else {
       TextPainter tp = getTextPainter(
-          mMainLowMinValue.toStringAsFixed(fixedLength) + " ──",
+          (NumberUtil.formatNumber(mMainLowMinValue, fixedLength) ?? '') + " ──",
           chartColors.minColor);
       tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
     }
@@ -368,12 +368,12 @@ class ChartPainter extends BaseChartPainter {
     if (x < mWidth / 2) {
       //draw right
       TextPainter tp = getTextPainter(
-          "── " + mMainHighMaxValue.toStringAsFixed(fixedLength),
+          "── " + (NumberUtil.formatNumber(mMainHighMaxValue, fixedLength) ?? ''),
           chartColors.maxColor);
       tp.paint(canvas, Offset(x, y - tp.height / 2));
     } else {
       TextPainter tp = getTextPainter(
-          mMainHighMaxValue.toStringAsFixed(fixedLength) + " ──",
+          (NumberUtil.formatNumber(mMainHighMaxValue, fixedLength) ?? '') + " ──",
           chartColors.maxColor);
       tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
     }
@@ -419,7 +419,7 @@ class ChartPainter extends BaseChartPainter {
     }
     //repaint the background and text
     TextPainter tp = getTextPainter(
-      value.toStringAsFixed(fixedLength),
+      NumberUtil.formatNumber(value, fixedLength) ?? '',
       this.chartColors.nowPriceTextColor,
     );
 

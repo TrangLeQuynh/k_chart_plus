@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:k_chart_plus/chart_style.dart';
 import 'package:k_chart_plus/entity/index.dart';
+import 'package:k_chart_plus/k_chart_plus.dart';
 
 part 'main/sar_indicator.dart';
 part 'main/ma_indicator.dart';
@@ -56,7 +57,7 @@ abstract class IndicatorTemplate<T> {
   }
 
   String formatNumber(double value, int precision) {
-    return value.toStringAsFixed(precision);
+    return NumberUtil.formatNumber(value, precision) ?? '--';
   }
 }
 
