@@ -63,6 +63,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     }
     scaleY = _contentRect.height / (maxValue - minValue);
   }
+
   @override
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;

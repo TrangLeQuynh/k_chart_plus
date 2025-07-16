@@ -4,14 +4,14 @@ import 'package:intl/intl.dart';
 
 class NumberUtil {
   static String format(double n) {
-    if (n >= 1000000000) {
-      n /= 1000000000;
+    if (n >= 1e9) {
+      n /= 1e9;
       return "${n.toStringAsFixed(2)}B";
-    } else if (n >= 1000000) {
-      n /= 1000000;
+    } else if (n >= 1e6) {
+      n /= 1e6;
       return "${n.toStringAsFixed(2)}M";
-    } else if (n >= 10000) {
-      n /= 1000;
+    } else if (n >= 1e4) {
+      n /= 1e3;
       return "${n.toStringAsFixed(2)}K";
     } else {
       return n.toStringAsFixed(4);
