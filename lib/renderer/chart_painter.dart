@@ -1,5 +1,6 @@
 import 'dart:async' show StreamSink;
 import 'package:flutter/material.dart';
+import 'package:k_chart_plus/extension/canvas_extension.dart';
 import 'package:k_chart_plus/utils/number_util.dart';
 import '../entity/info_window_entity.dart';
 import '../entity/k_line_entity.dart';
@@ -201,8 +202,7 @@ class ChartPainter extends BaseChartPainter {
       });
     }
 
-    if ((isLongPress == true || (isTapShowInfoDialog && isOnTap)) &&
-        isTrendLine == false) {
+    if ((isLongPress == true || (isTapShowInfoDialog && isOnTap)) && isTrendLine == false) {
       drawCrossLine(canvas, size);
     }
     if (isTrendLine == true) drawTrendLines(canvas, size);
@@ -405,38 +405,42 @@ class ChartPainter extends BaseChartPainter {
       ..color = value >= datas!.last.open
           ? this.chartColors.nowPriceUpColor
           : this.chartColors.nowPriceDnColor;
+
     //first draw the horizontal line
-    double startX = 0;
-    final max = -mTranslateX + mWidth / scaleX;
-    final space =
-        this.chartStyle.nowPriceLineSpan + this.chartStyle.nowPriceLineLength;
-    while (startX < max) {
-      canvas.drawLine(
-          Offset(startX, y),
-          Offset(startX + this.chartStyle.nowPriceLineLength, y),
-          nowPricePaint);
-      startX += space;
-    }
+    canvas.drawDashLine(
+      Offset(0, y),
+      Offset(-mTranslateX + mWidth / scaleX, y),
+      nowPricePaint,
+    );
+
     //repaint the background and text
     TextPainter tp = getTextPainter(
       NumberUtil.formatNumber(value, fixedLength) ?? '',
       this.chartColors.nowPriceTextColor,
     );
 
+    double paddingX = 3, paddingY = 1.2;
     double offsetX;
     switch (verticalTextAlignment) {
       case VerticalTextAlignment.left:
-        offsetX = mWidth - tp.width;
+        offsetX = mWidth - tp.width - paddingX;
         break;
       case VerticalTextAlignment.right:
-        offsetX = 0;
+        offsetX = paddingX;
         break;
     }
 
     double top = y - tp.height / 2;
-    canvas.drawRect(
-        Rect.fromLTRB(offsetX, top, offsetX + tp.width, top + tp.height),
-        nowPricePaint);
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        offsetX - paddingX,
+        top - paddingY,
+        offsetX + tp.width + paddingX + paddingX,
+        top + tp.height + paddingY + paddingY,
+        Radius.circular(2.0),
+      ),
+      nowPricePaint,
+    );
     tp.paint(canvas, Offset(offsetX, top));
   }
 
@@ -502,32 +506,36 @@ class ChartPainter extends BaseChartPainter {
   void drawCrossLine(Canvas canvas, Size size) {
     var index = calculateSelectedX(selectX);
     KLineEntity point = getItem(index);
-    Paint paintY = Paint()
-      ..color = this.chartColors.vCrossColor
-      ..strokeWidth = this.chartStyle.vCrossWidth
+    Paint paintCross = Paint()
+      ..color = this.chartColors.crossColor
+      ..strokeWidth = this.chartStyle.crossWidth
       ..isAntiAlias = true;
     double x = getX(index);
     double y = getMainY(point.close);
-    // K-line chart vertical line
-    canvas.drawLine(Offset(x, mTopPadding),
-        Offset(x, size.height - mBottomPadding), paintY);
 
-    Paint paintX = Paint()
-      ..color = this.chartColors.hCrossColor
-      ..strokeWidth = this.chartStyle.hCrossWidth
-      ..isAntiAlias = true;
+    // K-line chart vertical line
+    canvas.drawDashLine(
+      Offset(x, 0),
+      Offset(x, size.height - mBottomPadding),
+      paintCross,
+    );
+
     // K-line chart horizontal line
-    canvas.drawLine(Offset(-mTranslateX, y),
-        Offset(-mTranslateX + mWidth / scaleX, y), paintX);
+    canvas.drawDashLine(
+      Offset(-mTranslateX, y),
+      Offset(-mTranslateX + mWidth / scaleX, y),
+      paintCross,
+    );
+
     if (scaleX >= 1) {
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(x, y), height: 2.0 * scaleX, width: 2.0),
-        paintX,
+        Rect.fromCenter(center: Offset(x, y), height: 4.0 * scaleX, width: 4.0),
+        paintCross,
       );
     } else {
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(x, y), height: 2.0, width: 2.0 / scaleX),
-        paintX,
+        Rect.fromCenter(center: Offset(x, y), height: 4.0, width: 4.0 / scaleX),
+        paintCross,
       );
     }
   }

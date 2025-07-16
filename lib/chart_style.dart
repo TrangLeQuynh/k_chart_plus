@@ -78,11 +78,8 @@ class ChartColors {
   final Color infoWindowUpColor;
   final Color infoWindowDnColor;
 
-  /// color of the horizontal cross line
-  final Color hCrossColor;
-
-  /// color of the vertical cross line
-  final Color vCrossColor;
+  /// color of the horizontal & vertical cross line
+  final Color crossColor;
 
   /// text color
   final Color crossTextColor;
@@ -164,8 +161,7 @@ class ChartColors {
     this.infoWindowTitleColor = const Color(0xFF4D4D4E), //0xFF707070
     this.infoWindowUpColor = const Color(0xFF14AD8F),
     this.infoWindowDnColor = const Color(0xFFD5405D),
-    this.hCrossColor = const Color(0xFF222223),
-    this.vCrossColor = const Color(0x28424652),
+    this.crossColor = const Color(0xFF191919),
     this.crossTextColor = const Color(0xFF222223),
 
     ///The color of the maximum and minimum values in the current display
@@ -195,8 +191,7 @@ class ChartStyle {
   final double macdWidth = 8.5;
 
   ///vertical-horizontal cross line width
-  final double vCrossWidth = 8.5;
-  final double hCrossWidth = 0.5;
+  final double crossWidth = 0.5;
 
   ///(line length - space line - thickness) of the current price
   final double nowPriceLineLength = 4.5;
