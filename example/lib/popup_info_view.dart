@@ -1,27 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:k_chart_plus/chart_style.dart';
-import 'package:k_chart_plus/chart_translations.dart';
-import '../entity/k_line_entity.dart';
-import '../utils/date_format_util.dart';
-import '../utils/number_util.dart';
+import 'package:k_chart_plus/k_chart_plus.dart';
+import 'package:k_chart_plus/utils/number_util.dart';
 
 class PopupInfoView extends StatelessWidget {
   final KLineEntity entity;
-  final double width;
   final ChartColors chartColors;
-  final ChartTranslations chartTranslations;
-  final bool materialInfoDialog;
-  final List<String> timeFormat;
   final int fixedLength;
 
   const PopupInfoView({
     Key? key,
     required this.entity,
-    required this.width,
     required this.chartColors,
-    required this.chartTranslations,
-    required this.materialInfoDialog,
-    required this.timeFormat,
     required this.fixedLength,
   }) : super(key: key);
 
@@ -32,12 +21,9 @@ class PopupInfoView extends StatelessWidget {
         color: chartColors.selectFillColor,
         border: Border.all(color: chartColors.selectBorderColor, width: 0.5),
       ),
-      child: SizedBox(
-        width: width,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
-          child: _buildBody(context),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
+        child: _buildBody(context),
       ),
     );
   }
@@ -51,39 +37,39 @@ class PopupInfoView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildItem(chartTranslations.date, getDate(entity.time)),
+        _buildItem('Date', getDate(entity.time)),
         _buildItem(
-          chartTranslations.open,
+          'Open',
           NumberUtil.formatNumber(entity.open, fixedLength) ?? '--',
         ),
         _buildItem(
-          chartTranslations.high,
+          'High',
           NumberUtil.formatNumber(entity.high, fixedLength) ?? '--',
         ),
         _buildItem(
-          chartTranslations.low,
+          'Low',
           NumberUtil.formatNumber(entity.low, fixedLength) ?? '--',
         ),
         _buildItem(
-          chartTranslations.close,
+          'Close',
           NumberUtil.formatNumber(entity.close, fixedLength) ?? '--',
         ),
         _buildColorItem(
-          chartTranslations.changeAmount,
+          'Change',
           NumberUtil.formatNumber(upDown, fixedLength) ?? '--',
           upDown > 0,
         ),
         _buildColorItem(
-          chartTranslations.change,
+          'Change%',
           '${upDownPercent.toStringAsFixed(2)}%',
           upDownPercent > 0,
         ),
         _buildItem(
-          chartTranslations.vol,
+          'Volume',
           NumberUtil.format(entity.vol),
         ),
         if (entityAmount != null) _buildItem(
-          chartTranslations.amount,
+          'Amount',
           entityAmount.toInt().toString(),
         ),
       ],
@@ -99,7 +85,7 @@ class PopupInfoView extends StatelessWidget {
   }
 
   Widget _buildItem(String label, String info, {Color? textColor}) {
-    final infoWidget = Padding(
+    return Padding(
       padding: const EdgeInsets.only(bottom: 3.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -124,14 +110,10 @@ class PopupInfoView extends StatelessWidget {
         ],
       ),
     );
-    return materialInfoDialog
-        ? Material(color: Colors.transparent, child: infoWidget)
-        : infoWidget;
   }
 
   String getDate(int? date) => dateFormat(
-        DateTime.fromMillisecondsSinceEpoch(
-            date ?? DateTime.now().millisecondsSinceEpoch),
-        timeFormat,
-      );
+    DateTime.fromMillisecondsSinceEpoch(date ?? DateTime.now().millisecondsSinceEpoch),
+    TimeFormat.YEAR_MONTH_DAY_WITH_HOUR,
+  );
 }

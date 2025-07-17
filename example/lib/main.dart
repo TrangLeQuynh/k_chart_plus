@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:example/popup_info_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -116,6 +117,13 @@ class _MyHomePageState extends State<MyHomePage> {
               secondaryIndicators: _secondaryIndicators,
               fixedLength: 2,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
+              detailBuilder: (entity) {
+                return PopupInfoView(
+                  entity: entity,
+                  chartColors: chartColors,
+                  fixedLength: 2,
+                );
+              },
             ),
             if (showLoading)
               Container(
