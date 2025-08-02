@@ -313,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
         .reversed
         .toList()
         .cast<KLineEntity>();
-    DataUtil.calculate(
+    DataUtil.calculateAll(
       datas!,
       _defaultMainIndicators,
       _defaultSecondaryIndicators,
