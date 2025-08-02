@@ -3,18 +3,22 @@ import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 
 class NumberUtil {
-  static String format(double n) {
-    if (n >= 1e9) {
-      n /= 1e9;
-      return "${n.toStringAsFixed(2)}B";
-    } else if (n >= 1e6) {
-      n /= 1e6;
-      return "${n.toStringAsFixed(2)}M";
-    } else if (n >= 1e4) {
-      n /= 1e3;
-      return "${n.toStringAsFixed(2)}K";
-    } else {
-      return n.toStringAsFixed(4);
+  static String formatCompact(double n, [ int precision  = 2 ]) {
+    try {
+      if (n >= 1e9) {
+        n /= 1e9;
+        return "${n.toStringAsFixed(precision)}B";
+      } else if (n >= 1e6) {
+        n /= 1e6;
+        return "${n.toStringAsFixed(precision)}M";
+      } else if (n >= 1e4) {
+        n /= 1e3;
+        return "${n.toStringAsFixed(precision)}K";
+      } else {
+        return n.toStringAsFixed(precision);
+      }
+    } catch(e) {
+      return n.toString();
     }
   }
 
