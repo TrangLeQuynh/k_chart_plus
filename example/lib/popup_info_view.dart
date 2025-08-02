@@ -66,7 +66,7 @@ class PopupInfoView extends StatelessWidget {
         ),
         _buildItem(
           'Volume',
-          NumberUtil.format(entity.vol),
+          NumberUtil.formatCompact(entity.vol),
         ),
         if (entityAmount != null) _buildItem(
           'Amount',
