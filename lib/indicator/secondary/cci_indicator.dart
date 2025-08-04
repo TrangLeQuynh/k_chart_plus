@@ -1,11 +1,19 @@
 part of '../indicator_template.dart';
 
-class CCIIndicator extends SecondaryIndicator<MACDEntity> {
-  CCIIndicator(): super(
+class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
+  late final Paint _linePaint;
+
+  CCIIndicator([ CCIStyle indicatorStyle = const CCIStyle() ]): super(
     name: 'commodityChannelIndex',
     shortName: 'CCI',
     calcParams: const [20],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -17,20 +25,20 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
     if (entity.cci == null) return null;
     return TextSpan(
       text: "CCI(14):${formatNumber(entity.cci!, precision)}",
-      style: getTextStyle(chartColors.rsiColor),
+      style: getTextStyle(indicatorStyle.cciColor),
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (curPoint.cci == null || lastPoint.cci == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.cci!)),
       Offset(lastX, getY(lastPoint.cci!)),
-      _linePaint..color = chartColors.rsiColor,
+      _linePaint..color = indicatorStyle.cciColor,
     );
   }
 

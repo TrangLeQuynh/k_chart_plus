@@ -8,19 +8,26 @@ part of '../indicator_template.dart';
  * ⒊再计算DIFF的M日的平均的指数平滑移动平均线，记为DEA。
  * ⒋最后用DIFF减DEA，得MACD。MACD通常绘制成围绕零轴线波动的柱形图。MACD柱状大于0涨颜色，小于0跌颜色。
  */
-class MACDIndicator extends SecondaryIndicator<MACDEntity> {
+class MACDIndicator extends SecondaryIndicator<MACDEntity, MACDStyle> {
+  late final Paint _linePaint;
+  late final Paint _rectPaint;
 
-  MACDIndicator(): super(
+  MACDIndicator([ MACDStyle indicatorStyle = const MACDStyle() ]): super(
     name: 'movingAverageConvergenceDivergence',
     shortName: 'MACD',
     calcParams: const [12, 26, 9],
-    chartStyle: const ChartStyle(),
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
 
-  final Paint _rectPaint = Paint()
-    ..isAntiAlias = true
-    ..filterQuality = FilterQuality.high
-    ..strokeWidth = 1.0;
+    _rectPaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.strokeWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -40,7 +47,7 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
     return TextSpan(
       children: [
         TextSpan(
@@ -50,28 +57,28 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
         if (entity.macd != null && entity.macd != 0)
           TextSpan(
             text: "MACD:${formatNumber(entity.macd!, precision)}    ",
-            style: getTextStyle(chartColors.macdColor),
+            style: getTextStyle(indicatorStyle.macdColor),
           ),
         if (entity.dif != null && entity.dif != 0)
           TextSpan(
             text: "DIF:${formatNumber(entity.dif!, precision)}    ",
-            style: getTextStyle(chartColors.difColor),
+            style: getTextStyle(indicatorStyle.difColor),
           ),
         if (entity.dea != null && entity.dea != 0)
           TextSpan(
             text: "DEA:${formatNumber(entity.dea!, precision)}    ",
-            style: getTextStyle(chartColors.deaColor),
+            style: getTextStyle(indicatorStyle.deaColor),
           ),
       ],
     );
   }
 
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     final prevMacd = lastPoint.macd;
     final macd = curPoint.macd;
     if (curPoint.macd != null) {
-      final mMACDWidth = chartStyle!.macdWidth;
+      final mMACDWidth = indicatorStyle.macdWidth;
       double r = mMACDWidth / 2;
       double zeroy = getY(0);
       double macdY = getY(macd!);
@@ -80,13 +87,13 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
         canvas.drawRect(
           Rect.fromLTRB(curX - r, macdY, curX + r, zeroy),
           _rectPaint
-            ..color = chartColors.upColor,
+            ..color = indicatorStyle.upColor,
         );
       } else {
         canvas.drawRect(
           Rect.fromLTRB(curX - r, zeroy, curX + r, macdY),
           _rectPaint
-            ..color = chartColors.dnColor,
+            ..color = indicatorStyle.dnColor,
         );
       }
     }
@@ -94,14 +101,14 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity> {
       canvas.drawLine(
         Offset(curX, getY(curPoint.dif!)),
         Offset(lastX, getY(lastPoint.dif!)),
-        _linePaint..color = chartColors.difColor,
+        _linePaint..color = indicatorStyle.difColor,
       );
     }
     if (lastPoint.dea != null && lastPoint.dea != 0 && curPoint.dea != null) {
       canvas.drawLine(
         Offset(curX, getY(curPoint.dea!)),
         Offset(lastX, getY(lastPoint.dea!)),
-        _linePaint..color = chartColors.deaColor,
+        _linePaint..color = indicatorStyle.deaColor,
       );
     }
   }

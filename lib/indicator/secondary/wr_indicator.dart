@@ -1,11 +1,19 @@
 part of '../indicator_template.dart';
 
-class WRIndicator extends SecondaryIndicator<MACDEntity> {
-  WRIndicator(): super(
+class WRIndicator extends SecondaryIndicator<MACDEntity, WRStyle> {
+  late final Paint _linePaint;
+
+  WRIndicator([ WRStyle indicatorStyle = const WRStyle() ]): super(
     name: 'volumeRatio',
     shortName: 'WR',
     calcParams: const [26, 6],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -13,20 +21,20 @@ class WRIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
     if (entity.r == null) return null;
     return TextSpan(
       text: "WR(14):${formatNumber(entity.r!, precision)}",
-      style: getTextStyle(chartColors.rsiColor),
+      style: getTextStyle(indicatorStyle.wrColor),
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (curPoint.r == null || lastPoint.r == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.r!)),
       Offset(lastX, getY(lastPoint.r!)),
-      _linePaint..color = chartColors.rsiColor,
+      _linePaint..color = indicatorStyle.wrColor,
     );
   }
 

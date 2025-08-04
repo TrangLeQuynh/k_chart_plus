@@ -1,11 +1,20 @@
 part of '../indicator_template.dart';
 
-class SARIndicator extends MainIndicator<CandleEntity> {
-  SARIndicator(): super(
+class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
+  late final Paint _dotPaint;
+
+  SARIndicator([ SARStyle indicatorStyle = const SARStyle() ]): super(
     name: 'stopAndReverse',
     shortName: 'SAR',
     calcParams: const [2, 2, 20],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _dotPaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = indicatorStyle.strokeWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -17,26 +26,26 @@ class SARIndicator extends MainIndicator<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
     double? value = entity.sar;
     if (value == null) return null;
     return TextSpan(
       text: "SAR: ${formatNumber(value, precision)}",
       style: TextStyle(
         fontSize: 10,
-        color: chartColors.sarColor,
+        color: indicatorStyle.sarColor,
       ),
     );
   }
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     final sar = curPoint.sar;
     if (sar == null) return;
     final halfHL = (curPoint.high + curPoint.low) / 2;
     late final color;
     if (sar == halfHL) {
-      color = chartColors.avgColor;
+      color = chartColors.defaultTextColor;
     } else if (sar < halfHL) {
       color = chartColors.upColor;
     } else {
@@ -44,8 +53,8 @@ class SARIndicator extends MainIndicator<CandleEntity> {
     }
     canvas.drawCircle(
       Offset(curX, getY(sar)),
-      2.0,
-      _linePaint..color = color,
+      indicatorStyle.radius,
+      _dotPaint..color = color,
     );
   }
 

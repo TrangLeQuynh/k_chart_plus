@@ -7,12 +7,20 @@ class Boll {
   double? BOLLMA;
 }
 
-class BOLLIndicator extends MainIndicator<CandleEntity> {
-  BOLLIndicator(): super(
+class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
+  late final Paint _linePaint;
+
+  BOLLIndicator([  BOLLStyle indicatorStyle = const BOLLStyle() ]): super(
     name: 'bollingerBands',
     shortName: 'BOLL',
     calcParams: const [20, 2],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -29,7 +37,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
     if (entity.boll == null) return null;
     Boll value = entity.boll!;
     return TextSpan(
@@ -39,7 +47,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
             text: "BOLL:${formatNumber(value.mid!, precision)}    ",
             style: TextStyle(
               fontSize: 10,
-              color: chartColors.bollColor,
+              color: indicatorStyle.bollColor,
             ),
           ),
         if (value.up != null && value.up != 0)
@@ -47,7 +55,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
             text: "UB:${formatNumber(value.up!, precision)}    ",
             style: TextStyle(
               fontSize: 10,
-              color: chartColors.ubColor,
+              color: indicatorStyle.ubColor,
             ),
           ),
         if (value.dn != null && value.dn != 0)
@@ -55,21 +63,21 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
             text: "LB:${formatNumber(value.dn!, precision)} ",
             style: TextStyle(
               fontSize: 10,
-              color: chartColors.lbColor,
+              color: indicatorStyle.lbColor,
             ),
           ),
       ],
     );
   }
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (lastPoint.boll == null || curPoint.boll == null) return;
     if (curPoint.boll!.mid != null && lastPoint.boll!.mid != null) {
       /// BOLL
       canvas.drawLine(
         Offset(curX, getY(curPoint.boll!.mid!)),
         Offset(lastX, getY(lastPoint.boll!.mid!)),
-        _linePaint..color = chartColors.bollColor,
+        _linePaint..color = indicatorStyle.bollColor,
       );
     }
 
@@ -78,7 +86,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
       canvas.drawLine(
         Offset(curX, getY(curPoint.boll!.up!)),
         Offset(lastX, getY(lastPoint.boll!.up!)),
-        _linePaint..color = chartColors.ubColor,
+        _linePaint..color = indicatorStyle.ubColor,
       );
     }
 
@@ -87,7 +95,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity> {
       canvas.drawLine(
         Offset(curX, getY(curPoint.boll!.dn!)),
         Offset(lastX, getY(lastPoint.boll!.dn!)),
-        _linePaint..color = chartColors.lbColor,
+        _linePaint..color = indicatorStyle.lbColor,
       );
     }
   }
