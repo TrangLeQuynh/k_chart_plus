@@ -20,7 +20,7 @@ class DepthChart extends StatefulWidget {
     this.chartColors, {
     this.baseUnit = 2,
     this.quoteUnit = 6,
-    this.offset = const Offset(10, 10),
+    this.offset = const Offset(15, 0),
     this.chartTranslations = const DepthChartTranslations(),
     this.chartStyle = const DepthChartStyle(),
   });
@@ -98,11 +98,11 @@ class DepthChartPainter extends CustomPainter {
 
   //买卖出区域边线绘制画笔  //买卖出取悦绘制画笔
   Paint? mBuyLinePaint,
-      mSellLinePaint,
-      mBuyPathPaint,
-      mSellPathPaint,
-      selectPaint,
-      selectBorderPaint;
+    mSellLinePaint,
+    mBuyPathPaint,
+    mSellPathPaint,
+    selectPaint,
+    selectBorderPaint;
 
   DepthChartPainter(
     this.mBuyData,
@@ -140,9 +140,10 @@ class DepthChartPainter extends CustomPainter {
 
   void init() {
     if (mBuyData == null ||
-        mBuyData!.isEmpty ||
-        mSellData == null ||
-        mSellData!.isEmpty) return;
+      mBuyData!.isEmpty ||
+      mSellData == null ||
+      mSellData!.isEmpty
+    ) return;
     mMaxVolume = mBuyData![0].vol;
     mMaxVolume = max(mMaxVolume!, mSellData!.last.vol);
     mMaxVolume = mMaxVolume! * 1.05;
@@ -334,27 +335,26 @@ class DepthChartPainter extends CustomPainter {
     DepthEntity entity = isLeft ? mBuyData![index] : mSellData![index];
     double dx = isLeft ? getBuyX(index) : getSellX(index);
     double dy = getY(entity.vol);
-    double radius = 8.0;
 
     if (dx < mDrawWidth) {
       canvas.drawCircle(
         Offset(dx, dy),
-        radius / 3,
+        chartStyle.dotRadius / 2,
         mBuyLinePaint!..style = PaintingStyle.fill,
       );
       canvas.drawCircle(
         Offset(dx, dy),
-        radius,
+        chartStyle.dotRadius,
         mBuyLinePaint!..style = PaintingStyle.stroke,
       );
     } else {
       canvas.drawCircle(
         Offset(dx, dy),
-        radius / 3,
+        chartStyle.dotRadius / 2,
         mSellLinePaint!..style = PaintingStyle.fill,
       );
       canvas.drawCircle(
-        Offset(dx, dy), radius,
+        Offset(dx, dy), chartStyle.dotRadius,
         mSellLinePaint!..style = PaintingStyle.stroke,
       );
     }
@@ -362,15 +362,17 @@ class DepthChartPainter extends CustomPainter {
     ///draw popup info
     ///
     _PopupPainter popupPainter = _PopupPainter(
-      chartTranslations: this.chartTranslations,
+      translations: this.chartTranslations,
       chartColors: this.chartColors,
+      chartStyle: this.chartStyle,
       price: NumberUtil.formatNumber(entity.price, quoteUnit) ?? '',
       amount: NumberUtil.formatCompact(entity.vol, baseUnit) ?? '',
     );
     dx = dx < mDrawWidth ? dx + offset.dx : dx - offset.dx - popupPainter.width;
-    dy = dy < mDrawHeight / 2
-      ? dy + offset.dy
-      : dy - offset.dy - popupPainter.height;
+    // dy = dy < mDrawHeight / 2
+    //   ? dy + offset.dy
+    //   : dy - offset.dy - popupPainter.height;
+    dy = (dy - popupPainter.height / 2).clamp(offset.dy, mDrawHeight - popupPainter.height - offset.dy);
     Rect rect = Rect.fromLTWH(dx, dy, popupPainter.width, popupPainter.height);
     RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(chartStyle.radius));
 
@@ -429,27 +431,26 @@ class DepthChartPainter extends CustomPainter {
 }
 
 class _PopupPainter {
-  ///setting
-  final double space = 3.5;
-  final double padding = 8.0;
+  final DepthChartColors chartColors;
+  final DepthChartStyle chartStyle;
 
+  late final TextPainter annotationsPaint;
   late final TextPainter pricePaint;
   late final TextPainter amountPaint;
-  late final DepthChartColors chartColors;
 
   ///getter
-  double get width => max(pricePaint.width, amountPaint.width) + 2 * padding;
-  double get height => pricePaint.height + amountPaint.height + space + 2 * padding;
+  double get width => max(pricePaint.width, amountPaint.width) + 2 * chartStyle.padding;
+  double get height => pricePaint.height + amountPaint.height + chartStyle.space + 2 * chartStyle.padding;
 
   _PopupPainter({
-    required DepthChartTranslations chartTranslations,
-    required DepthChartColors chartColors,
+    required DepthChartTranslations translations,
+    required this.chartColors,
+    required this.chartStyle,
     required String price,
     required String amount,
   }) {
-    this.chartColors = chartColors;
-    this.pricePaint = _getTextPainter(chartTranslations.price, price);
-    this.amountPaint = _getTextPainter(chartTranslations.amount, amount);
+    this.pricePaint = _getTextPainter(translations.price, price);
+    this.amountPaint = _getTextPainter(translations.amount, amount);
     this.pricePaint.layout();
     this.amountPaint.layout();
   }
@@ -457,23 +458,24 @@ class _PopupPainter {
   void paint(Canvas canvas, Offset offset) {
     pricePaint.paint(
       canvas,
-      offset + Offset(padding, padding),
+      offset + Offset(chartStyle.padding, chartStyle.padding),
     );
     amountPaint.paint(
       canvas,
-      offset + Offset(padding, pricePaint.height + space + padding),
+      offset + Offset(chartStyle.padding, pricePaint.height + chartStyle.space + chartStyle.padding),
     );
   }
 
   TextPainter _getTextPainter(String label, String content) {
     return TextPainter(
       text: TextSpan(
-        text: "$label $content",
+        text: '$label $content',
         style: TextStyle(
           color: this.chartColors.annotationColor,
           fontSize: 10,
         ),
       ),
+      textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
     );
   }

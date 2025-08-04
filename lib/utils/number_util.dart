@@ -22,22 +22,22 @@ class NumberUtil {
     }
   }
 
-  static int getDecimalLength(double b) {
-    String s = b.toString();
-    int dotIndex = s.indexOf(".");
-    if (dotIndex < 0) {
-      return 0;
-    } else {
-      return s.length - dotIndex - 1;
-    }
-  }
-
-  static int getMaxDecimalLength(double a, double b, double c, double d) {
-    int result = max(getDecimalLength(a), getDecimalLength(b));
-    result = max(result, getDecimalLength(c));
-    result = max(result, getDecimalLength(d));
-    return result;
-  }
+  // static int getDecimalLength(double b) {
+  //   String s = b.toString();
+  //   int dotIndex = s.indexOf(".");
+  //   if (dotIndex < 0) {
+  //     return 0;
+  //   } else {
+  //     return s.length - dotIndex - 1;
+  //   }
+  // }
+  //
+  // static int getMaxDecimalLength(double a, double b, double c, double d) {
+  //   int result = max(getDecimalLength(a), getDecimalLength(b));
+  //   result = max(result, getDecimalLength(c));
+  //   result = max(result, getDecimalLength(d));
+  //   return result;
+  // }
 
   static bool checkNotNullOrZero(double? a) {
     if (a == null || a == 0) {

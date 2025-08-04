@@ -6,16 +6,22 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
   final KChartStyle chartStyle;
   final KChartColors chartColors;
 
-  VolRenderer(Rect mainRect, double maxValue, double minValue,
-      double topPadding, int fixedLength, this.chartStyle, this.chartColors)
-      : super(
-          chartRect: mainRect,
-          maxValue: maxValue,
-          minValue: minValue,
-          topPadding: topPadding,
-          fixedLength: fixedLength,
-          gridColor: chartColors.gridColor,
-        ) {
+  VolRenderer(
+    Rect mainRect,
+    double maxValue,
+    double minValue,
+    double topPadding,
+    int fixedLength,
+    this.chartStyle,
+    this.chartColors,
+  ) : super(
+    chartRect: mainRect,
+    maxValue: maxValue,
+    minValue: minValue,
+    topPadding: topPadding,
+    fixedLength: fixedLength,
+    gridColor: chartColors.gridColor,
+  ) {
     mVolWidth = this.chartStyle.volWidth;
   }
 
@@ -57,24 +63,26 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
     }
   }
 
-  double getVolY(double value) =>
-      (maxValue - value) * (chartRect.height / maxValue) + chartRect.top;
+  double getVolY(double value) => (maxValue - value) * (chartRect.height / maxValue) + chartRect.top;
 
   @override
   void drawText(Canvas canvas, VolumeEntity data, double x) {
     TextSpan span = TextSpan(
       children: [
         TextSpan(
-            text: "VOL:${NumberUtil.formatCompact(data.vol)}    ",
-            style: getTextStyle(this.chartColors.volColor)),
+          text: "VOL:${NumberUtil.formatCompact(data.vol)}    ",
+          style: getTextStyle(this.chartColors.volColor),
+        ),
         if (data.MA5Volume.notNullOrZero)
           TextSpan(
-              text: "MA5:${NumberUtil.formatCompact(data.MA5Volume!)}    ",
-              style: getTextStyle(this.chartColors.ma5Color)),
+            text: "MA5:${NumberUtil.formatCompact(data.MA5Volume!)}    ",
+            style: getTextStyle(this.chartColors.ma5Color),
+          ),
         if (data.MA10Volume.notNullOrZero)
           TextSpan(
-              text: "MA10:${NumberUtil.formatCompact(data.MA10Volume!)}    ",
-              style: getTextStyle(this.chartColors.ma10Color)),
+            text: "MA10:${NumberUtil.formatCompact(data.MA10Volume!)}    ",
+            style: getTextStyle(this.chartColors.ma10Color),
+          ),
       ],
     );
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
@@ -88,18 +96,26 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
     tp.layout();
     tp.paint(
-        canvas, Offset(chartRect.width - tp.width, chartRect.top - topPadding));
+      canvas,
+      Offset(chartRect.width - tp.width, chartRect.top - topPadding),
+    );
   }
 
   @override
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
-    canvas.drawLine(Offset(0, chartRect.bottom),
-        Offset(chartRect.width, chartRect.bottom), gridPaint);
+    canvas.drawLine(
+      Offset(0, chartRect.bottom),
+      Offset(chartRect.width, chartRect.bottom),
+      gridPaint,
+    );
     double columnSpace = chartRect.width / gridColumns;
     for (int i = 0; i <= columnSpace; i++) {
       //vol垂直线
-      canvas.drawLine(Offset(columnSpace * i, chartRect.top - topPadding),
-          Offset(columnSpace * i, chartRect.bottom), gridPaint);
+      canvas.drawLine(
+        Offset(columnSpace * i, chartRect.top - topPadding),
+        Offset(columnSpace * i, chartRect.bottom),
+        gridPaint,
+      );
     }
   }
 }

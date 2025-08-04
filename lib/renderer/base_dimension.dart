@@ -53,8 +53,8 @@ class BaseDimension {
     _totalLabelHeight = _mLabelHeight * mainIndicators.length;
 
     _mDisplayHeight = _mBaseHeight +
-        _mVolumeHeight +
-        _totalSecondaryHeight +
-        _totalLabelHeight;
+      _mVolumeHeight +
+      _totalSecondaryHeight +
+      _totalLabelHeight;
   }
 }

@@ -9,27 +9,25 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   final KChartColors chartColors;
 
   SecondaryRenderer(
-      Rect mainRect,
-      double maxValue,
-      double minValue,
-      double topPadding,
-      this.indicator,
-      int fixedLength,
-      this.chartStyle,
-      this.chartColors)
-      : super(
-          chartRect: mainRect,
-          maxValue: maxValue,
-          minValue: minValue,
-          topPadding: topPadding,
-          fixedLength: fixedLength,
-          gridColor: chartColors.gridColor,
-        ) {
-  }
+    Rect mainRect,
+    double maxValue,
+    double minValue,
+    double topPadding,
+    this.indicator,
+    int fixedLength,
+    this.chartStyle,
+    this.chartColors,
+  ) : super(
+    chartRect: mainRect,
+    maxValue: maxValue,
+    minValue: minValue,
+    topPadding: topPadding,
+    fixedLength: fixedLength,
+    gridColor: chartColors.gridColor,
+  );
 
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX,
-      double curX, Size size, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, Size size, Canvas canvas) {
     indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors);
   }
 
@@ -45,30 +43,48 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   @override
   void drawVerticalText(canvas, textStyle, int gridRows) {
     TextPainter maxTp = TextPainter(
-        text: TextSpan(text: "${format(maxValue)}", style: textStyle),
-        textDirection: TextDirection.ltr);
+      text: TextSpan(
+        text: "${format(maxValue)}",
+        style: textStyle,
+      ),
+      textDirection: TextDirection.ltr,
+    );
     maxTp.layout();
     TextPainter minTp = TextPainter(
-        text: TextSpan(text: "${format(minValue)}", style: textStyle),
-        textDirection: TextDirection.ltr);
+      text: TextSpan(
+        text: "${format(minValue)}",
+        style: textStyle,
+      ),
+      textDirection: TextDirection.ltr,
+    );
     minTp.layout();
 
-    maxTp.paint(canvas,
-        Offset(chartRect.width - maxTp.width, chartRect.top - topPadding));
-    minTp.paint(canvas,
-        Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height));
+    maxTp.paint(
+      canvas,
+      Offset(chartRect.width - maxTp.width, chartRect.top - topPadding),
+    );
+    minTp.paint(
+      canvas,
+      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
+    );
   }
 
   @override
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
     // canvas.drawLine(Offset(0, chartRect.top), Offset(chartRect.width, chartRect.top), gridPaint); //hidden line
-    canvas.drawLine(Offset(0, chartRect.bottom),
-        Offset(chartRect.width, chartRect.bottom), gridPaint);
+    canvas.drawLine(
+      Offset(0, chartRect.bottom),
+      Offset(chartRect.width, chartRect.bottom),
+      gridPaint,
+    );
     double columnSpace = chartRect.width / gridColumns;
     for (int i = 0; i <= columnSpace; i++) {
       //mSecondaryRect垂直线
-      canvas.drawLine(Offset(columnSpace * i, chartRect.top - topPadding),
-          Offset(columnSpace * i, chartRect.bottom), gridPaint);
+      canvas.drawLine(
+        Offset(columnSpace * i, chartRect.top - topPadding),
+        Offset(columnSpace * i, chartRect.bottom),
+        gridPaint,
+      );
     }
   }
 }

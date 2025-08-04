@@ -7,11 +7,11 @@ import 'volume_entity.dart';
 import 'cci_entity.dart';
 
 class KEntity
-    with
-        CandleEntity,
-        VolumeEntity,
-        KDJEntity,
-        RSIEntity,
-        WREntity,
-        CCIEntity,
-        MACDEntity {}
+  with
+    CandleEntity,
+    VolumeEntity,
+    KDJEntity,
+    RSIEntity,
+    WREntity,
+    CCIEntity,
+    MACDEntity {}

@@ -43,9 +43,17 @@ class DepthChartStyle {
   final double radius;
   final double strokeWidth;
 
+  final double space;
+  final double padding;
+
+  final double dotRadius;
+
   const DepthChartStyle({
     this.lineWidth = 1.0,
     this.radius = 4.0,
     this.strokeWidth = 0.6,
+    this.space = 3.0,
+    this.padding = 8.5,
+    this.dotRadius = 6.0,
   });
 }

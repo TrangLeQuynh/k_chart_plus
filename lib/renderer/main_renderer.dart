@@ -27,24 +27,25 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   final VerticalTextAlignment verticalTextAlignment;
 
   MainRenderer(
-      Rect mainRect,
-      double maxValue,
-      double minValue,
-      double topPadding,
-      this.indicatorLi,
-      this.isLine,
-      int fixedLength,
-      this.chartStyle,
-      this.chartColors,
-      this.scaleX,
-      this.verticalTextAlignment)
-      : super(
-            chartRect: mainRect,
-            maxValue: maxValue,
-            minValue: minValue,
-            topPadding: topPadding,
-            fixedLength: fixedLength,
-            gridColor: chartColors.gridColor) {
+    Rect mainRect,
+    double maxValue,
+    double minValue,
+    double topPadding,
+    this.indicatorLi,
+    this.isLine,
+    int fixedLength,
+    this.chartStyle,
+    this.chartColors,
+    this.scaleX,
+    this.verticalTextAlignment,
+  ) : super(
+    chartRect: mainRect,
+    maxValue: maxValue,
+    minValue: minValue,
+    topPadding: topPadding,
+    fixedLength: fixedLength,
+    gridColor: chartColors.gridColor,
+  ) {
     mCandleWidth = this.chartStyle.candleWidth;
     mCandleLineWidth = this.chartStyle.candleLineWidth;
     mLinePaint = Paint()
@@ -53,10 +54,11 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       ..strokeWidth = mLineStrokeWidth
       ..color = this.chartColors.kLineColor;
     _contentRect = Rect.fromLTRB(
-        chartRect.left,
-        chartRect.top + _contentPadding,
-        chartRect.right,
-        chartRect.bottom - _contentPadding);
+      chartRect.left,
+      chartRect.top + _contentPadding,
+      chartRect.right,
+      chartRect.bottom - _contentPadding,
+    );
     if (maxValue == minValue) {
       maxValue *= 1.5;
       minValue /= 2;
@@ -76,21 +78,21 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       Offset offset = Offset(x, chartRect.top - topPadding + i * 12);
 
       canvas.drawRect(
-          Rect.fromLTRB(
-            offset.dx - 2,
-            offset.dy - 2,
-            tp.width + offset.dx + 2,
-            tp.height + offset.dy + 2,
-          ),
-          Paint()..color = this.chartColors.bgColor);
+        Rect.fromLTRB(
+          offset.dx - 2,
+          offset.dy - 2,
+          tp.width + offset.dx + 2,
+          tp.height + offset.dy + 2,
+        ),
+        Paint()..color = this.chartColors.bgColor,
+      );
 
       tp.paint(canvas, offset);
     }
   }
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX,
-      double curX, Size size, Canvas canvas) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, Size size, Canvas canvas) {
     if (isLine) {
       drawPolyline(lastPoint.close, curPoint.close, canvas, lastX, curX);
     } else {
@@ -110,8 +112,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     ..isAntiAlias = true;
 
   //画折线图
-  drawPolyline(double lastPrice, double curPrice, Canvas canvas, double lastX,
-      double curX) {
+  drawPolyline(double lastPrice, double curPrice, Canvas canvas, double lastX, double curX) {
 //    drawLine(lastPrice + 100, curPrice + 100, canvas, lastX, curX, ChartColors.kLineColor);
     mLinePath ??= Path();
 
@@ -124,8 +125,14 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 //    }
     if (lastX == curX) lastX = 0; //起点位置填充
     mLinePath!.moveTo(lastX, getY(lastPrice));
-    mLinePath!.cubicTo((lastX + curX) / 2, getY(lastPrice), (lastX + curX) / 2,
-        getY(curPrice), curX, getY(curPrice));
+    mLinePath!.cubicTo(
+      (lastX + curX) / 2,
+      getY(lastPrice),
+      (lastX + curX) / 2,
+      getY(curPrice),
+      curX,
+      getY(curPrice),
+    );
 
     //画阴影
     mLineFillShader ??= LinearGradient(
@@ -133,24 +140,38 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       end: Alignment.bottomCenter,
       tileMode: TileMode.clamp,
       colors: this.chartColors.kLineFillColors,
-    ).createShader(Rect.fromLTRB(
-        chartRect.left, chartRect.top, chartRect.right, chartRect.bottom));
+    ).createShader(
+      Rect.fromLTRB(
+        chartRect.left,
+        chartRect.top,
+        chartRect.right,
+        chartRect.bottom,
+      ),
+    );
     mLineFillPaint..shader = mLineFillShader;
 
     mLineFillPath ??= Path();
 
     mLineFillPath!.moveTo(lastX, chartRect.height + chartRect.top);
     mLineFillPath!.lineTo(lastX, getY(lastPrice));
-    mLineFillPath!.cubicTo((lastX + curX) / 2, getY(lastPrice),
-        (lastX + curX) / 2, getY(curPrice), curX, getY(curPrice));
+    mLineFillPath!.cubicTo(
+      (lastX + curX) / 2,
+      getY(lastPrice),
+      (lastX + curX) / 2,
+      getY(curPrice),
+      curX,
+      getY(curPrice),
+    );
     mLineFillPath!.lineTo(curX, chartRect.height + chartRect.top);
     mLineFillPath!.close();
 
     canvas.drawPath(mLineFillPath!, mLineFillPaint);
     mLineFillPath!.reset();
 
-    canvas.drawPath(mLinePath!,
-        mLinePaint..strokeWidth = (mLineStrokeWidth / scaleX).clamp(0.1, 1.0));
+    canvas.drawPath(
+      mLinePath!,
+      mLinePaint..strokeWidth = (mLineStrokeWidth / scaleX).clamp(0.1, 1.0),
+    );
     mLinePath!.reset();
   }
 
@@ -168,9 +189,13 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       }
       chartPaint.color = this.chartColors.upColor;
       canvas.drawRect(
-          Rect.fromLTRB(curX - r, close, curX + r, open), chartPaint);
+        Rect.fromLTRB(curX - r, close, curX + r, open),
+        chartPaint,
+      );
       canvas.drawRect(
-          Rect.fromLTRB(curX - lineR, high, curX + lineR, low), chartPaint);
+        Rect.fromLTRB(curX - lineR, high, curX + lineR, low),
+        chartPaint,
+      );
     } else if (close > open) {
       // 实体高度>= CandleLineWidth
       if (close - open < mCandleLineWidth) {
@@ -178,9 +203,13 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       }
       chartPaint.color = this.chartColors.dnColor;
       canvas.drawRect(
-          Rect.fromLTRB(curX - r, open, curX + r, close), chartPaint);
+        Rect.fromLTRB(curX - r, open, curX + r, close),
+        chartPaint,
+      );
       canvas.drawRect(
-          Rect.fromLTRB(curX - lineR, high, curX + lineR, low), chartPaint);
+        Rect.fromLTRB(curX - lineR, high, curX + lineR, low),
+        chartPaint,
+      );
     }
   }
 
@@ -190,8 +219,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     for (var i = 0; i <= gridRows; ++i) {
       double value = (gridRows - i) * rowSpace / scaleY + minValue;
       TextSpan span = TextSpan(text: "${format(value)}", style: textStyle);
-      TextPainter tp =
-          TextPainter(text: span, textDirection: TextDirection.ltr);
+      TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
 
       double offsetX;
@@ -208,7 +236,9 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
         tp.paint(canvas, Offset(offsetX, topPadding));
       } else {
         tp.paint(
-            canvas, Offset(offsetX, rowSpace * i - tp.height + topPadding));
+          canvas,
+          Offset(offsetX, rowSpace * i - tp.height + topPadding),
+        );
       }
     }
   }
@@ -218,14 +248,20 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 //    final int gridRows = 4, gridColumns = 4;
     double rowSpace = chartRect.height / gridRows;
     for (int i = 0; i <= gridRows; i++) {
-      canvas.drawLine(Offset(0, rowSpace * i + topPadding),
-          Offset(chartRect.width, rowSpace * i + topPadding), gridPaint);
+      canvas.drawLine(
+        Offset(0, rowSpace * i + topPadding),
+        Offset(chartRect.width, rowSpace * i + topPadding),
+        gridPaint,
+      );
     }
     double columnSpace = chartRect.width / gridColumns;
 
     for (int i = 0; i <= columnSpace; i++) {
-      canvas.drawLine(Offset(columnSpace * i, 0),
-          Offset(columnSpace * i, chartRect.bottom), gridPaint);
+      canvas.drawLine(
+        Offset(columnSpace * i, 0),
+        Offset(columnSpace * i, chartRect.bottom),
+        gridPaint,
+      );
     }
   }
 
