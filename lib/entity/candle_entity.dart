@@ -9,6 +9,8 @@ mixin CandleEntity {
   // movingAverage
   List<double>? maValueList;
 
+  List<double>? emaValueList;
+
   // stopAndReverse
   double? sar;
 
