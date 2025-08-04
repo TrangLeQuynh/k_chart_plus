@@ -46,8 +46,8 @@ class KChartWidget extends StatefulWidget {
   final double flingRatio;
   final Curve flingCurve;
   final Function(bool)? isOnDrag;
-  final ChartColors chartColors;
-  final ChartStyle chartStyle;
+  final KChartColors chartColors;
+  final KChartStyle chartStyle;
   final VerticalTextAlignment verticalTextAlignment;
   final bool isTrendLine;
   final double xFrontPadding;

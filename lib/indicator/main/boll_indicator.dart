@@ -41,7 +41,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, KChartColors chartColors) {
     if (entity.boll == null) return null;
     Boll value = entity.boll!;
     return TextSpan(
@@ -74,7 +74,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
     );
   }
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (lastPoint.boll == null || curPoint.boll == null) return;
     final List<Offset> _positionLi = [];
 

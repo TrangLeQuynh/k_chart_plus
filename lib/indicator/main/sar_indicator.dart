@@ -26,7 +26,7 @@ class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, KChartColors chartColors) {
     double? value = entity.sar;
     if (value == null) return null;
     return TextSpan(
@@ -39,7 +39,7 @@ class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
   }
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     final sar = curPoint.sar;
     if (sar == null) return;
     final halfHL = (curPoint.high + curPoint.low) / 2;

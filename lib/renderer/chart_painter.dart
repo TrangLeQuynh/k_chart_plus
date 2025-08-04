@@ -42,9 +42,9 @@ class ChartPainter extends BaseChartPainter {
   Color? volColor;
   Color? macdColor, difColor, deaColor, jColor;
   int fixedLength;
-  final ChartColors chartColors;
+  final KChartColors chartColors;
   late Paint selectPointPaint, selectorBorderPaint, nowPricePaint;
-  final ChartStyle chartStyle;
+  final KChartStyle chartStyle;
   final bool hideGrid;
   final bool showNowPrice;
   final VerticalTextAlignment verticalTextAlignment;

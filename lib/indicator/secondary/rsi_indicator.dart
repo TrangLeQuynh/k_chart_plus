@@ -29,7 +29,7 @@ class RSIIndicator extends SecondaryIndicator<MACDEntity, RSIStyle> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, KChartColors chartColors) {
     if (entity.rsi == null) return null;
     return TextSpan(
       text: "RSI(14):${formatNumber(entity.rsi!, precision)}",
@@ -37,7 +37,7 @@ class RSIIndicator extends SecondaryIndicator<MACDEntity, RSIStyle> {
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.rsi == null || lastPoint.rsi == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.rsi!)),

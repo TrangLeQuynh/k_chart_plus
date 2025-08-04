@@ -33,7 +33,7 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, KChartColors chartColors) {
     return TextSpan(
       children: [
         TextSpan(
@@ -59,7 +59,7 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.k != null || lastPoint.k != null) {
       canvas.drawLine(
         Offset(curX, getY(curPoint.k!)),

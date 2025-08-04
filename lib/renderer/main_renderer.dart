@@ -19,8 +19,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   //绘制的内容区域
   late Rect _contentRect;
   double _contentPadding = 5.0;
-  final ChartStyle chartStyle;
-  final ChartColors chartColors;
+  final KChartStyle chartStyle;
+  final KChartColors chartColors;
   final double mLineStrokeWidth = 1.0;
   double scaleX;
   late Paint mLinePaint;
