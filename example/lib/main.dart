@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _volHidden = false;
   final List<MainIndicator> _defaultMainIndicators = [
     MAIndicator(),
+    EMAIndicator(),
     BOLLIndicator(),
     SARIndicator(),
   ];

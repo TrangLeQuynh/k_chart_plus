@@ -29,7 +29,6 @@ class ChartColors {
 
   final Color ma5Color;
   final Color ma10Color;
-  final Color ma30Color;
   final Color upColor;
   final Color dnColor;
   final Color volColor;
@@ -91,7 +90,7 @@ class ChartColors {
   /// get MA color via index
   Color getMAColor(int index) {
     if (index >= maColors.length) {
-      return ma5Color;
+      return maColors[index % maColors.length];
     }
     return maColors[index];
   }
@@ -108,34 +107,35 @@ class ChartColors {
     this.lineFillInsideColor = const Color(0x00000000),
 
     this.maColors = const [
-      Color(0xffE5B767),
-      Color(0xff1FD1AC),
-      Color(0xffB48CE3),
+      Color(0xFFFFC634),
+      Color(0xff35cdac),
+      Color(0xffb48ee3),
       Color(0xffE11D74),
+      Color(0xFFF7931A),
+      Color(0xFF127ECC),
     ],
 
     ///
     this.ubColor = const Color(0xFFFFC634),
     this.lbColor = const Color(0xFFFFC634),
     this.bollColor = const Color(0xFFF7931A),
-    this.ma5Color = const Color(0xffE5B767),
-    this.ma10Color = const Color(0xff1FD1AC),
-    this.ma30Color = const Color(0xffB48CE3),
+    this.ma5Color = const Color(0xFFFFC634),
+    this.ma10Color = const Color(0xff35cdac),
     this.upColor = const Color(0xFF14AD8F),
     this.dnColor = const Color(0xFFD5405D),
     this.volColor = const Color(0xff2f8fd5),
     this.macdColor = const Color(0xff2f8fd5),
-    this.difColor = const Color(0xffE5B767),
-    this.deaColor = const Color(0xff1FD1AC),
-    this.kColor = const Color(0xffE5B767),
-    this.dColor = const Color(0xff1FD1AC),
-    this.jColor = const Color(0xffB48CE3),
-    this.rsiColor = const Color(0xffE5B767),
+    this.difColor = const Color(0xFFFFC634),
+    this.deaColor = const Color(0xff35cdac),
+    this.kColor = const Color(0xFFFFC634),
+    this.dColor = const Color(0xff35cdac),
+    this.jColor = const Color(0xffb48ee3),
+    this.rsiColor = const Color(0xFFFFC634),
     this.defaultTextColor = const Color(0xFF909196),
     this.nowPriceUpColor = const Color(0xFF14AD8F),
     this.nowPriceDnColor = const Color(0xFFD5405D),
     this.nowPriceTextColor = const Color(0xffffffff),
-    this.sarColor = const Color(0xffE5B767),
+    this.sarColor = const Color(0xFFFFC634),
     this.avgColor = const Color(0xff82878e),
 
     /// trend color
