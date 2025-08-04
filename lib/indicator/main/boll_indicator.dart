@@ -9,6 +9,7 @@ class Boll {
 
 class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
   late final Paint _linePaint;
+  late final Paint _fillPaint;
 
   BOLLIndicator([  BOLLStyle indicatorStyle = const BOLLStyle() ]): super(
     name: 'bollingerBands',
@@ -20,6 +21,9 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
       ..isAntiAlias = true
       ..filterQuality = FilterQuality.high
       ..strokeWidth = indicatorStyle.lineWidth;
+
+    _fillPaint = Paint()
+      ..color = indicatorStyle.fillColor;
   }
 
   @override
@@ -72,30 +76,48 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
   @override
   void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (lastPoint.boll == null || curPoint.boll == null) return;
+    final List<Offset> _positionLi = [];
+
+    if (curPoint.boll!.up != null && lastPoint.boll!.up != null) {
+      _positionLi.add(Offset(curX, getY(curPoint.boll!.up!))); //0
+      _positionLi.add(Offset(lastX, getY(lastPoint.boll!.up!))); //1
+      /// UB
+      canvas.drawLine(
+        _positionLi[0],
+        _positionLi[1],
+        _linePaint..color = indicatorStyle.ubColor,
+      );
+    }
+
+    if (curPoint.boll!.dn != null && lastPoint.boll!.dn != null) {
+      _positionLi.add(Offset(lastX, getY(lastPoint.boll!.dn!))); //2
+      _positionLi.add(Offset(curX, getY(curPoint.boll!.dn!))); //3
+
+      /// LB
+      canvas.drawLine(
+        _positionLi[2],
+        _positionLi[3],
+        _linePaint..color = indicatorStyle.lbColor,
+      );
+    }
+
+    if (_positionLi.length == 4) {
+      Path _fillPath = Path()
+        ..moveTo(_positionLi[0].dx, _positionLi[0].dy)
+        ..lineTo(_positionLi[1].dx, _positionLi[1].dy)
+        ..lineTo(_positionLi[2].dx, _positionLi[2].dy)
+        ..lineTo(_positionLi[3].dx, _positionLi[3].dy)
+        ..close();
+
+      canvas.drawPath(_fillPath, _fillPaint);
+    }
+
     if (curPoint.boll!.mid != null && lastPoint.boll!.mid != null) {
       /// BOLL
       canvas.drawLine(
         Offset(curX, getY(curPoint.boll!.mid!)),
         Offset(lastX, getY(lastPoint.boll!.mid!)),
         _linePaint..color = indicatorStyle.bollColor,
-      );
-    }
-
-    if (curPoint.boll!.up != null && lastPoint.boll!.up != null) {
-      /// UB
-      canvas.drawLine(
-        Offset(curX, getY(curPoint.boll!.up!)),
-        Offset(lastX, getY(lastPoint.boll!.up!)),
-        _linePaint..color = indicatorStyle.ubColor,
-      );
-    }
-
-    if (curPoint.boll!.dn != null && lastPoint.boll!.dn != null) {
-      /// LB
-      canvas.drawLine(
-        Offset(curX, getY(curPoint.boll!.dn!)),
-        Offset(lastX, getY(lastPoint.boll!.dn!)),
-        _linePaint..color = indicatorStyle.lbColor,
       );
     }
   }
