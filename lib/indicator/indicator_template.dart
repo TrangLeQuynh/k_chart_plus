@@ -7,6 +7,7 @@ import 'package:k_chart_plus/k_chart_plus.dart';
 part 'main/sar_indicator.dart';
 part 'main/ma_indicator.dart';
 part 'main/boll_indicator.dart';
+part 'main/ema_indicator.dart';
 
 part 'secondary/macd_indicator.dart';
 part 'secondary/cci_indicator.dart';
