@@ -68,7 +68,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
     for (int i = 0; i < indicatorLi.length; ++i) {
-      TextSpan? span = indicatorLi[i].drawFigure(data, fixedLength);
+      TextSpan? span = indicatorLi[i].drawFigure(data, fixedLength, chartColors);
       if (span == null) return;
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
@@ -98,7 +98,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
       /// draw chart main state
       for (int i = 0; i < indicatorLi.length; ++i) {
-        indicatorLi[i].drawChart(lastPoint, curPoint, lastX, curX, getY, canvas);
+        indicatorLi[i].drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors);
       }
     }
   }

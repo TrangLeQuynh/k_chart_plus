@@ -1,11 +1,22 @@
 part of '../indicator_template.dart';
 
-class MAIndicator extends MainIndicator<CandleEntity> {
-  MAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
+class MAIndicator extends MainIndicator<CandleEntity, MAStyle> {
+  late final Paint _linePaint;
+
+  MAIndicator([
+    List<int> calcParams = const [5, 10, 30, 60],
+    MAStyle indicatorStyle = const MAStyle(),
+  ]): super(
     name: 'movingAverage',
     shortName: 'MA',
     calcParams: calcParams,
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -21,7 +32,7 @@ class MAIndicator extends MainIndicator<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
     List<InlineSpan> result = [];
     if (entity.maValueList?.isEmpty ?? true) return null;
     for (int i = 0; i < (entity.maValueList!.length); i++) {
@@ -30,7 +41,7 @@ class MAIndicator extends MainIndicator<CandleEntity> {
           text: "MA${calcParams[i]}:${formatNumber(entity.maValueList![i], precision)}    ",
           style: TextStyle(
             fontSize: 10,
-            color: chartColors.getMAColor(i),
+            color: indicatorStyle.getMAColor(i),
           ),
         );
         result.add(item);
@@ -41,7 +52,7 @@ class MAIndicator extends MainIndicator<CandleEntity> {
 
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (curPoint.maValueList == null ||
         lastPoint.maValueList == null ||
         curPoint.maValueList!.length != lastPoint.maValueList!.length) {
@@ -52,7 +63,7 @@ class MAIndicator extends MainIndicator<CandleEntity> {
         canvas.drawLine(
           Offset(curX, getY(curPoint.maValueList![i])),
           Offset(lastX, getY(lastPoint.maValueList![i])),
-          _linePaint..color = chartColors.getMAColor(i),
+          _linePaint..color = indicatorStyle.getMAColor(i),
         );
       }
     }

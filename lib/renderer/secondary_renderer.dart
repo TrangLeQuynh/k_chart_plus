@@ -32,12 +32,12 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX,
       double curX, Size size, Canvas canvas) {
-    indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas);
+    indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors);
   }
 
   @override
   void drawText(Canvas canvas, MACDEntity data, double x) {
-    TextSpan? span = indicator.drawFigure(data, fixedLength);
+    TextSpan? span = indicator.drawFigure(data, fixedLength, chartColors);
     if (span == null) return;
     TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
     tp.layout();

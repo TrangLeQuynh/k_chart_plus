@@ -4,12 +4,20 @@ part of '../indicator_template.dart';
  * RSI
  * RSI = SUM(MAX(CLOSE - REF(CLOSE,1),0),N) / SUM(ABS(CLOSE - REF(CLOSE,1)),N) × 100
  */
-class RSIIndicator extends SecondaryIndicator<MACDEntity> {
-  RSIIndicator(): super(
+class RSIIndicator extends SecondaryIndicator<MACDEntity, RSIStyle> {
+  late final Paint _linePaint;
+
+  RSIIndicator([ RSIStyle indicatorStyle = const RSIStyle() ]): super(
     name: 'relativeStrengthIndex',
     shortName: 'RSI',
     calcParams: const [6, 12, 24],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -21,20 +29,20 @@ class RSIIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
     if (entity.rsi == null) return null;
     return TextSpan(
       text: "RSI(14):${formatNumber(entity.rsi!, precision)}",
-      style: getTextStyle(chartColors.rsiColor),
+      style: getTextStyle(indicatorStyle.rsiColor),
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (curPoint.rsi == null || lastPoint.rsi == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.rsi!)),
       Offset(lastX, getY(lastPoint.rsi!)),
-      _linePaint..color = chartColors.rsiColor,
+      _linePaint..color = indicatorStyle.rsiColor,
     );
   }
 

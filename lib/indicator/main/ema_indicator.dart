@@ -1,11 +1,22 @@
 part of '../indicator_template.dart';
 
-class EMAIndicator extends MainIndicator<CandleEntity> {
-  EMAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
+class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
+  late final Paint _linePaint;
+
+  EMAIndicator([
+    List<int> calcParams = const [5, 10, 30, 60],
+    MAStyle indicatorStyle = const MAStyle(),
+  ]): super(
     name: 'exponentialMovingAverage',
     shortName: 'EMA',
     calcParams: calcParams,
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV) {
@@ -21,7 +32,7 @@ class EMAIndicator extends MainIndicator<CandleEntity> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
     List<InlineSpan> result = [];
     if (entity.emaValueList?.isEmpty ?? true) return null;
     for (int i = 0; i < (entity.emaValueList!.length); i++) {
@@ -30,7 +41,7 @@ class EMAIndicator extends MainIndicator<CandleEntity> {
           text: "EMA${calcParams[i]}:${formatNumber(entity.emaValueList![i], precision)}    ",
           style: TextStyle(
             fontSize: 10,
-            color: chartColors.getMAColor(i),
+            color: indicatorStyle.getMAColor(i),
           ),
         );
         result.add(item);
@@ -41,7 +52,7 @@ class EMAIndicator extends MainIndicator<CandleEntity> {
 
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (
       curPoint.emaValueList == null ||
       lastPoint.emaValueList == null ||
@@ -54,7 +65,7 @@ class EMAIndicator extends MainIndicator<CandleEntity> {
         canvas.drawLine(
           Offset(curX, getY(curPoint.emaValueList![i])),
           Offset(lastX, getY(lastPoint.emaValueList![i])),
-          _linePaint..color = chartColors.getMAColor(i),
+          _linePaint..color = indicatorStyle.getMAColor(i),
         );
       }
     }

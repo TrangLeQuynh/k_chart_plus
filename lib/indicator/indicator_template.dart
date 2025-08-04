@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
-import 'package:k_chart_plus/chart_style.dart';
-import 'package:k_chart_plus/entity/index.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
+
+part 'indicator_style.dart';
 
 part 'main/sar_indicator.dart';
 part 'main/ma_indicator.dart';
@@ -17,28 +17,20 @@ part 'secondary/wr_indicator.dart';
 
 typedef GetYFunction= double Function(double y);
 
-abstract class IndicatorTemplate<T> {
+abstract class IndicatorTemplate<T, K> {
   final String name;
 
   final String shortName;
 
   final List<int> calcParams;
 
-  final ChartColors chartColors;
-  final ChartStyle? chartStyle;
-
-  /// painter
-  final Paint _linePaint = Paint()
-    ..isAntiAlias = true
-    ..filterQuality = FilterQuality.high
-    ..strokeWidth = 1.0;
+  final K indicatorStyle;
 
   IndicatorTemplate({
     required this.name,
     required this.shortName,
     required this.calcParams,
-    this.chartColors = const ChartColors(),
-    this.chartStyle,
+    required this.indicatorStyle,
   });
 
 
@@ -46,9 +38,9 @@ abstract class IndicatorTemplate<T> {
   /// record.$2: max value
   (double, double) getMaxMinValue(KLineEntity entity, double minV, double maxV);
 
-  TextSpan? drawFigure(T value, int precision);
+  TextSpan? drawFigure(T value, int precision, ChartColors chartColors);
 
-  void drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas);
+  void drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors);
 
   void calc(List<KLineEntity> dataList);
 
@@ -62,22 +54,20 @@ abstract class IndicatorTemplate<T> {
   }
 }
 
-abstract class MainIndicator<T> extends IndicatorTemplate<T> {
+abstract class MainIndicator<T, K> extends IndicatorTemplate<T, K> {
   MainIndicator({
     required super.name,
     required super.shortName,
     required super.calcParams,
-    super.chartColors,
-    super.chartStyle,
+    required super.indicatorStyle,
   });
 }
 
-abstract class SecondaryIndicator<T> extends IndicatorTemplate<T> {
+abstract class SecondaryIndicator<T, K> extends IndicatorTemplate<T, K> {
   SecondaryIndicator({
     required super.name,
     required super.shortName,
     required super.calcParams,
-    super.chartColors,
-    super.chartStyle,
+    required super.indicatorStyle,
   });
 }

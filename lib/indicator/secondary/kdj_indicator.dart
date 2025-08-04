@@ -1,11 +1,19 @@
 part of '../indicator_template.dart';
 
-class KDJIndicator extends SecondaryIndicator<MACDEntity> {
-  KDJIndicator(): super(
+class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
+  late final Paint _linePaint;
+
+  KDJIndicator([ KDJStyle indicatorStyle = const KDJStyle() ]): super(
     name: 'stoch',
     shortName: 'KDJ',
     calcParams: const [9, 3, 3],
-  );
+    indicatorStyle: indicatorStyle,
+  ) {
+    _linePaint = Paint()
+      ..isAntiAlias = true
+      ..filterQuality = FilterQuality.high
+      ..strokeWidth = indicatorStyle.lineWidth;
+  }
 
   @override
   (double, double) getMaxMinValue(MACDEntity entity, double minV, double maxV) {
@@ -25,7 +33,7 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
     return TextSpan(
       children: [
         TextSpan(
@@ -35,42 +43,42 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity> {
         if (entity.k != null && entity.k != 0)
           TextSpan(
             text: "K:${formatNumber(entity.k!, precision)}    ",
-            style: getTextStyle(chartColors.kColor),
+            style: getTextStyle(indicatorStyle.kColor),
           ),
         if (entity.d != null && entity.d != 0)
           TextSpan(
             text: "D:${formatNumber(entity.d!, precision)}    ",
-            style: getTextStyle(chartColors.dColor),
+            style: getTextStyle(indicatorStyle.dColor),
           ),
         if (entity.j != null && entity.j != 0)
           TextSpan(
             text: "J:${formatNumber(entity.j!, precision)}    ",
-            style: getTextStyle(chartColors.jColor),
+            style: getTextStyle(indicatorStyle.jColor),
           ),
       ],
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
     if (curPoint.k != null || lastPoint.k != null) {
       canvas.drawLine(
         Offset(curX, getY(curPoint.k!)),
         Offset(lastX, getY(lastPoint.k!)),
-        _linePaint..color = chartColors.kColor,
+        _linePaint..color = indicatorStyle.kColor,
       );
     }
     if (curPoint.d != null || lastPoint.d != null) {
       canvas.drawLine(
         Offset(curX, getY(curPoint.d!)),
         Offset(lastX, getY(lastPoint.d!)),
-        _linePaint..color = chartColors.dColor,
+        _linePaint..color = indicatorStyle.dColor,
       );
     }
     if (curPoint.j != null || lastPoint.j != null) {
       canvas.drawLine(
         Offset(curX, getY(curPoint.j!)),
         Offset(lastX, getY(lastPoint.j!)),
-        _linePaint..color = chartColors.jColor,
+        _linePaint..color = indicatorStyle.jColor,
       );
     }
   }
