@@ -1,7 +1,7 @@
 part of '../indicator_template.dart';
 
 class EMAIndicator extends MainIndicator<CandleEntity> {
-  EMAIndicator([List<int> calcParams = const [6, 12, 20]]): super(
+  EMAIndicator([List<int> calcParams = const [5, 10, 30, 60]]): super(
     name: 'exponentialMovingAverage',
     shortName: 'EMA',
     calcParams: calcParams,
@@ -62,24 +62,24 @@ class EMAIndicator extends MainIndicator<CandleEntity> {
 
   @override
   void calc(List<KLineEntity> dataList) {
-    double closeSum = 0.0;
+    /// Formula:
+    ///   Multiplier = 2 / (period + 1)
+    ///   EMA = (Closing Price - Previous EMA) * Multiplier + Previous EMA
     List<double> emaValues = List<double>.filled(calcParams.length, 0);
-    for (int i = 0; i < dataList.length; ++i) {
+    for (int i = 0; i < dataList.length; i++) {
       KLineEntity entity = dataList[i];
-      final close = entity.close;
       List<double> ema = List<double>.filled(calcParams.length, 0);
-      closeSum += close;
       for (int j = 0; j < calcParams.length; ++j) {
         final p = calcParams[j];
-        if (i >= p - 1) {
-          if (i > p - 1) {
-            emaValues[j] = (2 * close + (p - 1) * emaValues[j]) / (p + 1);
-          } else {
-            emaValues[j] = closeSum / p;
-          }
-          ema[j] = emaValues[j];
+        double multiplier = 2 / (p + 1);
+        if (i == 0) {
+          emaValues[j] = entity.close;
+        } else {
+          emaValues[j] = (entity.close - emaValues[j]) * multiplier + emaValues[j];
         }
+        ema[j] = emaValues[j];
       }
+
       entity.emaValueList = ema;
     }
   }
