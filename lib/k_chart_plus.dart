@@ -1,7 +1,8 @@
 library k_chart_plus;
 
 export 'k_chart_widget.dart'; //布局
-export 'chart_style.dart';
+export 'styles/k_chart_style.dart';
+export 'styles/depth_chart_style.dart';
 export 'depth_chart.dart';
 
 export 'utils/index.dart'; //数据加工

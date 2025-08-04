@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
 
-export '../chart_style.dart';
+export '../styles/k_chart_style.dart';
 
 abstract class BaseChartRenderer<T> {
   double maxValue, minValue;

@@ -13,19 +13,19 @@ class ChartColors {
   /// the background color of base chart
   final Color bgColor;
 
+  /// Line chart
   final Color kLineColor;
-
-  ///
-  final Color lineFillColor;
-
-  ///
-  final Color lineFillInsideColor;
+  final List<Color> kLineFillColors;
 
   final Color ma5Color;
   final Color ma10Color;
+
   final Color upColor;
   final Color dnColor;
+
   final Color volColor;
+  final Color volUpColor;
+  final Color volDnColor;
 
   /// default text color: apply for text at grid
   final Color defaultTextColor;
@@ -72,13 +72,11 @@ class ChartColors {
   /// constructor chart color
   const ChartColors({
     this.bgColor = const Color(0xffffffff),
-    this.kLineColor = const Color(0xff4C86CD),
-
-    ///
-    this.lineFillColor = const Color(0x554C86CD),
-
-    ///
-    this.lineFillInsideColor = const Color(0x00000000),
+    this.kLineColor = const Color(0xff217AFF),
+    this.kLineFillColors = const [
+      Color(0x80217aff),
+      Color(0x00217AFF),
+    ],
 
     ///
     this.ma5Color = const Color(0xFFFFC634),
@@ -86,6 +84,8 @@ class ChartColors {
     this.upColor = const Color(0xFF14AD8F),
     this.dnColor = const Color(0xFFD5405D),
     this.volColor = const Color(0xff2f8fd5),
+    this.volUpColor = const Color(0xFF14AD8F),
+    this.volDnColor = const Color(0xFFD5405D),
     this.defaultTextColor = const Color(0xFF909196),
     this.nowPriceUpColor = const Color(0xFF14AD8F),
     this.nowPriceDnColor = const Color(0xFFD5405D),

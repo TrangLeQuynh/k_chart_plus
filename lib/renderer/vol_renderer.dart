@@ -20,28 +20,40 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
   }
 
   @override
-  void drawChart(VolumeEntity lastPoint, VolumeEntity curPoint, double lastX,
-      double curX, Size size, Canvas canvas) {
+  void drawChart(VolumeEntity lastPoint, VolumeEntity curPoint, double lastX, double curX, Size size, Canvas canvas) {
     double r = mVolWidth / 2;
     double top = getVolY(curPoint.vol);
     double bottom = chartRect.bottom;
     if (curPoint.vol != 0) {
       canvas.drawRect(
-          Rect.fromLTRB(curX - r, top, curX + r, bottom),
-          chartPaint
-            ..color = curPoint.close > curPoint.open
-                ? this.chartColors.upColor
-                : this.chartColors.dnColor);
+        Rect.fromLTRB(curX - r, top, curX + r, bottom),
+        chartPaint
+          ..color = curPoint.close > curPoint.open
+            ? this.chartColors.volUpColor
+            : this.chartColors.volDnColor,
+      );
     }
 
     if (lastPoint.MA5Volume != 0) {
-      drawLine(lastPoint.MA5Volume, curPoint.MA5Volume, canvas, lastX, curX,
-          this.chartColors.ma5Color);
+      drawLine(
+        lastPoint.MA5Volume,
+        curPoint.MA5Volume,
+        canvas,
+        lastX,
+        curX,
+        this.chartColors.ma5Color,
+      );
     }
 
     if (lastPoint.MA10Volume != 0) {
-      drawLine(lastPoint.MA10Volume, curPoint.MA10Volume, canvas, lastX, curX,
-          this.chartColors.ma10Color);
+      drawLine(
+        lastPoint.MA10Volume,
+        curPoint.MA10Volume,
+        canvas,
+        lastX,
+        curX,
+        this.chartColors.ma10Color,
+      );
     }
   }
 

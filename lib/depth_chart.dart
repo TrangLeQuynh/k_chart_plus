@@ -1,14 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/chart_translations.dart';
-import 'package:k_chart_plus/k_chart_plus.dart';
+import 'package:k_chart_plus/styles/depth_chart_style.dart';
+import 'package:k_chart_plus/utils/number_util.dart';
+import 'entity/depth_entity.dart';
 
 class DepthChart extends StatefulWidget {
   final List<DepthEntity> bids, asks;
   final int baseUnit;
   final int quoteUnit;
   final Offset offset;
-  final ChartColors chartColors;
+  final DepthChartColors chartColors;
+  final DepthChartStyle chartStyle;
   final DepthChartTranslations chartTranslations;
 
   DepthChart(
@@ -19,6 +22,7 @@ class DepthChart extends StatefulWidget {
     this.quoteUnit = 6,
     this.offset = const Offset(10, 10),
     this.chartTranslations = const DepthChartTranslations(),
+    this.chartStyle = const DepthChartStyle(),
   });
 
   @override
@@ -57,6 +61,7 @@ class _DepthChartState extends State<DepthChart> {
           widget.baseUnit,
           widget.quoteUnit,
           widget.chartColors,
+          widget.chartStyle,
           widget.offset,
           widget.chartTranslations,
         ),
@@ -72,7 +77,8 @@ class DepthChartPainter extends CustomPainter {
   bool isLongPress;
   int baseUnit;
   int quoteUnit;
-  ChartColors chartColors;
+  DepthChartColors chartColors;
+  DepthChartStyle chartStyle;
 
   double mPaddingBottom = 32.0;
   double mWidth = 0.0, mDrawHeight = 0.0, mDrawWidth = 0.0;
@@ -106,26 +112,27 @@ class DepthChartPainter extends CustomPainter {
     this.baseUnit,
     this.quoteUnit,
     this.chartColors,
+    this.chartStyle,
     this.offset,
     this.chartTranslations,
   ) {
     mBuyLinePaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthBuyColor
+      ..color = this.chartColors.upColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = chartStyle.lineWidth;
     mSellLinePaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthSellColor
+      ..color = this.chartColors.dnColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = chartStyle.lineWidth;
 
     mBuyPathPaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthBuyPathColor;
+      ..color = this.chartColors.upFillPathColor;
     mSellPathPaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthSellPathColor;
+      ..color = this.chartColors.dnFillPathColor;
     mBuyPath ??= Path();
     mSellPath ??= Path();
     init();
@@ -148,7 +155,7 @@ class DepthChartPainter extends CustomPainter {
       ..isAntiAlias = true
       ..color = chartColors.selectBorderColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.4;
+      ..strokeWidth = chartStyle.strokeWidth;
   }
 
   @override
@@ -365,7 +372,7 @@ class DepthChartPainter extends CustomPainter {
       ? dy + offset.dy
       : dy - offset.dy - popupPainter.height;
     Rect rect = Rect.fromLTWH(dx, dy, popupPainter.width, popupPainter.height);
-    RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(2.5));
+    RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(chartStyle.radius));
 
     canvas.drawRRect(boxRect, selectPaint!);
     canvas.drawRRect(boxRect, selectBorderPaint!);
@@ -428,7 +435,7 @@ class _PopupPainter {
 
   late final TextPainter pricePaint;
   late final TextPainter amountPaint;
-  late final ChartColors chartColors;
+  late final DepthChartColors chartColors;
 
   ///getter
   double get width => max(pricePaint.width, amountPaint.width) + 2 * padding;
@@ -436,7 +443,7 @@ class _PopupPainter {
 
   _PopupPainter({
     required DepthChartTranslations chartTranslations,
-    required ChartColors chartColors,
+    required DepthChartColors chartColors,
     required String price,
     required String amount,
   }) {
@@ -461,20 +468,11 @@ class _PopupPainter {
   TextPainter _getTextPainter(String label, String content) {
     return TextPainter(
       text: TextSpan(
-        text: "$label: ",
+        text: "$label $content",
         style: TextStyle(
-          color: this.chartColors.infoWindowTitleColor,
+          color: this.chartColors.annotationColor,
           fontSize: 10,
         ),
-        children: [
-          TextSpan(
-            text: content,
-            style: TextStyle(
-              color: this.chartColors.infoWindowNormalColor,
-              fontSize: 10,
-            ),
-          ),
-        ],
       ),
       textDirection: TextDirection.ltr,
     );

@@ -149,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: DepthChart(
                 _bids!,
                 _asks!,
-                chartColors,
+                const DepthChartColors(),
               ),
             )
         ],
