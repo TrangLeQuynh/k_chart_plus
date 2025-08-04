@@ -3,7 +3,7 @@ import 'package:flutter/material.dart'
     show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 import 'package:k_chart_plus/utils/date_format_util.dart';
-import '../chart_style.dart' show ChartStyle;
+import '../styles/k_chart_style.dart' show ChartStyle;
 import '../entity/k_line_entity.dart';
 import '../k_chart_widget.dart';
 import 'base_dimension.dart';
