@@ -36,11 +36,13 @@ class BOLLStyle extends IndicatorStyle {
   final Color bollColor;
   final Color ubColor;
   final Color lbColor;
+  final Color fillColor;
 
   const BOLLStyle({
     this.bollColor = const Color(0xFFF7931A),
     this.ubColor = const Color(0xFFFFC634),
     this.lbColor = const Color(0xFFFFC634),
+    this.fillColor = const Color(0x12FFC634),
   });
 }
 
