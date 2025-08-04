@@ -21,7 +21,7 @@ class WRIndicator extends SecondaryIndicator<MACDEntity, WRStyle> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, KChartColors chartColors) {
     if (entity.r == null) return null;
     return TextSpan(
       text: "WR(14):${formatNumber(entity.r!, precision)}",
@@ -29,7 +29,7 @@ class WRIndicator extends SecondaryIndicator<MACDEntity, WRStyle> {
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.r == null || lastPoint.r == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.r!)),

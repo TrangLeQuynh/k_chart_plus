@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' show Color;
 
-/// ChartColors
+/// KChartColors
 ///
 /// Note:
 /// If you need to apply multi theme, you need to change at least the colors related to the text, border and background color
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart' show Color;
 /// Border
 /// Text
 ///
-class ChartColors {
+class KChartColors {
   /// the background color of base chart
   final Color bgColor;
 
@@ -38,12 +38,6 @@ class ChartColors {
   /// trend color
   final Color trendLineColor;
 
-  /// depth color
-  final Color depthBuyColor; //upColor
-  final Color depthBuyPathColor;
-  final Color depthSellColor; //dnColor
-  final Color depthSellPathColor;
-
   ///value border color after selection
   final Color selectBorderColor;
 
@@ -52,12 +46,6 @@ class ChartColors {
 
   ///color of grid
   final Color gridColor;
-
-  ///color of annotation content
-  final Color infoWindowNormalColor;
-  final Color infoWindowTitleColor;
-  final Color infoWindowUpColor;
-  final Color infoWindowDnColor;
 
   /// color of the horizontal & vertical cross line
   final Color crossColor;
@@ -70,7 +58,7 @@ class ChartColors {
   final Color minColor;
 
   /// constructor chart color
-  const ChartColors({
+  const KChartColors({
     this.bgColor = const Color(0xffffffff),
     this.kLineColor = const Color(0xff217AFF),
     this.kLineFillColors = const [
@@ -94,12 +82,6 @@ class ChartColors {
     /// trend color
     this.trendLineColor = const Color(0xFFF89215),
 
-    ///depth color
-    this.depthBuyColor = const Color(0xFF14AD8F),
-    this.depthBuyPathColor = const Color(0x3314AD8F),
-    this.depthSellColor = const Color(0xFFD5405D),
-    this.depthSellPathColor = const Color(0x33D5405D),
-
     ///value border color after selection
     this.selectBorderColor = const Color(0xFF222223),
 
@@ -110,10 +92,6 @@ class ChartColors {
     this.gridColor = const Color(0xFFD1D3DB),
 
     ///color of annotation content
-    this.infoWindowNormalColor = const Color(0xFF222223),
-    this.infoWindowTitleColor = const Color(0xFF4D4D4E), //0xFF707070
-    this.infoWindowUpColor = const Color(0xFF14AD8F),
-    this.infoWindowDnColor = const Color(0xFFD5405D),
     this.crossColor = const Color(0xFF191919),
     this.crossTextColor = const Color(0xFF222223),
 
@@ -123,7 +101,7 @@ class ChartColors {
   });
 }
 
-class ChartStyle {
+class KChartStyle {
   final double topPadding = 20.0;
 
   final double bottomPadding = 20.0;
@@ -140,9 +118,6 @@ class ChartStyle {
   ///vol column width
   final double volWidth = 8.5;
 
-  ///macd column width
-  final double macdWidth = 8.5;
-
   ///vertical-horizontal cross line width
   final double crossWidth = 0.5;
 
@@ -157,5 +132,5 @@ class ChartStyle {
   ///customize the time below
   final List<String>? dateTimeFormat;
 
-  const ChartStyle([this.dateTimeFormat]);
+  const KChartStyle([this.dateTimeFormat]);
 }

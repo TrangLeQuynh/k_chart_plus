@@ -3,8 +3,8 @@ import 'package:k_chart_plus/k_chart_plus.dart';
 
 class VolRenderer extends BaseChartRenderer<VolumeEntity> {
   late double mVolWidth;
-  final ChartStyle chartStyle;
-  final ChartColors chartColors;
+  final KChartStyle chartStyle;
+  final KChartColors chartColors;
 
   VolRenderer(Rect mainRect, double maxValue, double minValue,
       double topPadding, int fixedLength, this.chartStyle, this.chartColors)

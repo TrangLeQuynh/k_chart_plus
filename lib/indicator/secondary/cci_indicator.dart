@@ -25,7 +25,7 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
   }
 
   @override
-  TextSpan? drawFigure(MACDEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(MACDEntity entity, int precision, KChartColors chartColors) {
     if (entity.cci == null) return null;
     return TextSpan(
       text: "CCI(14):${formatNumber(entity.cci!, precision)}",
@@ -33,7 +33,7 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
     );
   }
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.cci == null || lastPoint.cci == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.cci!)),

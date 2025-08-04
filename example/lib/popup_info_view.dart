@@ -4,7 +4,7 @@ import 'package:k_chart_plus/utils/number_util.dart';
 
 class PopupInfoView extends StatelessWidget {
   final KLineEntity entity;
-  final ChartColors chartColors;
+  final KChartColors chartColors;
   final int fixedLength;
 
   const PopupInfoView({
@@ -78,10 +78,13 @@ class PopupInfoView extends StatelessWidget {
 
   Widget _buildColorItem(String label, String info, bool isUp) {
     if (isUp) {
-      return _buildItem(label, '+$info',
-          textColor: chartColors.infoWindowUpColor);
+      return _buildItem(
+        label,
+        '+$info',
+        textColor: chartColors.upColor,
+      );
     }
-    return _buildItem(label, info, textColor: chartColors.infoWindowDnColor);
+    return _buildItem(label, info, textColor: chartColors.dnColor);
   }
 
   Widget _buildItem(String label, String info, {Color? textColor}) {
@@ -93,17 +96,12 @@ class PopupInfoView extends StatelessWidget {
         children: <Widget>[
           Text(
             label,
-            style: TextStyle(
-              color: chartColors.infoWindowTitleColor,
-              fontSize: 10.0,
-            ),
+            style: TextStyle(color: textColor, fontSize: 10.0),
           ),
           Expanded(
             child: Text(
               info,
-              style: TextStyle(
-                  color: textColor ?? chartColors.infoWindowNormalColor,
-                  fontSize: 10.0),
+              style: TextStyle(color: textColor, fontSize: 10.0),
               textAlign: TextAlign.right,
             ),
           ),

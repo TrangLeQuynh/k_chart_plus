@@ -32,7 +32,7 @@ class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
   }
 
   @override
-  TextSpan? drawFigure(CandleEntity entity, int precision, ChartColors chartColors) {
+  TextSpan? drawFigure(CandleEntity entity, int precision, KChartColors chartColors) {
     List<InlineSpan> result = [];
     if (entity.emaValueList?.isEmpty ?? true) return null;
     for (int i = 0; i < (entity.emaValueList!.length); i++) {
@@ -52,7 +52,7 @@ class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
 
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, ChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (
       curPoint.emaValueList == null ||
       lastPoint.emaValueList == null ||

@@ -4,10 +4,9 @@ import '../entity/macd_entity.dart';
 import 'base_chart_renderer.dart';
 
 class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
-  late double mMACDWidth;
   SecondaryIndicator indicator;
-  final ChartStyle chartStyle;
-  final ChartColors chartColors;
+  final KChartStyle chartStyle;
+  final KChartColors chartColors;
 
   SecondaryRenderer(
       Rect mainRect,
@@ -26,7 +25,6 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
           fixedLength: fixedLength,
           gridColor: chartColors.gridColor,
         ) {
-    mMACDWidth = this.chartStyle.macdWidth;
   }
 
   @override
