@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainIndicators: _mainIndicators,
               volHidden: _volHidden,
               secondaryIndicators: _secondaryIndicators,
-              fixedLength: 2,
+              fixedLength: 1,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
               detailBuilder: (entity) {
                 return PopupInfoView(

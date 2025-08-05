@@ -16,14 +16,17 @@ class PopupInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: chartColors.selectFillColor,
-        border: Border.all(color: chartColors.selectBorderColor, width: 0.5),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
-        child: _buildBody(context),
+    return SizedBox(
+      width: 150,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: chartColors.selectFillColor,
+          border: Border.all(color: chartColors.selectBorderColor, width: 0.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
+          child: _buildBody(context),
+        ),
       ),
     );
   }

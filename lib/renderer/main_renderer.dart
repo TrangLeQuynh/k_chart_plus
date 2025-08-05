@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/indicator/indicator_template.dart';
+import 'package:k_chart_plus/k_chart_plus.dart';
 import '../entity/candle_entity.dart';
 import 'base_chart_renderer.dart';
 
@@ -218,7 +219,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     double rowSpace = chartRect.height / gridRows;
     for (var i = 0; i <= gridRows; ++i) {
       double value = (gridRows - i) * rowSpace / scaleY + minValue;
-      TextSpan span = TextSpan(text: "${format(value)}", style: textStyle);
+      TextSpan span = TextSpan(text: "${NumberUtil.formatNumber(value, fixedLength)}", style: textStyle);
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
 

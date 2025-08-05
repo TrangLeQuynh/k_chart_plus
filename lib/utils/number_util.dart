@@ -54,8 +54,11 @@ class NumberUtil {
       String number = Decimal.parse(value.toString()).toString(); // avoid scientific notation format e-10
       List<String> parts = number.split('.');
       String integerPart = NumberFormat(pattern, 'en_US').format(num.parse(parts.first));
-      if (parts.length == 1 || precision == 0) {
+      if (precision == 0) {
         return integerPart;
+      }
+      if (parts.length == 1) {
+        parts.add('');
       }
       String fractionalPart = parts.last.padRight(precision, '0');
       fractionalPart = fractionalPart.substring(0, precision);
