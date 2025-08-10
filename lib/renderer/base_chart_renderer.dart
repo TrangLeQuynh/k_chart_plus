@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:k_chart_plus/k_chart_plus.dart';
-
 export '../styles/k_chart_style.dart';
 
 abstract class BaseChartRenderer<T> {
@@ -38,14 +36,6 @@ abstract class BaseChartRenderer<T> {
   }
 
   double getY(double y) => (maxValue - y) * scaleY + chartRect.top;
-
-  String format(double? n) {
-    if (n == null || n.isNaN) {
-      return "0.00";
-    } else {
-      return NumberUtil.formatNumber(n, fixedLength) ?? "0.00";
-    }
-  }
 
   void drawGrid(Canvas canvas, int gridRows, int gridColumns);
 

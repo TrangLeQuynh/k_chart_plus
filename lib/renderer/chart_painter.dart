@@ -271,7 +271,7 @@ class ChartPainter extends BaseChartPainter {
     KLineEntity point = getItem(index);
 
     TextPainter tp = getTextPainter(
-      NumberUtil.formatNumber(point.close, fixedLength),
+      NumberUtil.formatFixed(point.close, fixedLength),
       chartColors.crossTextColor,
     );
     double textHeight = tp.height;
@@ -371,13 +371,13 @@ class ChartPainter extends BaseChartPainter {
     if (x < mWidth / 2) {
       //draw right
       TextPainter tp = getTextPainter(
-        "── " + (NumberUtil.formatNumber(mMainLowMinValue, fixedLength) ?? ''),
+        "── " + (NumberUtil.formatFixed(mMainLowMinValue, fixedLength) ?? ''),
         chartColors.minColor,
       );
       tp.paint(canvas, Offset(x, y - tp.height / 2));
     } else {
       TextPainter tp = getTextPainter(
-        (NumberUtil.formatNumber(mMainLowMinValue, fixedLength) ?? '') + " ──",
+        (NumberUtil.formatFixed(mMainLowMinValue, fixedLength) ?? '') + " ──",
         chartColors.minColor,
       );
       tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
@@ -387,13 +387,13 @@ class ChartPainter extends BaseChartPainter {
     if (x < mWidth / 2) {
       //draw right
       TextPainter tp = getTextPainter(
-        "── " + (NumberUtil.formatNumber(mMainHighMaxValue, fixedLength) ?? ''),
+        "── " + (NumberUtil.formatFixed(mMainHighMaxValue, fixedLength) ?? ''),
         chartColors.maxColor,
       );
       tp.paint(canvas, Offset(x, y - tp.height / 2));
     } else {
       TextPainter tp = getTextPainter(
-        (NumberUtil.formatNumber(mMainHighMaxValue, fixedLength) ?? '') + " ──",
+        (NumberUtil.formatFixed(mMainHighMaxValue, fixedLength) ?? '') + " ──",
         chartColors.maxColor,
       );
       tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
@@ -436,7 +436,7 @@ class ChartPainter extends BaseChartPainter {
 
     //repaint the background and text
     TextPainter tp = getTextPainter(
-      NumberUtil.formatNumber(value, fixedLength) ?? '',
+      NumberUtil.formatFixed(value, fixedLength) ?? '',
       this.chartColors.nowPriceTextColor,
     );
 

@@ -50,7 +50,7 @@ abstract class IndicatorTemplate<T, K> {
   }
 
   String formatNumber(double value, int precision) {
-    return NumberUtil.formatNumber(value, precision) ?? '--';
+    return NumberUtil.formatFixed(value, precision) ?? '--';
   }
 }
 

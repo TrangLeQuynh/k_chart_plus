@@ -43,23 +43,23 @@ class PopupInfoView extends StatelessWidget {
         _buildItem('Date', getDate(entity.time)),
         _buildItem(
           'Open',
-          NumberUtil.formatNumber(entity.open, fixedLength) ?? '--',
+          NumberUtil.formatFixed(entity.open, fixedLength) ?? '--',
         ),
         _buildItem(
           'High',
-          NumberUtil.formatNumber(entity.high, fixedLength) ?? '--',
+          NumberUtil.formatFixed(entity.high, fixedLength) ?? '--',
         ),
         _buildItem(
           'Low',
-          NumberUtil.formatNumber(entity.low, fixedLength) ?? '--',
+          NumberUtil.formatFixed(entity.low, fixedLength) ?? '--',
         ),
         _buildItem(
           'Close',
-          NumberUtil.formatNumber(entity.close, fixedLength) ?? '--',
+          NumberUtil.formatFixed(entity.close, fixedLength) ?? '--',
         ),
         _buildColorItem(
           'Change',
-          NumberUtil.formatNumber(upDown, fixedLength) ?? '--',
+          NumberUtil.formatFixed(upDown, fixedLength) ?? '--',
           upDown > 0,
         ),
         _buildColorItem(

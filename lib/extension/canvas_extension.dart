@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 extension CanvasExtension on Canvas {
@@ -9,7 +10,7 @@ extension CanvasExtension on Canvas {
       while (startDy < endDy) {
         this.drawLine(
           Offset(begin.dx, startDy),
-          Offset(begin.dx, startDy + width),
+          Offset(begin.dx, min(startDy + width, endDy)),
           paint,
         );
         startDy += space + width;
@@ -23,7 +24,7 @@ extension CanvasExtension on Canvas {
       while (startDx < endDx) {
         this.drawLine(
           Offset(startDx, begin.dy),
-          Offset(startDx + width, begin.dy),
+          Offset(min(startDx + width, endDx), begin.dy),
           paint,
         );
 
