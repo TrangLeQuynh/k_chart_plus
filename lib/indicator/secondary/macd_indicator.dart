@@ -51,25 +51,62 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity, MACDStyle> {
     return TextSpan(
       children: [
         TextSpan(
-          text: "MACD(12,26,9)    ",
+          text: "MACD(12,26,9) ",
           style: getTextStyle(chartColors.defaultTextColor),
         ),
         if (entity.macd != null && entity.macd != 0)
           TextSpan(
-            text: "MACD:${formatNumber(entity.macd!, precision)}    ",
+            text: "MACD:${formatNumber(entity.macd!, precision)}   ",
             style: getTextStyle(indicatorStyle.macdColor),
           ),
         if (entity.dif != null && entity.dif != 0)
           TextSpan(
-            text: "DIF:${formatNumber(entity.dif!, precision)}    ",
+            text: "DIF:${formatNumber(entity.dif!, precision)}   ",
             style: getTextStyle(indicatorStyle.difColor),
           ),
         if (entity.dea != null && entity.dea != 0)
           TextSpan(
-            text: "DEA:${formatNumber(entity.dea!, precision)}    ",
+            text: "DEA:${formatNumber(entity.dea!, precision)}",
             style: getTextStyle(indicatorStyle.deaColor),
           ),
       ],
+    );
+  }
+
+  @override
+  void drawVerticalText({
+    required Canvas canvas,
+    required TextStyle style,
+    required double maxValue,
+    required double minValue,
+    required int fixedLength,
+    required Rect chartRect,
+  }) {
+    TextPainter maxTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    maxTp.layout();
+
+    TextPainter minTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    minTp.layout();
+
+    maxTp.paint(
+      canvas,
+      Offset(chartRect.width - maxTp.width, chartRect.top),
+    );
+    minTp.paint(
+      canvas,
+      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
     );
   }
 

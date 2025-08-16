@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 import '../entity/macd_entity.dart';
-import '../utils/number_util.dart';
 import 'base_chart_renderer.dart';
 
 class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
@@ -43,30 +42,18 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
 
   @override
   void drawVerticalText(canvas, textStyle, int gridRows) {
-    TextPainter maxTp = TextPainter(
-      text: TextSpan(
-        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
-        style: textStyle,
+    indicator.drawVerticalText(
+      canvas: canvas,
+      style: textStyle,
+      maxValue: maxValue,
+      minValue: minValue,
+      fixedLength: fixedLength,
+      chartRect: Rect.fromLTRB(
+        chartRect.left,
+        chartRect.top - topPadding,
+        chartRect.right - chartStyle.space,
+        chartRect.bottom,
       ),
-      textDirection: TextDirection.ltr,
-    );
-    maxTp.layout();
-    TextPainter minTp = TextPainter(
-      text: TextSpan(
-        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
-        style: textStyle,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    minTp.layout();
-
-    maxTp.paint(
-      canvas,
-      Offset(chartRect.width - maxTp.width, chartRect.top - topPadding),
-    );
-    minTp.paint(
-      canvas,
-      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
     );
   }
 

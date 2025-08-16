@@ -221,17 +221,20 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     double rowSpace = chartRect.height / gridRows;
     for (var i = 0; i <= gridRows; ++i) {
       double value = (gridRows - i) * rowSpace / scaleY + minValue;
-      TextSpan span = TextSpan(text: "${NumberUtil.formatFixed(value, fixedLength) ?? ''}", style: textStyle);
+      TextSpan span = TextSpan(
+        text: "${NumberUtil.formatFixed(value, fixedLength) ?? ''}",
+        style: textStyle,
+      );
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
 
       double offsetX;
       switch (verticalTextAlignment) {
         case VerticalTextAlignment.left:
-          offsetX = 0;
+          offsetX = this.chartStyle.space;
           break;
         case VerticalTextAlignment.right:
-          offsetX = chartRect.width - tp.width;
+          offsetX = chartRect.width - tp.width - this.chartStyle.space;
           break;
       }
 

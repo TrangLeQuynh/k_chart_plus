@@ -108,6 +108,8 @@ class KChartStyle {
 
   final double childPadding = 12.0;
 
+  final double space = 4.0;
+
   ///point-to-point distance
   final double pointWidth = 11.0;
 

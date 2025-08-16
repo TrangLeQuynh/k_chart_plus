@@ -48,7 +48,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
       children: [
         if (value.mid != null && value.mid != 0)
           TextSpan(
-            text: "BOLL:${formatNumber(value.mid!, precision)}    ",
+            text: "BOLL:${formatNumber(value.mid!, precision)}   ",
             style: TextStyle(
               fontSize: 10,
               color: indicatorStyle.bollColor,
@@ -56,7 +56,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
           ),
         if (value.up != null && value.up != 0)
           TextSpan(
-            text: "UB:${formatNumber(value.up!, precision)}    ",
+            text: "UB:${formatNumber(value.up!, precision)}   ",
             style: TextStyle(
               fontSize: 10,
               color: indicatorStyle.ubColor,
@@ -64,7 +64,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
           ),
         if (value.dn != null && value.dn != 0)
           TextSpan(
-            text: "LB:${formatNumber(value.dn!, precision)} ",
+            text: "LB:${formatNumber(value.dn!, precision)}",
             style: TextStyle(
               fontSize: 10,
               color: indicatorStyle.lbColor,

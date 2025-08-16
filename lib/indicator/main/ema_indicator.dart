@@ -38,7 +38,7 @@ class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
     for (int i = 0; i < (entity.emaValueList!.length); i++) {
       if (entity.emaValueList?[i] != 0) {
         var item = TextSpan(
-          text: "EMA${calcParams[i]}:${formatNumber(entity.emaValueList![i], precision)}    ",
+          text: "EMA${calcParams[i]}:${formatNumber(entity.emaValueList![i], precision)}   ",
           style: TextStyle(
             fontSize: 10,
             color: indicatorStyle.getMAColor(i),
