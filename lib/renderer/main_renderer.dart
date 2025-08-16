@@ -266,7 +266,13 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       );
     }
 
-    /// draw bottom grid (date)
+    /// draw top grid
+    canvas.drawLine(
+      Offset(0, 0),
+      Offset(chartRect.width, 0),
+      gridPaint..color,
+    );
+    /// draw bottom grid
     canvas.drawLine(
       Offset(0, chartRect.bottom + mBottomPadding),
       Offset(chartRect.width, chartRect.bottom + mBottomPadding),

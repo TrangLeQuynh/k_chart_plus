@@ -119,12 +119,15 @@ class KChartStyle {
   final double volWidth = 8.5;
 
   ///vertical-horizontal cross line width
-  final double crossWidth = 0.5;
+  final double crossWidth = 0.8;
 
   ///(line length - space line - thickness) of the current price
-  final double nowPriceLineLength = 4.5;
-  final double nowPriceLineSpan = 3.5;
-  final double nowPriceLineWidth = 1;
+  // final double nowPriceLineLength = 4.5;
+  // final double nowPriceLineSpan = 3.5;
+  final double nowPriceLineWidth = 0.8;
+
+  /// Border width : apply for cross & now price
+  final double borderWidth = 0.5;
 
   final int gridRows = 4;
   final int gridColumns = 4;
