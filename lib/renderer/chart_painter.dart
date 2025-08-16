@@ -120,6 +120,7 @@ class ChartPainter extends BaseChartPainter {
       this.chartColors,
       this.scaleX,
       verticalTextAlignment,
+      mBottomPadding,
     );
     if (mVolRect != null) {
       mVolRenderer = VolRenderer(
@@ -173,8 +174,7 @@ class ChartPainter extends BaseChartPainter {
       );
       canvas.drawRect(secondaryRect, mBgPaint);
     }
-    Rect dateRect = Rect.fromLTRB(0, size.height - mBottomPadding, size.width, size.height);
-    canvas.drawRect(dateRect, mBgPaint);
+    canvas.drawRect(mDateRect, mBgPaint);
   }
 
   @override
@@ -199,7 +199,6 @@ class ChartPainter extends BaseChartPainter {
       KLineEntity lastPoint = i == 0 ? curPoint : datas![i - 1];
       double curX = getX(i);
       double lastX = i == 0 ? curX : getX(i - 1);
-
       mMainRenderer.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
       mVolRenderer?.drawChart(lastPoint, curPoint, lastX, curX, size, canvas);
       mSecondaryRendererList.forEach((element) {
@@ -243,7 +242,7 @@ class ChartPainter extends BaseChartPainter {
 
         if (datas?[index] == null) continue;
         TextPainter tp = getTextPainter(getDate(datas![index].time), null);
-        y = size.height - (mBottomPadding - tp.height) / 2 - tp.height;
+        y = mDateRect.top + (mBottomPadding - tp.height) / 2;
         x = columnSpace * i - tp.width / 2;
         // Prevent date text out of canvas
         if (x < 0) x = 0;
@@ -315,34 +314,40 @@ class ChartPainter extends BaseChartPainter {
     textWidth = dateTp.width;
     r = textHeight / 2;
     x = translateXtoX(getX(index));
-    y = size.height - mBottomPadding;
+    y = mDateRect.top;
 
     if (x < textWidth + 2 * w1) {
       x = 1 + textWidth / 2 + w1;
     } else if (mWidth - x < textWidth + 2 * w1) {
       x = mWidth - 1 - textWidth / 2 - w1;
     }
+
+    RRect rectBox =  RRect.fromLTRBR(
+      x - textWidth / 2 - w1,
+      y,
+      x + textWidth / 2 + w1,
+      mDateRect.bottom,
+      Radius.circular(2.0),
+    );
+
     double baseLine = textHeight / 2;
-    canvas.drawRect(
-      Rect.fromLTRB(
-        x - textWidth / 2 - w1,
-        y,
-        x + textWidth / 2 + w1,
-        y + baseLine + r,
-      ),
+    canvas.drawRRect(
+      rectBox,
       selectPointPaint,
     );
-    canvas.drawRect(
-      Rect.fromLTRB(
-        x - textWidth / 2 - w1,
-        y,
-        x + textWidth / 2 + w1,
-        y + baseLine + r,
-      ),
+    canvas.drawRRect(
+      rectBox,
       selectorBorderPaint,
     );
 
-    dateTp.paint(canvas, Offset(x - textWidth / 2, y));
+    dateTp.paint(
+      canvas,
+      Offset(
+        x - textWidth / 2,
+        mDateRect.top + (mDateRect.height - dateTp.height) / 2,
+      ),
+    );
+
     //Long press to display the details of this data
     sink.add(InfoWindowEntity(point, isLeft: isLeft));
   }
@@ -481,7 +486,7 @@ class ChartPainter extends BaseChartPainter {
     // K-line chart vertical line
     canvas.drawLine(
       Offset(x, mTopPadding),
-      Offset(x, size.height - mBottomPadding),
+      Offset(x, size.height),
       paintY,
     );
     Paint paintX = Paint()
@@ -549,7 +554,7 @@ class ChartPainter extends BaseChartPainter {
     // K-line chart vertical line
     canvas.drawDashLine(
       Offset(x, 0),
-      Offset(x, size.height - mBottomPadding),
+      Offset(x, size.height),
       paintCross,
     );
 

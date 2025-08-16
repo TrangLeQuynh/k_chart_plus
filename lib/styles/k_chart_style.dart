@@ -104,7 +104,7 @@ class KChartColors {
 class KChartStyle {
   final double topPadding = 20.0;
 
-  final double bottomPadding = 20.0;
+  final double bottomPadding = 16.0;
 
   final double childPadding = 12.0;
 

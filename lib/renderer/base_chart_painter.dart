@@ -27,6 +27,8 @@ abstract class BaseChartPainter extends CustomPainter {
   /// Rectangle box of main chart
   late Rect mMainRect;
 
+  late Rect mDateRect;
+
   /// Rectangle box of the vol chart
   Rect? mVolRect;
 
@@ -34,7 +36,8 @@ abstract class BaseChartPainter extends CustomPainter {
   List<RenderRect> mSecondaryRectList = [];
   late double mDisplayHeight, mWidth;
   // padding
-  double mTopPadding = 20.0, mBottomPadding = 20.0, mChildPadding = 12.0;
+  // mBottomPadding: dateRect height
+  double mTopPadding = 20.0, mBottomPadding = 16.0, mChildPadding = 12.0;
   // grid: rows - columns
   int mGridRows = 4, mGridColumns = 4;
   int mStartIndex = 0, mStopIndex = 0;
@@ -185,13 +188,19 @@ abstract class BaseChartPainter extends CustomPainter {
     mainHeight -= baseDimension.totalSecondaryHeight;
 
     mMainRect = Rect.fromLTRB(0, mTopPadding, mWidth, mTopPadding + mainHeight);
+    mDateRect = Rect.fromLTRB(
+      0,
+      mMainRect.bottom,
+      mWidth,
+      mMainRect.bottom + mBottomPadding,
+    );
 
     if (volHidden != true) {
       mVolRect = Rect.fromLTRB(
         0,
-        mMainRect.bottom + mChildPadding,
+        mDateRect.bottom + mChildPadding,
         mWidth,
-        mMainRect.bottom + volHeight,
+        mDateRect.bottom + volHeight,
       );
     }
 
@@ -200,9 +209,9 @@ abstract class BaseChartPainter extends CustomPainter {
       mSecondaryRectList.add(RenderRect(
         Rect.fromLTRB(
           0,
-          mMainRect.bottom + volHeight + i * secondaryHeight + mChildPadding,
+          mDateRect.bottom + volHeight + i * secondaryHeight + mChildPadding,
           mWidth,
-          mMainRect.bottom + volHeight + i * secondaryHeight + secondaryHeight,
+          mDateRect.bottom + volHeight + i * secondaryHeight + secondaryHeight,
         ),
       ));
     }

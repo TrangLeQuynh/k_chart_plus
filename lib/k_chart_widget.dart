@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
-import 'indicator/indicator_template.dart';
 import 'renderer/base_dimension.dart';
 
 class TimeFormat {
@@ -35,6 +34,7 @@ class KChartWidget extends StatefulWidget {
   final bool materialInfoDialog; // Material Style Information Popup
   final List<String> timeFormat;
   final double mBaseHeight;
+  final double? mSecondaryHeight;
 
   // It will be called when the screen scrolls to the end.
   // If true, it will be scrolled to the end of the right side of the screen.
@@ -79,6 +79,7 @@ class KChartWidget extends StatefulWidget {
     this.isOnDrag,
     this.verticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
+    this.mSecondaryHeight,
   });
 
   @override
@@ -132,6 +133,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
     }
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
+      mSecondaryHeight: widget.mSecondaryHeight ?? widget.mBaseHeight * .2,
       volHidden: widget.volHidden,
       secondaryIndicators: widget.secondaryIndicators,
       mainIndicators: widget.mainIndicators,

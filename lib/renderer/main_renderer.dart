@@ -26,6 +26,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   double scaleX;
   late Paint mLinePaint;
   final VerticalTextAlignment verticalTextAlignment;
+  final double mBottomPadding;
 
   MainRenderer(
     Rect mainRect,
@@ -39,6 +40,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     this.chartColors,
     this.scaleX,
     this.verticalTextAlignment,
+    this.mBottomPadding,
   ) : super(
     chartRect: mainRect,
     maxValue: maxValue,
@@ -256,7 +258,6 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       );
     }
     double columnSpace = chartRect.width / gridColumns;
-
     for (int i = 0; i <= columnSpace; i++) {
       canvas.drawLine(
         Offset(columnSpace * i, 0),
@@ -264,6 +265,13 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
         gridPaint,
       );
     }
+
+    /// draw bottom grid (date)
+    canvas.drawLine(
+      Offset(0, chartRect.bottom + mBottomPadding),
+      Offset(chartRect.width, chartRect.bottom + mBottomPadding),
+      gridPaint..color,
+    );
   }
 
   @override
