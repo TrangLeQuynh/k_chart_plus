@@ -37,27 +37,64 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
     return TextSpan(
       children: [
         TextSpan(
-          text: "KDJ(9,1,3)    ",
+          text: "KDJ(9,1,3) ",
           style: getTextStyle(chartColors.defaultTextColor),
         ),
         if (entity.k != null && entity.k != 0)
           TextSpan(
-            text: "K:${formatNumber(entity.k!, precision)}    ",
+            text: "K:${formatNumber(entity.k!, precision)}   ",
             style: getTextStyle(indicatorStyle.kColor),
           ),
         if (entity.d != null && entity.d != 0)
           TextSpan(
-            text: "D:${formatNumber(entity.d!, precision)}    ",
+            text: "D:${formatNumber(entity.d!, precision)}   ",
             style: getTextStyle(indicatorStyle.dColor),
           ),
         if (entity.j != null && entity.j != 0)
           TextSpan(
-            text: "J:${formatNumber(entity.j!, precision)}    ",
+            text: "J:${formatNumber(entity.j!, precision)}",
             style: getTextStyle(indicatorStyle.jColor),
           ),
       ],
     );
   }
+
+  @override
+  void drawVerticalText({
+    required Canvas canvas,
+    required TextStyle style,
+    required double maxValue,
+    required double minValue,
+    required int fixedLength,
+    required Rect chartRect,
+  }) {
+    TextPainter maxTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    maxTp.layout();
+    TextPainter minTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    minTp.layout();
+
+    maxTp.paint(
+      canvas,
+      Offset(chartRect.width - maxTp.width, chartRect.top),
+    );
+    minTp.paint(
+      canvas,
+      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
+    );
+  }
+
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.k != null || lastPoint.k != null) {

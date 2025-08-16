@@ -32,6 +32,43 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
       style: getTextStyle(indicatorStyle.cciColor),
     );
   }
+
+  @override
+  void drawVerticalText({
+    required Canvas canvas,
+    required TextStyle style,
+    required double maxValue,
+    required double minValue,
+    required int fixedLength,
+    required Rect chartRect,
+  }) {
+    TextPainter maxTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    maxTp.layout();
+    TextPainter minTp = TextPainter(
+      text: TextSpan(
+        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
+        style: style,
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    minTp.layout();
+
+    maxTp.paint(
+      canvas,
+      Offset(chartRect.width - maxTp.width, chartRect.top),
+    );
+    minTp.paint(
+      canvas,
+      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
+    );
+  }
+
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
     if (curPoint.cci == null || lastPoint.cci == null) return;

@@ -50,7 +50,7 @@ abstract class IndicatorTemplate<T, K> {
   }
 
   String formatNumber(double value, int precision) {
-    return NumberUtil.formatFixed(value, precision) ?? '--';
+    return NumberUtil.format(value, precision) ?? '--';
   }
 }
 
@@ -69,5 +69,14 @@ abstract class SecondaryIndicator<T, K> extends IndicatorTemplate<T, K> {
     required super.shortName,
     required super.calcParams,
     required super.indicatorStyle,
+  });
+
+  void drawVerticalText({
+    required Canvas canvas,
+    required TextStyle style,
+    required double maxValue,
+    required double minValue,
+    required int fixedLength,
+    required Rect chartRect,
   });
 }
