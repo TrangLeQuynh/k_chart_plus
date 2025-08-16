@@ -281,33 +281,34 @@ class ChartPainter extends BaseChartPainter {
     double r = textHeight / 2 + w2;
     double y = getMainY(point.close);
     double x;
+    double space = 4.0;
     bool isLeft = false;
     if (translateXtoX(getX(index)) < mWidth / 2) {
       isLeft = false;
-      x = 1;
-      Path path = new Path();
-      path.moveTo(x, y - r);
-      path.lineTo(x, y + r);
-      path.lineTo(textWidth + 2 * w1, y + r);
-      path.lineTo(textWidth + 2 * w1 + w2, y);
-      path.lineTo(textWidth + 2 * w1, y - r);
-      path.close();
-      canvas.drawPath(path, selectPointPaint);
-      canvas.drawPath(path, selectorBorderPaint);
+      x = space;
+      RRect rect = RRect.fromLTRBR(
+        x,
+        y - r,
+        x + textWidth + 2 * w1,
+        y + r,
+        Radius.circular(2.0),
+      );
+      canvas.drawRRect(rect, selectPointPaint);
+      canvas.drawRRect(rect, selectorBorderPaint);
       tp.paint(canvas, Offset(x + w1, y - textHeight / 2));
     } else {
       isLeft = true;
-      x = mWidth - textWidth - 1 - 2 * w1 - w2;
-      Path path = new Path();
-      path.moveTo(x, y);
-      path.lineTo(x + w2, y + r);
-      path.lineTo(mWidth - 2, y + r);
-      path.lineTo(mWidth - 2, y - r);
-      path.lineTo(x + w2, y - r);
-      path.close();
-      canvas.drawPath(path, selectPointPaint);
-      canvas.drawPath(path, selectorBorderPaint);
-      tp.paint(canvas, Offset(x + w1 + w2, y - textHeight / 2));
+      x = mWidth - textWidth - 2 * w1 - space;
+      RRect rect = RRect.fromLTRBR(
+        x,
+        y - r,
+        mWidth - space,
+        y + r,
+        Radius.circular(2.0),
+      );
+      canvas.drawRRect(rect, selectPointPaint);
+      canvas.drawRRect(rect, selectorBorderPaint);
+      tp.paint(canvas, Offset(x + w1, y - textHeight / 2));
     }
 
     TextPainter dateTp = getTextPainter(getDate(point.time), chartColors.crossTextColor);
@@ -427,10 +428,11 @@ class ChartPainter extends BaseChartPainter {
       y = getMainY(mMainHighMaxValue);
     }
 
-    nowPricePaint
-      ..color = value >= datas!.last.open
+    Color priceColor = value >= datas!.last.open
         ? this.chartColors.nowPriceUpColor
         : this.chartColors.nowPriceDnColor;
+
+    nowPricePaint.color = priceColor;
 
     //first draw the horizontal line
     canvas.drawDashLine(
@@ -445,29 +447,35 @@ class ChartPainter extends BaseChartPainter {
       this.chartColors.nowPriceTextColor,
     );
 
-    double paddingX = 3, paddingY = 1.2;
+    double paddingX = 3, paddingY = 1.5;
+    double space = 5.0;
     double offsetX;
     switch (verticalTextAlignment) {
       case VerticalTextAlignment.left:
-        offsetX = paddingX;
+        // offsetX = paddingX;
+        offsetX = space;
         break;
       case VerticalTextAlignment.right:
-        offsetX = mWidth - tp.width - paddingX;
+        offsetX = mWidth - tp.width - paddingX * 2 - space;
         break;
     }
 
     double top = y - tp.height / 2;
+    RRect rect = RRect.fromLTRBR(
+      offsetX,
+      top - paddingY,
+      offsetX + tp.width + paddingX * 2,
+      top + tp.height + paddingY * 2,
+      Radius.circular(2.0),
+    );
     canvas.drawRRect(
-      RRect.fromLTRBR(
-        offsetX - paddingX,
-        top - paddingY,
-        offsetX + tp.width + paddingX + paddingX,
-        top + tp.height + paddingY + paddingY,
-        Radius.circular(2.0),
-      ),
+      rect,
       nowPricePaint,
     );
-    tp.paint(canvas, Offset(offsetX, top));
+    tp.paint(
+      canvas,
+      Offset(offsetX + paddingX, top),
+    );
   }
 
   //For TrendLine
