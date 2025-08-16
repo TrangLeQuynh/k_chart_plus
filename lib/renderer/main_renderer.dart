@@ -72,13 +72,17 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   @override
   void drawText(Canvas canvas, CandleEntity data, double x) {
     if (isLine == true) return;
+    double y = 2.0;
     for (int i = 0; i < indicatorLi.length; ++i) {
       TextSpan? span = indicatorLi[i].drawFigure(data, fixedLength, chartColors);
       if (span == null) return;
-      TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
-      tp.layout();
+      TextPainter tp = TextPainter(
+        text: span,
+        textDirection: TextDirection.ltr,
+      );
+      tp.layout(minWidth: 0, maxWidth: chartRect.width - chartStyle.space);
 
-      Offset offset = Offset(x, chartRect.top - topPadding + i * 12);
+      Offset offset = Offset(x, y);
 
       canvas.drawRect(
         Rect.fromLTRB(
@@ -87,10 +91,12 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
           tp.width + offset.dx + 2,
           tp.height + offset.dy + 2,
         ),
-        Paint()..color = this.chartColors.bgColor,
+        Paint()..color = this.chartColors.bgColor.withAlpha(80),
       );
 
       tp.paint(canvas, offset);
+
+      y = y + tp.height + 2.0; // update y
     }
   }
 
