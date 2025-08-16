@@ -43,7 +43,8 @@ class ChartPainter extends BaseChartPainter {
   Color? macdColor, difColor, deaColor, jColor;
   int fixedLength;
   final KChartColors chartColors;
-  late Paint selectPointPaint, selectorBorderPaint, nowPricePaint;
+  late Paint paintCross, selectPointPaint, selectorBorderPaint;
+  late Paint nowPriceSelectorPaint, nowPriceSelectorBorderPaint, nowPriceLinePaint;
   final KChartStyle chartStyle;
   final bool hideGrid;
   final bool showNowPrice;
@@ -88,16 +89,27 @@ class ChartPainter extends BaseChartPainter {
             secondaryIndicators: secondaryIndicators,
             xFrontPadding: xFrontPadding,
             isLine: isLine) {
+    paintCross = Paint()
+      ..color = this.chartColors.crossColor
+      ..strokeWidth = this.chartStyle.crossWidth
+      ..isAntiAlias = true;
     selectPointPaint = Paint()
       ..isAntiAlias = true
-      ..strokeWidth = 0.5
       ..color = this.chartColors.selectFillColor;
     selectorBorderPaint = Paint()
       ..isAntiAlias = true
-      ..strokeWidth = 0.5
+      ..strokeWidth = this.chartStyle.borderWidth
       ..style = PaintingStyle.stroke
       ..color = this.chartColors.selectBorderColor;
-    nowPricePaint = Paint()
+
+    nowPriceSelectorPaint = Paint()
+      ..color = this.chartColors.selectFillColor
+      ..isAntiAlias = true;
+    nowPriceSelectorBorderPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = this.chartStyle.borderWidth
+      ..isAntiAlias = true;
+    nowPriceLinePaint = Paint()
       ..strokeWidth = this.chartStyle.nowPriceLineWidth
       ..isAntiAlias = true;
   }
@@ -432,19 +444,20 @@ class ChartPainter extends BaseChartPainter {
         ? this.chartColors.nowPriceUpColor
         : this.chartColors.nowPriceDnColor;
 
-    nowPricePaint.color = priceColor;
+    nowPriceSelectorBorderPaint.color = priceColor;
+    nowPriceLinePaint.color = priceColor;
 
     //first draw the horizontal line
     canvas.drawDashLine(
       Offset(0, y),
       Offset(-mTranslateX + mWidth / scaleX, y),
-      nowPricePaint,
+      nowPriceLinePaint,
     );
 
     //repaint the background and text
     TextPainter tp = getTextPainter(
       NumberUtil.formatFixed(value, fixedLength) ?? '',
-      this.chartColors.nowPriceTextColor,
+      priceColor,
     );
 
     double paddingX = 3, paddingY = 1.5;
@@ -470,7 +483,11 @@ class ChartPainter extends BaseChartPainter {
     );
     canvas.drawRRect(
       rect,
-      nowPricePaint,
+      nowPriceSelectorPaint,
+    );
+    canvas.drawRRect(
+      rect,
+      nowPriceSelectorBorderPaint,
     );
     tp.paint(
       canvas,
@@ -552,10 +569,6 @@ class ChartPainter extends BaseChartPainter {
   void drawCrossLine(Canvas canvas, Size size) {
     var index = calculateSelectedX(selectX);
     KLineEntity point = getItem(index);
-    Paint paintCross = Paint()
-      ..color = this.chartColors.crossColor
-      ..strokeWidth = this.chartStyle.crossWidth
-      ..isAntiAlias = true;
     double x = getX(index);
     double y = getMainY(point.close);
 
