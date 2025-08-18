@@ -28,7 +28,7 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
   TextSpan? drawFigure(MACDEntity entity, int precision, KChartColors chartColors) {
     if (entity.cci == null) return null;
     return TextSpan(
-      text: "CCI(14):${formatNumber(entity.cci!, precision)}",
+      text: "CCI(${calcParams.first}):${formatNumber(entity.cci!, precision)}",
       style: getTextStyle(indicatorStyle.cciColor),
     );
   }
@@ -42,30 +42,54 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
     required int fixedLength,
     required Rect chartRect,
   }) {
+    double jumpStep = maxValue - minValue;
+    late int jumpValue;
+    if (jumpStep >= 100) {
+      jumpValue = 100;
+    } else if (jumpStep >= 10) {
+      jumpValue = 10;
+    } else {
+      jumpValue = 1;
+    }
+
+    /// max
     TextPainter maxTp = TextPainter(
       text: TextSpan(
-        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
+        text: "${NumberUtil.formatFixed(
+          (maxValue / jumpValue).round() * jumpValue,
+          0,
+        ) ?? ''}",
         style: style,
       ),
       textDirection: TextDirection.ltr,
     );
     maxTp.layout();
+    maxTp.paint(
+      canvas,
+      Offset(
+        chartRect.width - maxTp.width,
+        chartRect.top,
+      ),
+    );
+
+    /// min
     TextPainter minTp = TextPainter(
       text: TextSpan(
-        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
+        text: "${NumberUtil.formatFixed(
+          (minValue / jumpValue).round() * jumpValue,
+          0,
+        ) ?? ''}",
         style: style,
       ),
       textDirection: TextDirection.ltr,
     );
     minTp.layout();
-
-    maxTp.paint(
-      canvas,
-      Offset(chartRect.width - maxTp.width, chartRect.top),
-    );
     minTp.paint(
       canvas,
-      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
+      Offset(
+        chartRect.width - minTp.width,
+        chartRect.bottom - minTp.height,
+      ),
     );
   }
 
@@ -81,29 +105,27 @@ class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
 
   @override
   void calc(List<KLineEntity> dataList) {
-    final size = dataList.length;
-    final count = 14;
-    for (int i = 0; i < size; i++) {
+    final periods = calcParams.first;
+    final p = periods - 1;
+    double tpSum = 0;
+    final tpList = [];
+    for (int i = 0; i < dataList.length; i++) {
       final kline = dataList[i];
+      kline.cci = null;
       final tp = (kline.high + kline.low + kline.close) / 3;
-      final start = max(0, i - count + 1);
-      var amount = 0.0;
-      var len = 0;
-      for (int n = start; n <= i; n++) {
-        amount += (dataList[n].high + dataList[n].low + dataList[n].close) / 3;
-        len++;
-      }
-      final ma = amount / len;
-      amount = 0.0;
-      for (int n = start; n <= i; n++) {
-        amount +=
-            (ma - (dataList[n].high + dataList[n].low + dataList[n].close) / 3)
-                .abs();
-      }
-      final md = amount / len;
-      kline.cci = ((tp - ma) / 0.015 / md);
-      if (kline.cci!.isNaN) {
-        kline.cci = 0.0;
+      tpSum += tp;
+      tpList.add(tp);
+      if (i >= p) {
+        final maTp = tpSum / periods;
+        final sliceTpList = tpList.sublist(i - p, i + 1);
+        final sum = sliceTpList.fold(0.0, (s, tp) {
+          s += (tp - maTp).abs();
+          return s;
+        });
+        final md = sum / periods;
+        kline.cci = md != 0 ? ((tp - maTp) / md / 0.015) : 0;
+        final agoTp = (dataList[i - p].high + dataList[i - p].low + dataList[i - p].close) / 3;
+        tpSum -= agoTp;
       }
     }
   }
