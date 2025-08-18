@@ -3,10 +3,10 @@ part of '../indicator_template.dart';
 class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
   late final Paint _linePaint;
 
-  EMAIndicator([
+  EMAIndicator({
     List<int> calcParams = const [5, 10, 30, 60],
     MAStyle indicatorStyle = const MAStyle(),
-  ]): super(
+  }): super(
     name: 'exponentialMovingAverage',
     shortName: 'EMA',
     calcParams: calcParams,

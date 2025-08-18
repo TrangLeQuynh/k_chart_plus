@@ -3,7 +3,7 @@ part of '../indicator_template.dart';
 class CCIIndicator extends SecondaryIndicator<MACDEntity, CCIStyle> {
   late final Paint _linePaint;
 
-  CCIIndicator([ CCIStyle indicatorStyle = const CCIStyle() ]): super(
+  CCIIndicator({ CCIStyle indicatorStyle = const CCIStyle() }): super(
     name: 'commodityChannelIndex',
     shortName: 'CCI',
     calcParams: const [20],

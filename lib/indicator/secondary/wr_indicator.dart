@@ -3,7 +3,7 @@ part of '../indicator_template.dart';
 class WRIndicator extends SecondaryIndicator<MACDEntity, WRStyle> {
   late final Paint _linePaint;
 
-  WRIndicator([ WRStyle indicatorStyle = const WRStyle() ]): super(
+  WRIndicator({ WRStyle indicatorStyle = const WRStyle() }): super(
     name: 'volumeRatio',
     shortName: 'WR',
     calcParams: const [26, 6],
