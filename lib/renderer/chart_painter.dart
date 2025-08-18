@@ -103,7 +103,7 @@ class ChartPainter extends BaseChartPainter {
       ..color = this.chartColors.selectBorderColor;
 
     nowPriceSelectorPaint = Paint()
-      ..color = this.chartColors.selectFillColor
+      ..color = this.chartColors.bgColor
       ..isAntiAlias = true;
     nowPriceSelectorBorderPaint = Paint()
       ..style = PaintingStyle.stroke

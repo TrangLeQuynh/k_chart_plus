@@ -3,7 +3,7 @@ part of '../indicator_template.dart';
 class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
   late final Paint _dotPaint;
 
-  SARIndicator([ SARStyle indicatorStyle = const SARStyle() ]): super(
+  SARIndicator({ SARStyle indicatorStyle = const SARStyle() }): super(
     name: 'stopAndReverse',
     shortName: 'SAR',
     calcParams: const [2, 2, 20],

@@ -33,7 +33,6 @@ class KChartColors {
   /// color of the current price
   final Color nowPriceUpColor;
   final Color nowPriceDnColor;
-  final Color nowPriceTextColor;
 
   /// trend color
   final Color trendLineColor;
@@ -77,7 +76,6 @@ class KChartColors {
     this.defaultTextColor = const Color(0xFF909196),
     this.nowPriceUpColor = const Color(0xFF14AD8F),
     this.nowPriceDnColor = const Color(0xFFD5405D),
-    this.nowPriceTextColor = const Color(0xffffffff),
 
     /// trend color
     this.trendLineColor = const Color(0xFFF89215),

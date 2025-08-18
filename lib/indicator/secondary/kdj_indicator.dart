@@ -3,10 +3,10 @@ part of '../indicator_template.dart';
 class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
   late final Paint _linePaint;
 
-  KDJIndicator([ KDJStyle indicatorStyle = const KDJStyle() ]): super(
+  KDJIndicator({ KDJStyle indicatorStyle = const KDJStyle() }): super(
     name: 'stoch',
     shortName: 'KDJ',
-    calcParams: const [9, 3, 3],
+    calcParams: const [],//[9, 3, 3], [9, 1, 3],
     indicatorStyle: indicatorStyle,
   ) {
     _linePaint = Paint()
@@ -68,31 +68,28 @@ class KDJIndicator extends SecondaryIndicator<MACDEntity, KDJStyle> {
     required int fixedLength,
     required Rect chartRect,
   }) {
-    TextPainter maxTp = TextPainter(
-      text: TextSpan(
-        text: "${NumberUtil.formatFixed(maxValue, fixedLength) ?? ''}",
-        style: style,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    maxTp.layout();
-    TextPainter minTp = TextPainter(
-      text: TextSpan(
-        text: "${NumberUtil.formatFixed(minValue, fixedLength) ?? ''}",
-        style: style,
-      ),
-      textDirection: TextDirection.ltr,
-    );
-    minTp.layout();
+    List<int> rangeValue = [80, 20];
+    final spaceRange = maxValue - minValue;
 
-    maxTp.paint(
-      canvas,
-      Offset(chartRect.width - maxTp.width, chartRect.top),
-    );
-    minTp.paint(
-      canvas,
-      Offset(chartRect.width - minTp.width, chartRect.bottom - minTp.height),
-    );
+    for (int i = 0; i < rangeValue.length; ++i) {
+      final value = rangeValue[i];
+      if (value < minValue || value > maxValue) continue;
+      TextPainter tp = TextPainter(
+        text: TextSpan(
+          text: value.toString(),
+          style: style,
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      tp.layout();
+      final ratio = (value - minValue) / spaceRange;
+      final x = chartRect.width - tp.width;
+      final y = chartRect.bottom - ratio * chartRect.height - tp.height / 2;
+      tp.paint(
+        canvas,
+        Offset(x, y.clamp(chartRect.top, chartRect.bottom - tp.height)),
+      );
+    }
   }
 
   @override

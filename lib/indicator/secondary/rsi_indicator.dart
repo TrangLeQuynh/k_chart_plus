@@ -7,7 +7,7 @@ part of '../indicator_template.dart';
 class RSIIndicator extends SecondaryIndicator<MACDEntity, RSIStyle> {
   late final Paint _linePaint;
 
-  RSIIndicator([ RSIStyle indicatorStyle = const RSIStyle() ]): super(
+  RSIIndicator({ RSIStyle indicatorStyle = const RSIStyle() }): super(
     name: 'relativeStrengthIndex',
     shortName: 'RSI',
     calcParams: const [6, 12, 24],

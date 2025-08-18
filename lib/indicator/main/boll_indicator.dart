@@ -11,7 +11,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
   late final Paint _linePaint;
   late final Paint _fillPaint;
 
-  BOLLIndicator([  BOLLStyle indicatorStyle = const BOLLStyle() ]): super(
+  BOLLIndicator({ BOLLStyle indicatorStyle = const BOLLStyle() }): super(
     name: 'bollingerBands',
     shortName: 'BOLL',
     calcParams: const [20, 2],

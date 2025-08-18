@@ -12,7 +12,7 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity, MACDStyle> {
   late final Paint _linePaint;
   late final Paint _rectPaint;
 
-  MACDIndicator([ MACDStyle indicatorStyle = const MACDStyle() ]): super(
+  MACDIndicator({ MACDStyle indicatorStyle = const MACDStyle() }): super(
     name: 'movingAverageConvergenceDivergence',
     shortName: 'MACD',
     calcParams: const [12, 26, 9],
