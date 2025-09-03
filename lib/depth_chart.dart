@@ -102,6 +102,7 @@ class DepthChartPainter extends CustomPainter {
     mSellLinePaint,
     mBuyPathPaint,
     mSellPathPaint,
+    mBarrierPathPaint,
     selectPaint,
     selectBorderPaint,
     crossPaint;
@@ -135,6 +136,9 @@ class DepthChartPainter extends CustomPainter {
     mSellPathPaint ??= Paint()
       ..isAntiAlias = true
       ..color = this.chartColors.dnFillPathColor;
+    mBarrierPathPaint ??= Paint()
+      ..isAntiAlias = true
+      ..color = this.chartColors.barrierColor;
     crossPaint = Paint()
       ..isAntiAlias = true
       ..strokeWidth = this.chartStyle.crossWidth
@@ -352,8 +356,8 @@ class DepthChartPainter extends CustomPainter {
 
     // draw overlay barrier model
     canvas.drawRect(
-      Rect.fromLTRB(0, 0, dx, mDrawHeight), 
-      mBuyPathPaint!..color = chartColors.barrierColor,
+      Rect.fromLTRB(0, 0, dx, mDrawHeight),
+      mBarrierPathPaint!,
     );
 
     /// draw cross line
@@ -409,7 +413,7 @@ class DepthChartPainter extends CustomPainter {
     /// draw overlay barrier model
     canvas.drawRect(
       Rect.fromLTRB(dx, 0, mWidth, mDrawHeight),
-      mSellPathPaint!..color = chartColors.barrierColor,
+      mBarrierPathPaint!,
     );
 
     /// draw cross line
