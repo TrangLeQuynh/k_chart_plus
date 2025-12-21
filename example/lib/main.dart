@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:example/popup_info_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -35,13 +36,26 @@ class _MyHomePageState extends State<MyHomePage> {
   List<KLineEntity>? datas;
   bool showLoading = true;
   bool _volHidden = false;
-  // final Set<SecondaryState> _secondaryStateLi = <SecondaryState>{};
-  final List<MainState> _mainStateLi = [];
-  final List<SecondaryState> _secondaryStateLi = [];
+  final List<MainIndicator> _defaultMainIndicators = [
+    MAIndicator(),  
+    EMAIndicator(),
+    BOLLIndicator(),
+    SARIndicator(),
+  ];
+  final List<SecondaryIndicator> _defaultSecondaryIndicators = [
+    MACDIndicator(),
+    KDJIndicator(),
+    RSIIndicator(),
+    WRIndicator(),
+    CCIIndicator(),
+  ];
+
+  final List<MainIndicator> _mainIndicators = [];
+  final List<SecondaryIndicator> _secondaryIndicators = [];
   List<DepthEntity>? _bids, _asks;
 
-  ChartStyle chartStyle = ChartStyle();
-  ChartColors chartColors = ChartColors();
+  KChartStyle chartStyle = KChartStyle();
+  KChartColors chartColors = KChartColors();
 
   @override
   void initState() {
@@ -96,13 +110,21 @@ class _MyHomePageState extends State<MyHomePage> {
               datas,
               chartStyle,
               chartColors,
-              mBaseHeight: 360,
+              mBaseHeight: 350,
+              mSecondaryHeight: 80,
               isTrendLine: false,
-              mainStateLi: _mainStateLi.toSet(),
+              mainIndicators: _mainIndicators,
               volHidden: _volHidden,
-              secondaryStateLi: _secondaryStateLi.toSet(),
-              fixedLength: 2,
+              secondaryIndicators: _secondaryIndicators,
+              fixedLength: 6,
               timeFormat: TimeFormat.YEAR_MONTH_DAY,
+              detailBuilder: (entity) {
+                return PopupInfoView(
+                  entity: entity,
+                  chartColors: chartColors,
+                  fixedLength: 2,
+                );
+              },
             ),
             if (showLoading)
               Container(
@@ -127,7 +149,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: DepthChart(
                 _bids!,
                 _asks!,
-                chartColors,
+                const DepthChartColors(),
+                // chartTranslations: const DepthChartTranslations(
+                //   price: 'Price',
+                //   amount: 'Amount',
+                // ),
               ),
             )
         ],
@@ -172,17 +198,17 @@ class _MyHomePageState extends State<MyHomePage> {
         alignment: WrapAlignment.start,
         spacing: 10,
         runSpacing: 10,
-        children: MainState.values.map((e) {
-          bool isActive = _mainStateLi.contains(e);
+        children: _defaultMainIndicators.map((e) {
+          bool isActive = _mainIndicators.contains(e);
           return _buildButton(
             context: context,
-            title: e.name,
+            title: e.shortName,
             isActive: isActive,
             onPress: () {
               if (isActive) {
-                _mainStateLi.remove(e);
+                _mainIndicators.remove(e);
               } else {
-                _mainStateLi.add(e);
+                _mainIndicators.add(e);
               }
             },
           );
@@ -198,17 +224,17 @@ class _MyHomePageState extends State<MyHomePage> {
         alignment: WrapAlignment.start,
         spacing: 10,
         runSpacing: 5,
-        children: SecondaryState.values.map((e) {
-          bool isActive = _secondaryStateLi.contains(e);
+        children: _defaultSecondaryIndicators.map((e) {
+          bool isActive = _secondaryIndicators.contains(e);
           return _buildButton(
             context: context,
-            title: e.name,
-            isActive: _secondaryStateLi.contains(e),
+            title: e.shortName,
+            isActive: isActive,
             onPress: () {
               if (isActive) {
-                _secondaryStateLi.remove(e);
+                _secondaryIndicators.remove(e);
               } else {
-                _secondaryStateLi.add(e);
+                _secondaryIndicators.add(e);
               }
             },
           );
@@ -255,8 +281,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getData(String period) {
-    final Future<String> future = getChatDataFromInternet(period);
-    //final Future<String> future = getChatDataFromJson();
+    // final Future<String> future = getChatDataFromInternet(period);
+    final Future<String> future = getChatDataFromJson();
     future.then((String result) {
       solveChatData(result);
     }).catchError((_) {
@@ -292,7 +318,11 @@ class _MyHomePageState extends State<MyHomePage> {
         .reversed
         .toList()
         .cast<KLineEntity>();
-    DataUtil.calculate(datas!);
+    DataUtil.calculateAll(
+      datas!,
+      _defaultMainIndicators,
+      _defaultSecondaryIndicators,
+    );
     showLoading = false;
     setState(() {});
   }

@@ -1,16 +1,18 @@
+import 'package:k_chart_plus/indicator/indicator_template.dart';
+
 import '../k_chart_widget.dart';
 
 /// Base Dimension
 class BaseDimension {
   // the height of base chart
-  double _mBaseHeight = 380;
+  late double _mBaseHeight;
   // default: 0
   // the height of volume chart
-  double _mVolumeHeight = 0;
+  late double _mVolumeHeight;
   // default: 0
   // the height of a secondary chart
-  double _mSecondaryHeight = 0;
-  double _totalSecondaryHeight = 0;
+  late double _mSecondaryHeight;
+  late double _totalSecondaryHeight;
 
   double _mLabelHeight = 12;
   double _totalLabelHeight = 12;
@@ -40,19 +42,21 @@ class BaseDimension {
   /// compute value of _mVolumeHeight, _mSecondaryHeight, _mDisplayHeight
   BaseDimension({
     required double mBaseHeight,
+    required double mSecondaryHeight,
     required bool volHidden,
-    required Set<SecondaryState> secondaryStateLi,
-    required Set<MainState> mainStateLi,
+    required List<SecondaryIndicator> secondaryIndicators,
+    required List<MainIndicator> mainIndicators,
   }) {
     _mBaseHeight = mBaseHeight;
-    _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
-    _mSecondaryHeight = _mBaseHeight * 0.2;
-    _totalSecondaryHeight = _mSecondaryHeight * secondaryStateLi.length;
-    _totalLabelHeight = _mLabelHeight * mainStateLi.length;
+    _mVolumeHeight = volHidden != true ? mSecondaryHeight : 0;
+    _mSecondaryHeight = mSecondaryHeight;
+
+    _totalSecondaryHeight = _mSecondaryHeight * secondaryIndicators.length;
+    _totalLabelHeight = _mLabelHeight * mainIndicators.length;
 
     _mDisplayHeight = _mBaseHeight +
-        _mVolumeHeight +
-        _totalSecondaryHeight +
-        _totalLabelHeight;
+      _mVolumeHeight +
+      _totalSecondaryHeight +
+      _totalLabelHeight;
   }
 }

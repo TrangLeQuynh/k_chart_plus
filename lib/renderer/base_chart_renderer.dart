@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-export '../chart_style.dart';
+export '../styles/k_chart_style.dart';
 
 abstract class BaseChartRenderer<T> {
   double maxValue, minValue;
@@ -38,14 +37,6 @@ abstract class BaseChartRenderer<T> {
 
   double getY(double y) => (maxValue - y) * scaleY + chartRect.top;
 
-  String format(double? n) {
-    if (n == null || n.isNaN) {
-      return "0.00";
-    } else {
-      return n.toStringAsFixed(fixedLength);
-    }
-  }
-
   void drawGrid(Canvas canvas, int gridRows, int gridColumns);
 
   void drawText(Canvas canvas, T data, double x);
@@ -55,25 +46,16 @@ abstract class BaseChartRenderer<T> {
   void drawChart(T lastPoint, T curPoint, double lastX, double curX, Size size,
       Canvas canvas);
 
-  void drawLine(double? lastPrice, double? curPrice, Canvas canvas,
-      double lastX, double curX, Color color) {
+  void drawLine(double? lastPrice, double? curPrice, Canvas canvas, double lastX, double curX, Color color) {
     if (lastPrice == null || curPrice == null) {
       return;
     }
     double lastY = getY(lastPrice);
     double curY = getY(curPrice);
     canvas.drawLine(
-        Offset(lastX, lastY), Offset(curX, curY), chartPaint..color = color);
-  }
-
-  void drawCircle(Canvas canvas, double curX, double curY, Color color) {
-    canvas.drawCircle(
-      Offset(curX, getY(curY)),
-      2.0,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .8
-        ..color = color,
+      Offset(lastX, lastY),
+      Offset(curX, curY),
+      chartPaint..color = color,
     );
   }
 

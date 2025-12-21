@@ -1,14 +1,18 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/chart_translations.dart';
-import 'package:k_chart_plus/k_chart_plus.dart';
+import 'package:k_chart_plus/extension/canvas_extension.dart';
+import 'package:k_chart_plus/styles/depth_chart_style.dart';
+import 'package:k_chart_plus/utils/number_util.dart';
+import 'entity/depth_entity.dart';
 
 class DepthChart extends StatefulWidget {
   final List<DepthEntity> bids, asks;
   final int baseUnit;
   final int quoteUnit;
   final Offset offset;
-  final ChartColors chartColors;
+  final DepthChartColors chartColors;
+  final DepthChartStyle chartStyle;
   final DepthChartTranslations chartTranslations;
 
   DepthChart(
@@ -17,8 +21,9 @@ class DepthChart extends StatefulWidget {
     this.chartColors, {
     this.baseUnit = 2,
     this.quoteUnit = 6,
-    this.offset = const Offset(10, 10),
+    this.offset = const Offset(8, 0),
     this.chartTranslations = const DepthChartTranslations(),
+    this.chartStyle = const DepthChartStyle(),
   });
 
   @override
@@ -57,6 +62,7 @@ class _DepthChartState extends State<DepthChart> {
           widget.baseUnit,
           widget.quoteUnit,
           widget.chartColors,
+          widget.chartStyle,
           widget.offset,
           widget.chartTranslations,
         ),
@@ -72,7 +78,8 @@ class DepthChartPainter extends CustomPainter {
   bool isLongPress;
   int baseUnit;
   int quoteUnit;
-  ChartColors chartColors;
+  DepthChartColors chartColors;
+  DepthChartStyle chartStyle;
 
   double mPaddingBottom = 32.0;
   double mWidth = 0.0, mDrawHeight = 0.0, mDrawWidth = 0.0;
@@ -92,11 +99,13 @@ class DepthChartPainter extends CustomPainter {
 
   //买卖出区域边线绘制画笔  //买卖出取悦绘制画笔
   Paint? mBuyLinePaint,
-      mSellLinePaint,
-      mBuyPathPaint,
-      mSellPathPaint,
-      selectPaint,
-      selectBorderPaint;
+    mSellLinePaint,
+    mBuyPathPaint,
+    mSellPathPaint,
+    mBarrierPathPaint,
+    selectPaint,
+    selectBorderPaint,
+    crossPaint;
 
   DepthChartPainter(
     this.mBuyData,
@@ -106,26 +115,35 @@ class DepthChartPainter extends CustomPainter {
     this.baseUnit,
     this.quoteUnit,
     this.chartColors,
+    this.chartStyle,
     this.offset,
     this.chartTranslations,
   ) {
     mBuyLinePaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthBuyColor
+      ..color = this.chartColors.upColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = chartStyle.lineWidth;
     mSellLinePaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthSellColor
+      ..color = this.chartColors.dnColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = chartStyle.lineWidth;
 
     mBuyPathPaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthBuyPathColor;
+      ..color = this.chartColors.upFillPathColor;
     mSellPathPaint ??= Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.depthSellPathColor;
+      ..color = this.chartColors.dnFillPathColor;
+    mBarrierPathPaint ??= Paint()
+      ..isAntiAlias = true
+      ..color = this.chartColors.barrierColor;
+    crossPaint = Paint()
+      ..isAntiAlias = true
+      ..strokeWidth = this.chartStyle.crossWidth
+      ..color = this.chartColors.crossColor;
+
     mBuyPath ??= Path();
     mSellPath ??= Path();
     init();
@@ -133,12 +151,11 @@ class DepthChartPainter extends CustomPainter {
 
   void init() {
     if (mBuyData == null ||
-        mBuyData!.isEmpty ||
-        mSellData == null ||
-        mSellData!.isEmpty) return;
-    mMaxVolume = mBuyData![0].vol;
-    mMaxVolume = max(mMaxVolume!, mSellData!.last.vol);
-    mMaxVolume = mMaxVolume! * 1.05;
+      mSellData == null ||
+      mBuyData!.isEmpty ||
+      mSellData!.isEmpty) return;
+    mMaxVolume = max(mBuyData!.first.vol, mSellData!.last.vol);
+    mMaxVolume = mMaxVolume! * 1.08;
     mMultiple = mMaxVolume! / mLineCount;
 
     selectPaint = Paint()
@@ -148,7 +165,7 @@ class DepthChartPainter extends CustomPainter {
       ..isAntiAlias = true
       ..color = chartColors.selectBorderColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.4;
+      ..strokeWidth = chartStyle.strokeWidth;
   }
 
   @override
@@ -173,8 +190,7 @@ class DepthChartPainter extends CustomPainter {
   }
 
   void drawBuy(Canvas canvas) {
-    mBuyPointWidth =
-        (mDrawWidth / (mBuyData!.length - 1 == 0 ? 1 : mBuyData!.length - 1));
+    mBuyPointWidth = (mDrawWidth / (mBuyData!.length - 1 == 0 ? 1 : mBuyData!.length - 1));
     mBuyPath!.reset();
     double x;
     double y;
@@ -186,13 +202,13 @@ class DepthChartPainter extends CustomPainter {
       y = getY(mBuyData![i].vol);
       if (i >= 1) {
         canvas.drawLine(
-            Offset(mBuyPointWidth! * (i - 1), getY(mBuyData![i - 1].vol)),
-            Offset(x, y),
-            mBuyLinePaint!);
+          Offset(mBuyPointWidth! * (i - 1), getY(mBuyData![i - 1].vol)),
+          Offset(x, y),
+          mBuyLinePaint!,
+        );
       }
       if (i != mBuyData!.length - 1) {
-        mBuyPath!.quadraticBezierTo(
-            x, y, mBuyPointWidth! * (i + 1), getY(mBuyData![i + 1].vol));
+        mBuyPath!.quadraticBezierTo(x, y, mBuyPointWidth! * (i + 1), getY(mBuyData![i + 1].vol));
       } else {
         if (i == 0) {
           mBuyPath!.lineTo(mDrawWidth, y);
@@ -209,8 +225,7 @@ class DepthChartPainter extends CustomPainter {
   }
 
   void drawSell(Canvas canvas) {
-    mSellPointWidth =
-        (mDrawWidth / (mSellData!.length - 1 == 0 ? 1 : mSellData!.length - 1));
+    mSellPointWidth = (mDrawWidth / (mSellData!.length - 1 == 0 ? 1 : mSellData!.length - 1));
     mSellPath!.reset();
     double x;
     double y;
@@ -222,17 +237,18 @@ class DepthChartPainter extends CustomPainter {
       y = getY(mSellData![i].vol);
       if (i >= 1) {
         canvas.drawLine(
-            Offset((mSellPointWidth! * (i - 1)) + mDrawWidth,
-                getY(mSellData![i - 1].vol)),
-            Offset(x, y),
-            mSellLinePaint!);
+          Offset((mSellPointWidth! * (i - 1)) + mDrawWidth, getY(mSellData![i - 1].vol)),
+          Offset(x, y),
+          mSellLinePaint!,
+        );
       }
       if (i != mSellData!.length - 1) {
         mSellPath!.quadraticBezierTo(
-            x,
-            y,
-            (mSellPointWidth! * (i + 1)) + mDrawWidth,
-            getY(mSellData![i + 1].vol));
+          x,
+          y,
+          (mSellPointWidth! * (i + 1)) + mDrawWidth,
+          getY(mSellData![i + 1].vol),
+        );
       } else {
         if (i == 0) {
           mSellPath!.lineTo(mWidth, y);
@@ -255,99 +271,188 @@ class DepthChartPainter extends CustomPainter {
     String str;
     for (int j = 0; j < mLineCount; j++) {
       value = mMaxVolume! - mMultiple! * j;
-      str = value.toStringAsFixed(baseUnit);
+      str = NumberUtil.formatCompact(value, baseUnit) ?? '';
       var tp = getTextPainter(str);
       tp.layout();
       tp.paint(
-          canvas,
-          Offset(
-              mWidth - tp.width, mDrawHeight / mLineCount * j + tp.height / 2));
+        canvas,
+        Offset(mWidth - tp.width, mDrawHeight / mLineCount * j + tp.height / 2),
+      );
     }
 
-    var startText = mBuyData!.first.price.toStringAsFixed(quoteUnit);
+    var startText = NumberUtil.formatFixed(mBuyData!.first.price, quoteUnit) ?? '';
     TextPainter startTP = getTextPainter(startText);
     startTP.layout();
     startTP.paint(canvas, Offset(0, getBottomTextY(startTP.height)));
 
     double centerPrice = (mBuyData!.last.price + mSellData!.first.price) / 2;
 
-    var center = centerPrice.toStringAsFixed(quoteUnit);
+    var center = NumberUtil.formatFixed(centerPrice, quoteUnit) ?? '';
     TextPainter centerTP = getTextPainter(center);
     centerTP.layout();
     centerTP.paint(
-        canvas,
-        Offset(
-            mDrawWidth - centerTP.width / 2, getBottomTextY(centerTP.height)));
+      canvas,
+      Offset(mDrawWidth - centerTP.width / 2, getBottomTextY(centerTP.height)),
+    );
 
-    var endText = mSellData!.last.price.toStringAsFixed(quoteUnit);
+    var endText = NumberUtil.formatFixed(mSellData!.last.price, quoteUnit) ?? '';
     TextPainter endTP = getTextPainter(endText);
     endTP.layout();
     endTP.paint(
-        canvas, Offset(mWidth - endTP.width, getBottomTextY(endTP.height)));
+      canvas,
+      Offset(mWidth - endTP.width, getBottomTextY(endTP.height)),
+    );
 
-    var leftHalfText =
-        ((mBuyData!.first.price + centerPrice) / 2).toStringAsFixed(quoteUnit);
+    var leftHalfText = NumberUtil.formatFixed((mBuyData!.first.price + centerPrice) / 2, quoteUnit) ?? '';
     TextPainter leftHalfTP = getTextPainter(leftHalfText);
     leftHalfTP.layout();
     leftHalfTP.paint(
-        canvas,
-        Offset((mDrawWidth - leftHalfTP.width) / 2,
-            getBottomTextY(leftHalfTP.height)));
+      canvas,
+      Offset((mDrawWidth - leftHalfTP.width) / 2, getBottomTextY(leftHalfTP.height)),
+    );
 
-    var rightHalfText =
-        ((mSellData!.last.price + centerPrice) / 2).toStringAsFixed(quoteUnit);
+    var rightHalfText = NumberUtil.formatFixed((mSellData!.last.price + centerPrice) / 2, quoteUnit) ?? '';
     TextPainter rightHalfTP = getTextPainter(rightHalfText);
     rightHalfTP.layout();
     rightHalfTP.paint(
-        canvas,
-        Offset((mDrawWidth + mWidth - rightHalfTP.width) / 2,
-            getBottomTextY(rightHalfTP.height)));
+      canvas,
+      Offset((mDrawWidth + mWidth - rightHalfTP.width) / 2, getBottomTextY(rightHalfTP.height)),
+    );
 
     if (isLongPress == true) {
       if (pressOffset!.dx <= mDrawWidth) {
         int index = _indexOfTranslateX(
-            pressOffset!.dx, 0, mBuyData!.length - 1, getBuyX);
-        drawSelectView(canvas, index, true);
+          pressOffset!.dx,
+          0,
+          mBuyData!.length - 1,
+          getBuyX,
+        );
+        drawLeftSelectView(canvas, index); // buy
+
+        int indexRight = mBuyData!.length - index - 1;
+        if (indexRight < mSellData!.length) {
+          drawRightSelectView(canvas, indexRight);
+        }
       } else {
         int index = _indexOfTranslateX(
-            pressOffset!.dx, 0, mSellData!.length - 1, getSellX);
-        drawSelectView(canvas, index, false);
+          pressOffset!.dx,
+          0,
+          mSellData!.length - 1,
+          getSellX,
+        );
+        drawRightSelectView(canvas, index); // sell
+        int indexLeft = mBuyData!.length - index - 1;
+        if (indexLeft >= 0 && indexLeft < mBuyData!.length) {
+          drawLeftSelectView(canvas, indexLeft);
+        }
       }
     }
   }
 
-  void drawSelectView(Canvas canvas, int index, bool isLeft) {
-    DepthEntity entity = isLeft ? mBuyData![index] : mSellData![index];
-    double dx = isLeft ? getBuyX(index) : getSellX(index);
+  void drawLeftSelectView(Canvas canvas, int index) {
+    DepthEntity entity = mBuyData![index];
+    double dx = getBuyX(index);
     double dy = getY(entity.vol);
-    double radius = 8.0;
 
-    if (dx < mDrawWidth) {
-      canvas.drawCircle(Offset(dx, dy), radius / 3,
-          mBuyLinePaint!..style = PaintingStyle.fill);
-      canvas.drawCircle(
-          Offset(dx, dy), radius, mBuyLinePaint!..style = PaintingStyle.stroke);
-    } else {
-      canvas.drawCircle(Offset(dx, dy), radius / 3,
-          mSellLinePaint!..style = PaintingStyle.fill);
-      canvas.drawCircle(Offset(dx, dy), radius,
-          mSellLinePaint!..style = PaintingStyle.stroke);
-    }
+    // draw overlay barrier model
+    canvas.drawRect(
+      Rect.fromLTRB(0, 0, dx, mDrawHeight),
+      mBarrierPathPaint!,
+    );
+
+    /// draw cross line
+    canvas.drawDashLine(
+      Offset(dx, 0),
+      Offset(dx, mDrawHeight),
+      crossPaint ?? Paint(),
+    );
+
+    /// draw dot
+    canvas.drawCircle(
+      Offset(dx, dy),
+      chartStyle.dotRadius * .6,
+      mBuyLinePaint!
+        ..style = PaintingStyle.fill,
+    );
+    canvas.drawCircle(
+      Offset(dx, dy),
+      chartStyle.dotRadius,
+      mBuyLinePaint!
+        ..style = PaintingStyle.stroke,
+    );
 
     ///draw popup info
     ///
     _PopupPainter popupPainter = _PopupPainter(
-      chartTranslations: this.chartTranslations,
+      translations: this.chartTranslations,
       chartColors: this.chartColors,
-      price: entity.price.toStringAsFixed(quoteUnit),
-      amount: entity.vol.toStringAsFixed(baseUnit),
+      chartStyle: this.chartStyle,
+      price: NumberUtil.format(entity.price, quoteUnit) ?? '',
+      amount: NumberUtil.formatCompact(entity.vol, baseUnit) ?? '',
     );
-    dx = dx < mDrawWidth ? dx + offset.dx : dx - offset.dx - popupPainter.width;
-    dy = dy < mDrawHeight / 2
-        ? dy + offset.dy
-        : dy - offset.dy - popupPainter.height;
+
+    dx = dx < mWidth * 0.25 ? dx + offset.dx : dx - offset.dx - popupPainter.width;
+    // dy = dy < mDrawHeight / 2
+    //   ? dy + offset.dy
+    //   : dy - offset.dy - popupPainter.height;
+    dy = (dy - popupPainter.height / 2).clamp(offset.dy, mDrawHeight - popupPainter.height - offset.dy);
+
     Rect rect = Rect.fromLTWH(dx, dy, popupPainter.width, popupPainter.height);
-    RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(2.5));
+    RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(chartStyle.radius));
+
+    canvas.drawRRect(boxRect, selectPaint!);
+    canvas.drawRRect(boxRect, selectBorderPaint!);
+    popupPainter.paint(canvas, rect.topLeft);
+  }
+
+  void drawRightSelectView(Canvas canvas, int index) {
+    DepthEntity entity = mSellData![index];
+    double dx = getSellX(index);
+    double dy = getY(entity.vol);
+
+    /// draw overlay barrier model
+    canvas.drawRect(
+      Rect.fromLTRB(dx, 0, mWidth, mDrawHeight),
+      mBarrierPathPaint!,
+    );
+
+    /// draw cross line
+    canvas.drawDashLine(
+      Offset(dx, 0),
+      Offset(dx, mDrawHeight),
+      crossPaint ?? Paint(),
+    );
+
+    /// draw dot
+    canvas.drawCircle(
+      Offset(dx, dy),
+      chartStyle.dotRadius * .6,
+      mSellLinePaint!..style = PaintingStyle.fill,
+    );
+    canvas.drawCircle(
+      Offset(dx, dy), chartStyle.dotRadius,
+      mSellLinePaint!..style = PaintingStyle.stroke,
+    );
+
+    ///draw popup info
+    ///
+    _PopupPainter popupPainter = _PopupPainter(
+      translations: this.chartTranslations,
+      chartColors: this.chartColors,
+      chartStyle: this.chartStyle,
+      price: NumberUtil.format(entity.price, quoteUnit) ?? '',
+      amount: NumberUtil.formatCompact(entity.vol, baseUnit) ?? '',
+    );
+
+    dx = dx < mWidth * 0.75 ? dx + offset.dx : dx - offset.dx - popupPainter.width;
+    // dx = dx + offset.dx;
+    // dy = dy < mDrawHeight / 2
+    //   ? dy + offset.dy
+    //   : dy - offset.dy - popupPainter.height;
+    dy = (dy - popupPainter.height / 2).clamp(offset.dy, mDrawHeight - popupPainter.height - offset.dy);
+
+    Rect rect = Rect.fromLTWH(dx, dy, popupPainter.width, popupPainter.height);
+    RRect boxRect = RRect.fromRectAndRadius(rect, Radius.circular(chartStyle.radius));
 
     canvas.drawRRect(boxRect, selectPaint!);
     canvas.drawRRect(boxRect, selectBorderPaint!);
@@ -363,8 +468,8 @@ class DepthChartPainter extends CustomPainter {
       double startValue = getX(start);
       double endValue = getX(end);
       return (translateX - startValue).abs() < (translateX - endValue).abs()
-          ? start
-          : end;
+        ? start
+        : end;
     }
     int mid = start + (end - start) ~/ 2;
     double midValue = getX(mid);
@@ -382,18 +487,16 @@ class DepthChartPainter extends CustomPainter {
   double getSellX(int position) => position * mSellPointWidth! + mDrawWidth;
 
   getTextPainter(String text) => TextPainter(
-        text: TextSpan(
-          text: "$text",
-          style: TextStyle(color: chartColors.defaultTextColor, fontSize: 10),
-        ),
-        textDirection: TextDirection.ltr,
-      );
+    text: TextSpan(
+      text: "$text",
+      style: TextStyle(color: chartColors.defaultTextColor, fontSize: 10),
+    ),
+    textDirection: TextDirection.ltr,
+  );
 
-  double getBottomTextY(double textHeight) =>
-      (mPaddingBottom - textHeight) / 2 + mDrawHeight;
+  double getBottomTextY(double textHeight) => (mPaddingBottom - textHeight) / 2 + mDrawHeight;
 
-  double getY(double volume) =>
-      mDrawHeight - (mDrawHeight) * volume / mMaxVolume!;
+  double getY(double volume) => mDrawHeight - (mDrawHeight) * volume / mMaxVolume!;
 
   @override
   bool shouldRepaint(DepthChartPainter oldDelegate) {
@@ -406,52 +509,51 @@ class DepthChartPainter extends CustomPainter {
 }
 
 class _PopupPainter {
-  ///setting
-  final double space = 3.5;
-  final double padding = 8.0;
+  final DepthChartColors chartColors;
+  final DepthChartStyle chartStyle;
 
+  late final TextPainter annotationsPaint;
   late final TextPainter pricePaint;
   late final TextPainter amountPaint;
-  late final ChartColors chartColors;
 
   ///getter
-  double get width => max(pricePaint.width, amountPaint.width) + 2 * padding;
-  double get height =>
-      pricePaint.height + amountPaint.height + space + 2 * padding;
+  double get width => max(pricePaint.width, amountPaint.width) + 2 * chartStyle.padding;
+  double get height => pricePaint.height + amountPaint.height + chartStyle.space + 2 * chartStyle.padding;
 
   _PopupPainter({
-    required DepthChartTranslations chartTranslations,
-    required ChartColors chartColors,
+    required DepthChartTranslations translations,
+    required this.chartColors,
+    required this.chartStyle,
     required String price,
     required String amount,
   }) {
-    this.chartColors = chartColors;
-    this.pricePaint = _getTextPainter(chartTranslations.price, price);
-    this.amountPaint = _getTextPainter(chartTranslations.amount, amount);
+    this.pricePaint = _getTextPainter(translations.price, price);
+    this.amountPaint = _getTextPainter(translations.amount, amount);
     this.pricePaint.layout();
     this.amountPaint.layout();
   }
 
   void paint(Canvas canvas, Offset offset) {
-    pricePaint.paint(canvas, offset + Offset(padding, padding));
+    pricePaint.paint(
+      canvas,
+      offset + Offset(chartStyle.padding, chartStyle.padding),
+    );
     amountPaint.paint(
-        canvas, offset + Offset(padding, pricePaint.height + space + padding));
+      canvas,
+      offset + Offset(chartStyle.padding, pricePaint.height + chartStyle.space + chartStyle.padding),
+    );
   }
 
   TextPainter _getTextPainter(String label, String content) {
     return TextPainter(
       text: TextSpan(
-        text: "$label: ",
+        text: '$label $content',
         style: TextStyle(
-            color: this.chartColors.infoWindowTitleColor, fontSize: 10),
-        children: [
-          TextSpan(
-            text: content,
-            style: TextStyle(
-                color: this.chartColors.infoWindowNormalColor, fontSize: 10),
-          ),
-        ],
+          color: this.chartColors.annotationColor,
+          fontSize: 9,
+        ),
       ),
+      textAlign: TextAlign.start,
       textDirection: TextDirection.ltr,
     );
   }

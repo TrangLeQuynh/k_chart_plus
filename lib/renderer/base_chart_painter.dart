@@ -1,22 +1,19 @@
 import 'dart:math';
-import 'package:flutter/material.dart'
-    show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
+import 'package:flutter/material.dart' show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
+import 'package:k_chart_plus/indicator/indicator_template.dart';
 import 'package:k_chart_plus/utils/date_format_util.dart';
-import '../chart_style.dart' show ChartStyle;
+import '../styles/k_chart_style.dart' show KChartStyle;
 import '../entity/k_line_entity.dart';
-import '../k_chart_widget.dart';
 import 'base_dimension.dart';
-export 'package:flutter/material.dart'
-    show Color, required, TextStyle, Rect, Canvas, Size, CustomPainter;
 
 /// BaseChartPainter
 abstract class BaseChartPainter extends CustomPainter {
   static double maxScrollX = 0.0;
   List<KLineEntity>? datas; // data of chart
 
-  Set<MainState> mainStateLi; //MainState mainState;
+  List<MainIndicator> mainIndicators;
 
-  Set<SecondaryState> secondaryStateLi;
+  List<SecondaryIndicator> secondaryIndicators;
 
   bool volHidden;
   bool isTapShowInfoDialog;
@@ -30,6 +27,8 @@ abstract class BaseChartPainter extends CustomPainter {
   /// Rectangle box of main chart
   late Rect mMainRect;
 
+  late Rect mDateRect;
+
   /// Rectangle box of the vol chart
   Rect? mVolRect;
 
@@ -37,7 +36,8 @@ abstract class BaseChartPainter extends CustomPainter {
   List<RenderRect> mSecondaryRectList = [];
   late double mDisplayHeight, mWidth;
   // padding
-  double mTopPadding = 20.0, mBottomPadding = 20.0, mChildPadding = 12.0;
+  // mBottomPadding: dateRect height
+  double mTopPadding = 20.0, mBottomPadding = 16.0, mChildPadding = 12.0;
   // grid: rows - columns
   int mGridRows = 4, mGridColumns = 4;
   int mStartIndex = 0, mStopIndex = 0;
@@ -49,7 +49,7 @@ abstract class BaseChartPainter extends CustomPainter {
       mMainLowMinValue = double.maxFinite;
   int mItemCount = 0;
   double mDataLen = 0.0; // the data occupies the total length of the screen
-  final ChartStyle chartStyle;
+  final KChartStyle chartStyle;
   late double mPointWidth;
   // format time
   List<String> mFormats = [yyyy, '-', mm, '-', dd, ' ', HH, ':', nn];
@@ -70,16 +70,15 @@ abstract class BaseChartPainter extends CustomPainter {
     required this.xFrontPadding,
     required this.baseDimension,
     this.isOnTap = false,
-    this.mainStateLi = const <MainState>{},
+    this.mainIndicators = const [],
     this.volHidden = false,
     this.isTapShowInfoDialog = false,
-    this.secondaryStateLi = const <SecondaryState>{},
+    this.secondaryIndicators = const [],
     this.isLine = false,
   }) {
     mItemCount = datas?.length ?? 0;
     mPointWidth = this.chartStyle.pointWidth;
-    mTopPadding = this.chartStyle.topPadding +
-        baseDimension.totalLabelHeight; // space to display text of main chart
+    mTopPadding = this.chartStyle.topPadding + baseDimension.totalLabelHeight; // space to display text of main chart
     mBottomPadding = this.chartStyle.bottomPadding;
     mChildPadding = this.chartStyle.childPadding;
     mGridRows = this.chartStyle.gridRows;
@@ -135,7 +134,7 @@ abstract class BaseChartPainter extends CustomPainter {
       drawVerticalText(canvas);
       drawDate(canvas, size);
 
-      drawText(canvas, datas!.last, 5);
+      drawText(canvas, datas!.last, this.chartStyle.space);
       drawMaxAndMin(canvas);
       drawNowPrice(canvas);
 
@@ -189,23 +188,31 @@ abstract class BaseChartPainter extends CustomPainter {
     mainHeight -= baseDimension.totalSecondaryHeight;
 
     mMainRect = Rect.fromLTRB(0, mTopPadding, mWidth, mTopPadding + mainHeight);
+    mDateRect = Rect.fromLTRB(
+      0,
+      mMainRect.bottom,
+      mWidth,
+      mMainRect.bottom + mBottomPadding,
+    );
 
     if (volHidden != true) {
-      mVolRect = Rect.fromLTRB(0, mMainRect.bottom + mChildPadding, mWidth,
-          mMainRect.bottom + volHeight);
+      mVolRect = Rect.fromLTRB(
+        0,
+        mDateRect.bottom + mChildPadding,
+        mWidth,
+        mDateRect.bottom + volHeight,
+      );
     }
 
     mSecondaryRectList.clear();
-    for (int i = 0; i < secondaryStateLi.length; ++i) {
+    for (int i = 0; i < secondaryIndicators.length; ++i) {
       mSecondaryRectList.add(RenderRect(
         Rect.fromLTRB(
-            0,
-            mMainRect.bottom + volHeight + i * secondaryHeight + mChildPadding,
-            mWidth,
-            mMainRect.bottom +
-                volHeight +
-                i * secondaryHeight +
-                secondaryHeight),
+          0,
+          mDateRect.bottom + volHeight + i * secondaryHeight + mChildPadding,
+          mWidth,
+          mDateRect.bottom + volHeight + i * secondaryHeight + secondaryHeight,
+        ),
       ));
     }
   }
@@ -232,17 +239,10 @@ abstract class BaseChartPainter extends CustomPainter {
   void getMainMaxMinValue(KLineEntity item, int i) {
     double maxPrice = item.high;
     double minPrice = item.low;
-    for (int i = 0; i < mainStateLi.length; ++i) {
-      if (mainStateLi.elementAt(i) == MainState.MA) {
-        maxPrice = max(maxPrice, _findMaxMA(item.maValueList ?? [0]));
-        minPrice = min(minPrice, _findMinMA(item.maValueList ?? [0]));
-      } else if (mainStateLi.elementAt(i) == MainState.BOLL) {
-        maxPrice = max(maxPrice, item.up ?? 0);
-        minPrice = min(minPrice, item.dn ?? 0);
-      } else if (mainStateLi.elementAt(i) == MainState.SAR) {
-        maxPrice = max(maxPrice, item.sar ?? 0);
-        minPrice = min(minPrice, item.sar ?? 0);
-      }
+    for (int i = 0; i < mainIndicators.length; ++i) {
+      final value = mainIndicators[i].getMaxMinValue(item, minPrice, maxPrice);
+      minPrice = value.$1;
+      maxPrice = value.$2;
     }
 
     mMainMaxValue = max(mMainMaxValue, maxPrice);
@@ -263,93 +263,34 @@ abstract class BaseChartPainter extends CustomPainter {
     }
   }
 
-  // find maximum of the MA
-  double _findMaxMA(List<double> a) {
-    double result = double.minPositive;
-    for (double i in a) {
-      result = max(result, i);
-    }
-    return result;
-  }
-
-  // find minimum of the MA
-  double _findMinMA(List<double> a) {
-    double result = double.maxFinite;
-    for (double i in a) {
-      result = min(result, i == 0 ? double.maxFinite : i);
-    }
-    return result;
-  }
-
   // get the maximum and minimum of the Vol value
   void getVolMaxMinValue(KLineEntity item) {
-    mVolMaxValue = max(mVolMaxValue,
-        max(item.vol, max(item.MA5Volume ?? 0, item.MA10Volume ?? 0)));
-    mVolMinValue = min(mVolMinValue,
-        min(item.vol, min(item.MA5Volume ?? 0, item.MA10Volume ?? 0)));
+    mVolMaxValue = max(
+      mVolMaxValue,
+      max(item.vol, max(item.MA5Volume ?? 0, item.MA10Volume ?? 0)),
+    );
+    mVolMinValue = min(
+      mVolMinValue,
+      min(item.vol, min(item.MA5Volume ?? 0, item.MA10Volume ?? 0)),
+    );
   }
 
   // compute maximum and minimum of secondary value
   getSecondaryMaxMinValue(int index, KLineEntity item) {
-    SecondaryState secondaryState = secondaryStateLi.elementAt(index);
-    switch (secondaryState) {
-      // MACD
-      case SecondaryState.MACD:
-        if (item.macd != null) {
-          mSecondaryRectList[index].mMaxValue = max(
-              mSecondaryRectList[index].mMaxValue,
-              max(item.macd!, max(item.dif!, item.dea!)));
-          mSecondaryRectList[index].mMinValue = min(
-              mSecondaryRectList[index].mMinValue,
-              min(item.macd!, min(item.dif!, item.dea!)));
-        }
-        break;
-      // KDJ
-      case SecondaryState.KDJ:
-        if (item.d != null) {
-          mSecondaryRectList[index].mMaxValue = max(
-              mSecondaryRectList[index].mMaxValue,
-              max(item.k!, max(item.d!, item.j!)));
-          mSecondaryRectList[index].mMinValue = min(
-              mSecondaryRectList[index].mMinValue,
-              min(item.k!, min(item.d!, item.j!)));
-        }
-        break;
-      // RSI
-      case SecondaryState.RSI:
-        if (item.rsi != null) {
-          mSecondaryRectList[index].mMaxValue =
-              max(mSecondaryRectList[index].mMaxValue, item.rsi!);
-          mSecondaryRectList[index].mMinValue =
-              min(mSecondaryRectList[index].mMinValue, item.rsi!);
-        }
-        break;
-      // WR
-      case SecondaryState.WR:
-        mSecondaryRectList[index].mMaxValue = 0;
-        mSecondaryRectList[index].mMinValue = -100;
-        break;
-      // CCI
-      case SecondaryState.CCI:
-        if (item.cci != null) {
-          mSecondaryRectList[index].mMaxValue =
-              max(mSecondaryRectList[index].mMaxValue, item.cci!);
-          mSecondaryRectList[index].mMinValue =
-              min(mSecondaryRectList[index].mMinValue, item.cci!);
-        }
-        break;
-      // default:
-      //   mSecondaryRectList[index].mMaxValue = 0;
-      //   mSecondaryRectList[index].mMinValue = 0;
-      //   break;
-    }
+    SecondaryIndicator indicator = secondaryIndicators[index];
+    final value = indicator.getMaxMinValue(
+      item,
+      mSecondaryRectList[index].mMinValue,
+      mSecondaryRectList[index].mMaxValue,
+    );
+    mSecondaryRectList[index].mMinValue = value.$1;
+    mSecondaryRectList[index].mMaxValue = value.$2;
   }
 
   // translate x
   double xToTranslateX(double x) => -mTranslateX + x / scaleX;
 
-  int indexOfTranslateX(double translateX) =>
-      _indexOfTranslateX(translateX, 0, mItemCount - 1);
+  int indexOfTranslateX(double translateX) => _indexOfTranslateX(translateX, 0, mItemCount - 1);
 
   /// Using binary search for the index of the current value
   int _indexOfTranslateX(double translateX, int start, int end) {
@@ -360,8 +301,8 @@ abstract class BaseChartPainter extends CustomPainter {
       double startValue = getX(start);
       double endValue = getX(end);
       return (translateX - startValue).abs() < (translateX - endValue).abs()
-          ? start
-          : end;
+        ? start
+        : end;
     }
     int mid = start + (end - start) ~/ 2;
     double midValue = getX(mid);
@@ -389,8 +330,7 @@ abstract class BaseChartPainter extends CustomPainter {
   }
 
   /// scrollX convert to TranslateX
-  void setTranslateXFromScrollX(double scrollX) =>
-      mTranslateX = scrollX + getMinTranslateX();
+  void setTranslateXFromScrollX(double scrollX) => mTranslateX = scrollX + getMinTranslateX();
 
   /// get the minimum value of translation
   double getMinTranslateX() {
@@ -411,8 +351,7 @@ abstract class BaseChartPainter extends CustomPainter {
   }
 
   /// translateX is converted to X in view
-  double translateXtoX(double translateX) =>
-      (translateX + mTranslateX) * scaleX;
+  double translateXtoX(double translateX) => (translateX + mTranslateX) * scaleX;
 
   /// define text style
   TextStyle getTextStyle(Color color) {
