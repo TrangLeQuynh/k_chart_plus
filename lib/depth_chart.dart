@@ -271,7 +271,7 @@ class DepthChartPainter extends CustomPainter {
     String str;
     for (int j = 0; j < mLineCount; j++) {
       value = mMaxVolume! - mMultiple! * j;
-      str = NumberUtil.formatCompact(value, baseUnit) ?? '';
+      str = NumberUtil.formatCompact(value, baseUnit);
       var tp = getTextPainter(str);
       tp.layout();
       tp.paint(
@@ -388,7 +388,7 @@ class DepthChartPainter extends CustomPainter {
       chartColors: this.chartColors,
       chartStyle: this.chartStyle,
       price: NumberUtil.format(entity.price, quoteUnit) ?? '',
-      amount: NumberUtil.formatCompact(entity.vol, baseUnit) ?? '',
+      amount: NumberUtil.formatCompact(entity.vol, baseUnit),
     );
 
     dx = dx < mWidth * 0.25 ? dx + offset.dx : dx - offset.dx - popupPainter.width;
@@ -441,7 +441,7 @@ class DepthChartPainter extends CustomPainter {
       chartColors: this.chartColors,
       chartStyle: this.chartStyle,
       price: NumberUtil.format(entity.price, quoteUnit) ?? '',
-      amount: NumberUtil.formatCompact(entity.vol, baseUnit) ?? '',
+      amount: NumberUtil.formatCompact(entity.vol, baseUnit),
     );
 
     dx = dx < mWidth * 0.75 ? dx + offset.dx : dx - offset.dx - popupPainter.width;

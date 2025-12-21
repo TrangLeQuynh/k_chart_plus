@@ -54,8 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<SecondaryIndicator> _secondaryIndicators = [];
   List<DepthEntity>? _bids, _asks;
 
-  KChartStyle chartStyle = KChartStyle();
-  KChartColors chartColors = KChartColors();
+  KChartStyle chartStyle = const KChartStyle();
+  KChartColors chartColors = const KChartColors();
 
   @override
   void initState() {

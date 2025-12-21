@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/indicator/indicator_template.dart';
-import 'package:k_chart_plus/k_chart_plus.dart';
 import '../entity/candle_entity.dart';
+import '../utils/number_util.dart';
 import 'base_chart_renderer.dart';
 
 enum VerticalTextAlignment { left, right }

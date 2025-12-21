@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:k_chart_plus/k_chart_plus.dart';
-import 'package:k_chart_plus/utils/number_util.dart';
 
 class PopupInfoView extends StatelessWidget {
   final KLineEntity entity;
