@@ -343,7 +343,7 @@ class ChartPainter extends BaseChartPainter {
       Radius.circular(2.0),
     );
 
-    double baseLine = textHeight / 2;
+    // double baseLine = textHeight / 2;
     canvas.drawRRect(
       rectBox,
       selectPointPaint,

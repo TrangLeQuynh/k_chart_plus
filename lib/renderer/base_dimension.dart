@@ -1,7 +1,5 @@
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 
-import '../k_chart_widget.dart';
-
 /// Base Dimension
 class BaseDimension {
   // the height of base chart

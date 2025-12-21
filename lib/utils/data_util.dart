@@ -1,5 +1,4 @@
 import 'package:k_chart_plus/indicator/indicator_template.dart';
-import 'package:k_chart_plus/k_chart_plus.dart';
 import '../entity/index.dart';
 
 class DataUtil {
