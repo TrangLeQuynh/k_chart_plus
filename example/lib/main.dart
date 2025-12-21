@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLoading = true;
   bool _volHidden = false;
   final List<MainIndicator> _defaultMainIndicators = [
-    MAIndicator(),
+    MAIndicator(),  
     EMAIndicator(),
     BOLLIndicator(),
     SARIndicator(),
@@ -110,8 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
               datas,
               chartStyle,
               chartColors,
-              mBaseHeight: 500,
-              mSecondaryHeight: 100,
+              mBaseHeight: 350,
+              mSecondaryHeight: 80,
               isTrendLine: false,
               mainIndicators: _mainIndicators,
               volHidden: _volHidden,
@@ -150,6 +150,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 _bids!,
                 _asks!,
                 const DepthChartColors(),
+                // chartTranslations: const DepthChartTranslations(
+                //   price: 'Price',
+                //   amount: 'Amount',
+                // ),
               ),
             )
         ],
