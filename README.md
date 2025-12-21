@@ -13,7 +13,7 @@ Maybe this is the best k chart in Flutter.Support drag,scale,long press,fling.An
 First, add `k_chart_plus` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ```yaml
-k_chart_plus: ^1.0.3
+k_chart_plus: ^1.0.4
 ```
 
 > If you don't want to support selecting multiple secondary states, you need to use: 
@@ -28,15 +28,10 @@ k_chart_plus: ^1.0.3
 
 ## Usage
 
-**When you change the data, you must call this:**
-```dart
-DataUtil.calculate(datas); //This function has some optional parameters: n is BOLL N-day closing price. k is BOLL param.
-```
-
 ### Use K line chart
 
 
-Indicator definitions (main & secondary). `indicatorStyle` and `calcParams` can be customized, subject to indicator support.
+**Indicator definitions (main & secondary)**. `indicatorStyle` and `calcParams` can be customized, subject to indicator support.
 
 ```dart
 final List<MainIndicator> _mainIndicators = [
@@ -59,7 +54,7 @@ final List<SecondaryIndicator> _secondaryIndicators = [
 ];
 ```
 
-Compute K chart data based on the selected indicators
+**Compute K chart data based on the selected indicators**
 
 ```dart
 DataUtil.calculateAll(

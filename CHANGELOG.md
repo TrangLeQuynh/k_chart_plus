@@ -1,3 +1,8 @@
+## [1.0.4]
+
+* Significant update
+* Support EMA, renew BOLL
+
 ## [1.0.3]
 
 * Support stopAndReverse
