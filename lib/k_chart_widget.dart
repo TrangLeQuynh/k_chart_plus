@@ -141,7 +141,7 @@ class _KChartWidgetState extends State<KChartWidget>
       mSelectX = 0.0;
     } else if (widget.controller!.action == 2) {
       // Zoom logic
-      mScaleX = (mScaleX + widget.controller!.zoom).clamp(0.5, 2.2);
+      mScaleX = (mScaleX + widget.controller!.zoom).clamp(0.01, 100.0);
     }
     notifyChanged();
   }
@@ -242,7 +242,7 @@ class _KChartWidgetState extends State<KChartWidget>
       },
       onScaleUpdate: (details) {
         if (isDrag || isLongPress) return;
-        mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
+        mScaleX = (_lastScale * details.scale).clamp(0.01, 100.0);
         notifyChanged();
       },
       onScaleEnd: (_) {
