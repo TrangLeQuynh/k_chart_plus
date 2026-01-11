@@ -14,7 +14,7 @@ class TimeFormat {
     ' ',
     HH,
     ':',
-    nn
+    nn,
   ];
 }
 
@@ -22,12 +22,17 @@ typedef WidgetDetailBuilder = Widget Function(KLineEntity entity);
 
 class KChartWidget extends StatefulWidget {
   final List<KLineEntity>? datas;
-  final List<MainIndicator> mainIndicators; ///warning only using MA, BOLL, SAR
+  final List<MainIndicator> mainIndicators;
+
+  ///warning only using MA, BOLL, SAR
   final bool volHidden;
-  final List<SecondaryIndicator> secondaryIndicators; ///SecondaryState { MACD, KDJ, RSI, WR, CCI }
+  final List<SecondaryIndicator> secondaryIndicators;
+
+  ///SecondaryState { MACD, KDJ, RSI, WR, CCI }
   // final Function()? onSecondaryTap;
   final bool isLine;
-  final bool isTapShowInfoDialog; //Whether to enable click to display detailed data
+  final bool
+      isTapShowInfoDialog; //Whether to enable click to display detailed data
   final bool hideGrid;
   final bool showNowPrice;
   final bool showInfoDialog;
@@ -52,6 +57,8 @@ class KChartWidget extends StatefulWidget {
   final bool isTrendLine;
   final double xFrontPadding;
   final WidgetDetailBuilder detailBuilder;
+
+  final KChartController? controller;
 
   KChartWidget(
     this.datas,
@@ -80,14 +87,18 @@ class KChartWidget extends StatefulWidget {
     this.verticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
     this.mSecondaryHeight,
+    this.controller,
+    super.key,
   });
 
   @override
   _KChartWidgetState createState() => _KChartWidgetState();
 }
 
-class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMixin {
-  final StreamController<InfoWindowEntity?> mInfoWindowStream = StreamController<InfoWindowEntity?>();
+class _KChartWidgetState extends State<KChartWidget>
+    with TickerProviderStateMixin {
+  final StreamController<InfoWindowEntity?> mInfoWindowStream =
+      StreamController<InfoWindowEntity?>();
   double mScaleX = 1.0, mScrollX = 0.0, mSelectX = 0.0;
   AnimationController? _controller;
   Animation<double>? aniX;
@@ -108,21 +119,31 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
   bool isScale = false, isDrag = false, isLongPress = false, isOnTap = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
     mInfoWindowStream.sink.close();
     mInfoWindowStream.close();
     _controller?.dispose();
+    widget.controller?.removeListener(_onController);
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller?.addListener(_onController);
+  }
+
+  void _onController() {
+    // 1: reset 2: zoom
+    if (widget.controller!.action == 1) {
+      mScaleX = 1.0;
+      mScrollX = 0.0;
+      mSelectX = 0.0;
+    } else if (widget.controller!.action == 2) {
+      // Zoom logic
+      mScaleX = (mScaleX + widget.controller!.zoom).clamp(0.5, 2.2);
+    }
+    notifyChanged();
   }
 
   @override
@@ -170,9 +191,11 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
         //   widget.onSecondaryTap!();
         // }
 
-        if (!widget.isTrendLine && _painter.isInMainRect(details.localPosition)) {
+        if (!widget.isTrendLine &&
+            _painter.isInMainRect(details.localPosition)) {
           isOnTap = true;
-          if (mSelectX != details.localPosition.dx && widget.isTapShowInfoDialog) {
+          if (mSelectX != details.localPosition.dx &&
+              widget.isTapShowInfoDialog) {
             mSelectX = details.localPosition.dx;
             notifyChanged();
           }
@@ -182,12 +205,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
           Offset p1 = Offset(getTrendLineX(), mSelectY);
           if (!waitingForOtherPairofCords) {
             lines.add(
-              TrendLine(
-                p1,
-                Offset(-1, -1),
-                trendLineMax!,
-                trendLineScale!,
-              ),
+              TrendLine(p1, Offset(-1, -1), trendLineMax!, trendLineScale!),
             );
           }
 
@@ -210,8 +228,8 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       onHorizontalDragUpdate: (details) {
         if (isScale || isLongPress) return;
         mScrollX = ((details.primaryDelta ?? 0) / mScaleX + mScrollX)
-          .clamp(0.0, ChartPainter.maxScrollX)
-          .toDouble();
+            .clamp(0.0, ChartPainter.maxScrollX)
+            .toDouble();
         notifyChanged();
       },
       onHorizontalDragEnd: (DragEndDetails details) {
@@ -235,7 +253,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
         isOnTap = false;
         isLongPress = true;
         if ((mSelectX != details.localPosition.dx ||
-            mSelectY != details.globalPosition.dy) &&
+                mSelectY != details.globalPosition.dy) &&
             !widget.isTrendLine) {
           mSelectX = details.localPosition.dx;
           notifyChanged();
@@ -255,7 +273,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       },
       onLongPressMoveUpdate: (details) {
         if ((mSelectX != details.localPosition.dx ||
-            mSelectY != details.globalPosition.dy) &&
+                mSelectY != details.globalPosition.dy) &&
             !widget.isTrendLine) {
           mSelectX = details.localPosition.dx;
           mSelectY = details.localPosition.dy;
@@ -264,7 +282,8 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
         if (widget.isTrendLine) {
           mSelectX = mSelectX + (details.localPosition.dx - changeinXposition!);
           changeinXposition = details.localPosition.dx;
-          mSelectY = mSelectY + (details.globalPosition.dy - changeinYposition!);
+          mSelectY =
+              mSelectY + (details.globalPosition.dy - changeinYposition!);
           changeinYposition = details.globalPosition.dy;
           notifyChanged();
         }
@@ -281,7 +300,7 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
             size: Size(double.infinity, baseDimension.mDisplayHeight),
             painter: _painter,
           ),
-          if (widget.showInfoDialog) _buildInfoDialog()
+          if (widget.showInfoDialog) _buildInfoDialog(),
         ],
       ),
     );
@@ -305,9 +324,13 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
   }
 
   void _onFling(double x) {
-    _controller = AnimationController(duration: Duration(milliseconds: widget.flingTime), vsync: this);
+    _controller = AnimationController(
+      duration: Duration(milliseconds: widget.flingTime),
+      vsync: this,
+    );
     aniX = null;
-    aniX = Tween<double>(begin: mScrollX, end: x * widget.flingRatio + mScrollX).animate(
+    aniX = Tween<double>(begin: mScrollX, end: x * widget.flingRatio + mScrollX)
+        .animate(
       CurvedAnimation(parent: _controller!.view, curve: widget.flingCurve),
     );
     aniX!.addListener(() {
@@ -346,10 +369,9 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       stream: mInfoWindowStream.stream,
       builder: (context, snapshot) {
         if ((!isLongPress && !isOnTap) ||
-          widget.isLine == true ||
-          !snapshot.hasData ||
-          snapshot.data?.kLineEntity == null
-        ) {
+            widget.isLine == true ||
+            !snapshot.hasData ||
+            snapshot.data?.kLineEntity == null) {
           return const SizedBox();
         }
         KLineEntity entity = snapshot.data!.kLineEntity;
