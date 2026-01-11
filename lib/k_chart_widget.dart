@@ -57,6 +57,8 @@ class KChartWidget extends StatefulWidget {
   final bool isTrendLine;
   final double xFrontPadding;
   final WidgetDetailBuilder detailBuilder;
+  final double minScale;
+  final double maxScale;
 
   final KChartController? controller;
 
@@ -88,6 +90,8 @@ class KChartWidget extends StatefulWidget {
     this.mBaseHeight = 360,
     this.mSecondaryHeight,
     this.controller,
+    this.minScale = 0.5,
+    this.maxScale = 2.2,
     super.key,
   });
 
@@ -141,7 +145,8 @@ class _KChartWidgetState extends State<KChartWidget>
       mSelectX = 0.0;
     } else if (widget.controller!.action == 2) {
       // Zoom logic
-      mScaleX = (mScaleX + widget.controller!.zoom).clamp(0.01, 100.0);
+      mScaleX = (mScaleX + widget.controller!.zoom)
+          .clamp(widget.minScale, widget.maxScale);
     }
     notifyChanged();
   }
@@ -242,7 +247,8 @@ class _KChartWidgetState extends State<KChartWidget>
       },
       onScaleUpdate: (details) {
         if (isDrag || isLongPress) return;
-        mScaleX = (_lastScale * details.scale).clamp(0.01, 100.0);
+        mScaleX = (_lastScale * details.scale)
+            .clamp(widget.minScale, widget.maxScale);
         notifyChanged();
       },
       onScaleEnd: (_) {

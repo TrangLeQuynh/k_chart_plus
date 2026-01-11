@@ -116,6 +116,8 @@ class _MyHomePageState extends State<MyHomePage> {
               controller: controller,
               mBaseHeight: 350,
               mSecondaryHeight: 80,
+              minScale: 0.1,
+              maxScale: 100.0,
               isTrendLine: false,
               mainIndicators: _mainIndicators,
               volHidden: _volHidden,
