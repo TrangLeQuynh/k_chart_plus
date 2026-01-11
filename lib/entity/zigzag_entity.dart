@@ -1,0 +1,3 @@
+mixin ZigZagEntity {
+  double? zigzag;
+}
