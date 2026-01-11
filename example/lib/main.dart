@@ -58,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   KChartStyle chartStyle = const KChartStyle();
   KChartColors chartColors = const KChartColors();
 
+  KChartController controller = KChartController();
+
   @override
   void initState() {
     super.initState();
@@ -111,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
               datas,
               chartStyle,
               chartColors,
+              controller: controller,
               mBaseHeight: 350,
               mSecondaryHeight: 80,
               isTrendLine: false,
@@ -135,6 +138,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const CircularProgressIndicator(),
               ),
           ]),
+          _buildTitle(context, 'Controller'),
+          buildControllerButtons(),
           _buildTitle(context, 'VOL'),
           buildVolButton(),
           _buildTitle(context, 'Main State'),
@@ -171,6 +176,37 @@ class _MyHomePageState extends State<MyHomePage> {
               // color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
+      ),
+    );
+  }
+
+  Widget buildControllerButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        spacing: 10,
+        runSpacing: 10,
+        children: [
+          _buildButton(
+            context: context,
+            title: 'Reset',
+            isActive: false,
+            onPress: () => controller.reset(),
+          ),
+          _buildButton(
+            context: context,
+            title: 'Zoom In',
+            isActive: false,
+            onPress: () => controller.zoomIn(),
+          ),
+          _buildButton(
+            context: context,
+            title: 'Zoom Out',
+            isActive: false,
+            onPress: () => controller.zoomOut(),
+          ),
+        ],
       ),
     );
   }
