@@ -113,3 +113,12 @@ class MACDStyle extends IndicatorStyle {
     this.macdWidth = 8.5,
   });
 }
+
+class ZigZagStyle extends IndicatorStyle {
+  final Color zigzagColor;
+
+  const ZigZagStyle({
+    this.zigzagColor = const Color(0xFFFFC634),
+    super.lineWidth = 1.0,
+  });
+}

@@ -37,10 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLoading = true;
   bool _volHidden = false;
   final List<MainIndicator> _defaultMainIndicators = [
-    MAIndicator(),  
+    MAIndicator(),
     EMAIndicator(),
     BOLLIndicator(),
     SARIndicator(),
+    ZigZagIndicator(),
   ];
   final List<SecondaryIndicator> _defaultSecondaryIndicators = [
     MACDIndicator(),
