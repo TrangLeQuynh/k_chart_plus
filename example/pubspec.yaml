@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.0.0
+  flutter_svg: ^2.2.3
   k_chart_plus:
     path: ../
 
@@ -25,3 +26,4 @@ flutter:
   assets:
     - assets/depth.json
     - assets/chatData.json
+    - assets/icons/

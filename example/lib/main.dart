@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'package:example/popup_info_view.dart';
+import 'package:example/examples/depth_example.dart';
+import 'package:example/examples/kline_example.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:k_chart_plus/k_chart_plus.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() => runApp(const MyApp());
 
@@ -15,8 +14,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        scaffoldBackgroundColor: const Color(0xFFF8F8F8),
+        primaryColor: Colors.blueAccent,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarThemeData(
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(
+            size: 22,
+          ),
+        ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -33,297 +39,74 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<KLineEntity>? datas;
-  bool showLoading = true;
-  bool _volHidden = false;
-  final List<MainIndicator> _defaultMainIndicators = [
-    MAIndicator(),  
-    EMAIndicator(),
-    BOLLIndicator(),
-    SARIndicator(),
-  ];
-  final List<SecondaryIndicator> _defaultSecondaryIndicators = [
-    MACDIndicator(),
-    KDJIndicator(),
-    RSIIndicator(),
-    WRIndicator(),
-    CCIIndicator(),
-  ];
-
-  final List<MainIndicator> _mainIndicators = [];
-  final List<SecondaryIndicator> _secondaryIndicators = [];
-  List<DepthEntity>? _bids, _asks;
-
-  KChartStyle chartStyle = const KChartStyle();
-  KChartColors chartColors = const KChartColors();
-
   @override
   void initState() {
     super.initState();
-    getData('1day');
-    rootBundle.loadString('assets/depth.json').then((result) {
-      final parseJson = json.decode(result);
-      final tick = parseJson['tick'] as Map<String, dynamic>;
-      final List<DepthEntity> bids = (tick['bids'] as List<dynamic>)
-          .map<DepthEntity>(
-              (item) => DepthEntity(item[0] as double, item[1] as double))
-          .toList();
-      final List<DepthEntity> asks = (tick['asks'] as List<dynamic>)
-          .map<DepthEntity>(
-              (item) => DepthEntity(item[0] as double, item[1] as double))
-          .toList();
-      initDepth(bids, asks);
-    });
-  }
-
-  void initDepth(List<DepthEntity>? bids, List<DepthEntity>? asks) {
-    if (bids == null || asks == null || bids.isEmpty || asks.isEmpty) return;
-    _bids = [];
-    _asks = [];
-    double amount = 0.0;
-    bids.sort((left, right) => left.price.compareTo(right.price));
-    for (var item in bids.reversed) {
-      amount += item.vol;
-      item.vol = amount;
-      _bids!.insert(0, item);
-    }
-
-    amount = 0.0;
-    asks.sort((left, right) => left.price.compareTo(right.price));
-    for (var item in asks) {
-      amount += item.vol;
-      item.vol = amount;
-      _asks!.add(item);
-    }
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Examples'),),
       body: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          const SafeArea(bottom: false, child: SizedBox(height: 10)),
-          Stack(children: <Widget>[
-            KChartWidget(
-              datas,
-              chartStyle,
-              chartColors,
-              mBaseHeight: 350,
-              mSecondaryHeight: 80,
-              isTrendLine: false,
-              mainIndicators: _mainIndicators,
-              volHidden: _volHidden,
-              secondaryIndicators: _secondaryIndicators,
-              fixedLength: 6,
-              timeFormat: TimeFormat.YEAR_MONTH_DAY,
-              detailBuilder: (entity) {
-                return PopupInfoView(
-                  entity: entity,
-                  chartColors: chartColors,
-                  fixedLength: 2,
-                );
-              },
-            ),
-            if (showLoading)
-              Container(
-                width: double.infinity,
-                height: 450,
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(),
-              ),
-          ]),
-          _buildTitle(context, 'VOL'),
-          buildVolButton(),
-          _buildTitle(context, 'Main State'),
-          buildMainButtons(),
-          _buildTitle(context, 'Secondary State'),
-          buildSecondButtons(),
-          const SizedBox(height: 30),
-          if (_bids != null && _asks != null)
-            Container(
-              color: Colors.white,
-              height: 320,
-              width: double.infinity,
-              child: DepthChart(
-                _bids!,
-                _asks!,
-                const DepthChartColors(),
-                // chartTranslations: const DepthChartTranslations(
-                //   price: 'Price',
-                //   amount: 'Amount',
-                // ),
-              ),
-            )
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 50),
+        children: [
+          _buildExampleItem(
+            icon: 'assets/icons/candle.svg',
+            title: 'KLine chart',
+            onPressed: () async {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (c) => const KlineExample()),
+              );
+            },
+          ),
+          _buildExampleItem(
+            icon: 'assets/icons/depth.svg',
+            title: 'Depth chart',
+            onPressed: () async {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (c) => DepthExample()),
+              );
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 12, 15),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              // color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-      ),
-    );
-  }
-
-  Widget buildVolButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: _buildButton(
-            context: context,
-            title: 'VOL',
-            isActive: !_volHidden,
-            onPress: () {
-              _volHidden = !_volHidden;
-              setState(() {});
-            }),
-      ),
-    );
-  }
-
-  Widget buildMainButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        spacing: 10,
-        runSpacing: 10,
-        children: _defaultMainIndicators.map((e) {
-          bool isActive = _mainIndicators.contains(e);
-          return _buildButton(
-            context: context,
-            title: e.shortName,
-            isActive: isActive,
-            onPress: () {
-              if (isActive) {
-                _mainIndicators.remove(e);
-              } else {
-                _mainIndicators.add(e);
-              }
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget buildSecondButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Wrap(
-        alignment: WrapAlignment.start,
-        spacing: 10,
-        runSpacing: 5,
-        children: _defaultSecondaryIndicators.map((e) {
-          bool isActive = _secondaryIndicators.contains(e);
-          return _buildButton(
-            context: context,
-            title: e.shortName,
-            isActive: isActive,
-            onPress: () {
-              if (isActive) {
-                _secondaryIndicators.remove(e);
-              } else {
-                _secondaryIndicators.add(e);
-              }
-            },
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildButton({
-    required BuildContext context,
+  Widget _buildExampleItem({
+    required String icon,
     required String title,
-    required isActive,
-    required Function onPress,
+    required AsyncCallback onPressed,
   }) {
-    late Color? bgColor, txtColor;
-    if (isActive) {
-      bgColor = Theme.of(context).primaryColor.withAlpha(30);
-      txtColor = Theme.of(context).primaryColor;
-    } else {
-      bgColor = Colors.transparent;
-      txtColor = Theme.of(context).textTheme.bodyMedium?.color;
-    }
-    return InkWell(
-      onTap: () {
-        onPress();
-        setState(() {});
-      },
+    return GestureDetector(
+      onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFDCDCDC), width: 1.0),
         ),
-        constraints: const BoxConstraints(minWidth: 60),
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: txtColor,
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 16.0,
+          children: [
+            SvgPicture.asset(
+              icon,
+              height: 30,
+            ),
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-          textAlign: TextAlign.center,
+            )
+          ],
         ),
       ),
     );
-  }
-
-  void getData(String period) {
-    // final Future<String> future = getChatDataFromInternet(period);
-    final Future<String> future = getChatDataFromJson();
-    future.then((String result) {
-      solveChatData(result);
-    }).catchError((_) {
-      showLoading = false;
-      setState(() {});
-      debugPrint('### datas error $_');
-    });
-  }
-
-  Future<String> getChatDataFromInternet(String? period) async {
-    var url =
-        'https://api.huobi.br.com/market/history/kline?period=${period ?? '1day'}&size=300&symbol=btcusdt';
-    late String result;
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      result = response.body;
-    } else {
-      debugPrint('Failed getting IP address');
-    }
-    return result;
-  }
-
-  Future<String> getChatDataFromJson() async {
-    return rootBundle.loadString('assets/chatData.json');
-  }
-
-  void solveChatData(String result) {
-    final Map parseJson = json.decode(result) as Map<dynamic, dynamic>;
-    final list = parseJson['data'] as List<dynamic>;
-    datas = list
-        .map((item) => KLineEntity.fromJson(item as Map<String, dynamic>))
-        .toList()
-        .reversed
-        .toList()
-        .cast<KLineEntity>();
-    DataUtil.calculateAll(
-      datas!,
-      _defaultMainIndicators,
-      _defaultSecondaryIndicators,
-    );
-    showLoading = false;
-    setState(() {});
   }
 }
