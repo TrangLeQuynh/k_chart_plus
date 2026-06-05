@@ -52,7 +52,7 @@ class EMAIndicator extends MainIndicator<CandleEntity, MAStyle> {
 
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX) {
     if (
       curPoint.emaValueList == null ||
       lastPoint.emaValueList == null ||

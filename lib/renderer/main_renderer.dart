@@ -109,7 +109,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
       /// draw chart main state
       for (int i = 0; i < indicatorLi.length; ++i) {
-        indicatorLi[i].drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors);
+        indicatorLi[i].drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors, scaleX);
       }
     }
   }

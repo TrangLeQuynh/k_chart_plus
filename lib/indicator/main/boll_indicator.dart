@@ -74,7 +74,7 @@ class BOLLIndicator extends MainIndicator<CandleEntity, BOLLStyle> {
     );
   }
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX) {
     if (lastPoint.boll == null || curPoint.boll == null) return;
     final List<Offset> _positionLi = [];
 

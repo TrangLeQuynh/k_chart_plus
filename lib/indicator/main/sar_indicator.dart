@@ -39,7 +39,7 @@ class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
   }
 
   @override
-  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
+  void drawChart(CandleEntity lastPoint, CandleEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX) {
     final sar = curPoint.sar;
     if (sar == null) return;
     final halfHL = (curPoint.high + curPoint.low) / 2;
@@ -51,9 +51,18 @@ class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
     } else {
       color = chartColors.dnColor;
     }
-    canvas.drawCircle(
-      Offset(curX, getY(sar)),
-      indicatorStyle.radius,
+    // canvas.drawCircle(
+    //   Offset(curX, getY(sar)),
+    //   indicatorStyle.radius,
+    //   _dotPaint..color = color,
+    // );
+    final r = indicatorStyle.radius;
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(curX, getY(sar)),
+        width: r * 2 / scaleX,
+        height: r * 2,
+      ),
       _dotPaint..color = color,
     );
   }

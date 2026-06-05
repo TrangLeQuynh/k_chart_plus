@@ -28,7 +28,7 @@ class SecondaryRenderer extends BaseChartRenderer<MACDEntity> {
 
   @override
   void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, Size size, Canvas canvas) {
-    indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors);
+    indicator.drawChart(lastPoint, curPoint, lastX, curX, getY, canvas, chartColors, 1.0);
   }
 
   @override

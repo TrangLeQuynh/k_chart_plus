@@ -40,7 +40,7 @@ abstract class IndicatorTemplate<T, K> {
 
   TextSpan? drawFigure(T value, int precision, KChartColors chartColors);
 
-  void drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors);
+  void drawChart(T lastPoint, T curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX);
 
   void calc(List<KLineEntity> dataList);
 

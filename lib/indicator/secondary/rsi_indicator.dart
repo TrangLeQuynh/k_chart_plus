@@ -74,7 +74,7 @@ class RSIIndicator extends SecondaryIndicator<MACDEntity, RSIStyle> {
   }
 
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX) {
     if (curPoint.rsi == null || lastPoint.rsi == null) return;
     canvas.drawLine(
       Offset(curX, getY(curPoint.rsi!)),
