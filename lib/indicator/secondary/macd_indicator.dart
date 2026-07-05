@@ -111,7 +111,7 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity, MACDStyle> {
   }
 
   @override
-  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors) {
+  void drawChart(MACDEntity lastPoint, MACDEntity curPoint, double lastX, double curX, GetYFunction getY, Canvas canvas, KChartColors chartColors, double scaleX) {
     final prevMacd = lastPoint.macd;
     final macd = curPoint.macd;
     if (curPoint.macd != null) {

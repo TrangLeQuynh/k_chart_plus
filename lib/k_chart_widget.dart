@@ -202,34 +202,32 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
           notifyChanged();
         }
       },
-      onHorizontalDragDown: (details) {
+      onScaleStart: (details) {
         isOnTap = false;
         _stopAnimation();
         _onDragChanged(true);
       },
-      onHorizontalDragUpdate: (details) {
-        if (isScale || isLongPress) return;
-        mScrollX = ((details.primaryDelta ?? 0) / mScaleX + mScrollX)
-          .clamp(0.0, ChartPainter.maxScrollX)
-          .toDouble();
-        notifyChanged();
-      },
-      onHorizontalDragEnd: (DragEndDetails details) {
-        var velocity = details.velocity.pixelsPerSecond.dx;
-        _onFling(velocity);
-      },
-      onHorizontalDragCancel: () => _onDragChanged(false),
-      onScaleStart: (_) {
-        isScale = true;
-      },
       onScaleUpdate: (details) {
-        if (isDrag || isLongPress) return;
-        mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
-        notifyChanged();
+        if (isLongPress) return;
+        if (details.pointerCount >= 2) {
+          isScale = true;
+          mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
+          notifyChanged();
+        } else if (!isScale) {
+          mScrollX = (details.focalPointDelta.dx / mScaleX + mScrollX)
+              .clamp(0.0, ChartPainter.maxScrollX)
+              .toDouble();
+          notifyChanged();
+        }
       },
-      onScaleEnd: (_) {
-        isScale = false;
-        _lastScale = mScaleX;
+      onScaleEnd: (details) {
+        if (isScale) {
+          _lastScale = mScaleX;
+          isScale = false;
+        } else {
+          _onFling(details.velocity.pixelsPerSecond.dx);
+        }
+        _onDragChanged(false);
       },
       onLongPressStart: (details) {
         isOnTap = false;
