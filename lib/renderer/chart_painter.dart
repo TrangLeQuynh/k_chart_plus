@@ -143,6 +143,7 @@ class ChartPainter extends BaseChartPainter {
         fixedLength,
         this.chartStyle,
         this.chartColors,
+        scaleX: this.scaleX,
       );
     }
     mSecondaryRendererList.clear();
@@ -155,7 +156,8 @@ class ChartPainter extends BaseChartPainter {
         secondaryIndicators[i],
         fixedLength,
         chartStyle,
-        chartColors
+        chartColors,
+        scaleX: scaleX,
       ));
     }
   }
@@ -203,8 +205,9 @@ class ChartPainter extends BaseChartPainter {
   @override
   void drawChart(Canvas canvas, Size size) {
     canvas.save();
-    canvas.translate(mTranslateX * scaleX, 0.0);
-    canvas.scale(scaleX, 1.0);
+    // Zoom is baked into the x math (mPointWidth is already scaled), so the
+    // canvas only pans. Nothing drawn below gets stretched horizontally.
+    canvas.translate(mTranslateX, 0.0);
     for (int i = mStartIndex; datas != null && i <= mStopIndex; i++) {
       KLineEntity? curPoint = datas?[i];
       if (curPoint == null) continue;
@@ -448,9 +451,10 @@ class ChartPainter extends BaseChartPainter {
     nowPriceLinePaint.color = priceColor;
 
     //first draw the horizontal line
+    // Drawn outside the pan transform: plain screen coordinates.
     canvas.drawDashLine(
       Offset(0, y),
-      Offset(-mTranslateX + mWidth / scaleX, y),
+      Offset(-mTranslateX + mWidth, y),
       nowPriceLinePaint,
     );
 
@@ -503,7 +507,9 @@ class ChartPainter extends BaseChartPainter {
       ..strokeWidth = 1
       ..isAntiAlias = true;
     double x = getX(index);
-    trendLineX = x;
+    // Stored in data units (independent of the current zoom) so lines placed
+    // at one zoom level keep tracking their candle after re-scaling.
+    trendLineX = x / scaleX;
 
     double y = selectY;
     // getMainY(point.close);
@@ -525,36 +531,22 @@ class ChartPainter extends BaseChartPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(
       Offset(-mTranslateX, y),
-      Offset(-mTranslateX + mWidth / scaleX, y),
+      Offset(-mTranslateX + mWidth, y),
       paintX,
     );
-    if (scaleX >= 1) {
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(x, y),
-          height: 15.0 * scaleX,
-          width: 15.0,
-        ),
-        paint,
-      );
-    } else {
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(x, y),
-          height: 10.0,
-          width: 10.0 / scaleX,
-        ),
-        paint,
-      );
-    }
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(x, y), height: 15.0, width: 15.0),
+      paint,
+    );
     if (lines.isNotEmpty) {
       lines.forEach((element) {
         var y1 = -((element.p1.dy - 35) / element.scale) + element.maxHeight;
         var y2 = -((element.p2.dy - 35) / element.scale) + element.maxHeight;
         var a = (trendLineMax! - y1) * trendLineScale! + trendLineContentRec!;
         var b = (trendLineMax! - y2) * trendLineScale! + trendLineContentRec!;
-        var p1 = Offset(element.p1.dx, a);
-        var p2 = Offset(element.p2.dx, b);
+        // p*.dx is stored in data units — scale to the current zoom.
+        var p1 = Offset(element.p1.dx * scaleX, a);
+        var p2 = Offset(element.p2.dx * scaleX, b);
         canvas.drawLine(
           p1,
           element.p2 == Offset(-1, -1) ? Offset(x, y) : p2,
@@ -582,21 +574,16 @@ class ChartPainter extends BaseChartPainter {
     // K-line chart horizontal line
     canvas.drawDashLine(
       Offset(-mTranslateX, y),
-      Offset(-mTranslateX + mWidth / scaleX, y),
+      Offset(-mTranslateX + mWidth, y),
       paintCross,
     );
 
-    if (scaleX >= 1) {
-      canvas.drawOval(
-        Rect.fromCenter(center: Offset(x, y), height: 4.0 * scaleX, width: 4.0),
-        paintCross,
-      );
-    } else {
-      canvas.drawOval(
-        Rect.fromCenter(center: Offset(x, y), height: 4.0, width: 4.0 / scaleX),
-        paintCross,
-      );
-    }
+    // The canvas is no longer scaled, so a plain circle stays a circle at
+    // any zoom level.
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(x, y), height: 4.0, width: 4.0),
+      paintCross,
+    );
   }
 
   TextPainter getTextPainter(text, color) {

@@ -116,7 +116,8 @@ class MACDIndicator extends SecondaryIndicator<MACDEntity, MACDStyle> {
     final macd = curPoint.macd;
     if (curPoint.macd != null) {
       final mMACDWidth = indicatorStyle.macdWidth;
-      double r = mMACDWidth / 2;
+      // Bar width follows the zoom explicitly (the canvas is not scaled).
+      double r = mMACDWidth / 2 * scaleX;
       double zeroy = getY(0);
       double macdY = getY(macd!);
       _rectPaint.style = (prevMacd == null || prevMacd <= macd) ? PaintingStyle.stroke : PaintingStyle.fill;

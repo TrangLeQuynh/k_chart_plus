@@ -214,7 +214,9 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
           mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
           notifyChanged();
         } else if (!isScale) {
-          mScrollX = (details.focalPointDelta.dx / mScaleX + mScrollX)
+          // scrollX is in screen pixels now (zoom lives in the point width),
+          // so the finger delta is applied 1:1.
+          mScrollX = (details.focalPointDelta.dx + mScrollX)
               .clamp(0.0, ChartPainter.maxScrollX)
               .toDouble();
           notifyChanged();

@@ -5,6 +5,7 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
   late double mVolWidth;
   final KChartStyle chartStyle;
   final KChartColors chartColors;
+  final double scaleX;
 
   VolRenderer(
     Rect mainRect,
@@ -13,8 +14,9 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
     double topPadding,
     int fixedLength,
     this.chartStyle,
-    this.chartColors,
-  ) : super(
+    this.chartColors, {
+    this.scaleX = 1.0,
+  }) : super(
     chartRect: mainRect,
     maxValue: maxValue,
     minValue: minValue,
@@ -27,7 +29,7 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
 
   @override
   void drawChart(VolumeEntity lastPoint, VolumeEntity curPoint, double lastX, double curX, Size size, Canvas canvas) {
-    double r = mVolWidth / 2;
+    double r = mVolWidth / 2 * scaleX;
     double top = getVolY(curPoint.vol);
     double bottom = chartRect.bottom;
     if (curPoint.vol != 0) {

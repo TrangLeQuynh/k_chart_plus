@@ -51,18 +51,11 @@ class SARIndicator extends MainIndicator<CandleEntity, SARStyle> {
     } else {
       color = chartColors.dnColor;
     }
-    // canvas.drawCircle(
-    //   Offset(curX, getY(sar)),
-    //   indicatorStyle.radius,
-    //   _dotPaint..color = color,
-    // );
-    final r = indicatorStyle.radius;
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(curX, getY(sar)),
-        width: r * 2 / scaleX,
-        height: r * 2,
-      ),
+    // The canvas is never scaled horizontally anymore, so a plain circle
+    // keeps its shape at any zoom level.
+    canvas.drawCircle(
+      Offset(curX, getY(sar)),
+      indicatorStyle.radius,
       _dotPaint..color = color,
     );
   }

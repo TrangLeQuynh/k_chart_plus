@@ -77,7 +77,11 @@ abstract class BaseChartPainter extends CustomPainter {
     this.isLine = false,
   }) {
     mItemCount = datas?.length ?? 0;
-    mPointWidth = this.chartStyle.pointWidth;
+    // Effective step between two data points in screen pixels. Zoom is
+    // expressed by widening/narrowing this step instead of canvas.scale, so
+    // strokes, dots and dash patterns keep their intended size (see
+    // ChartPainter.drawChart).
+    mPointWidth = this.chartStyle.pointWidth * scaleX;
     mTopPadding = this.chartStyle.topPadding + baseDimension.totalLabelHeight; // space to display text of main chart
     mBottomPadding = this.chartStyle.bottomPadding;
     mChildPadding = this.chartStyle.childPadding;
@@ -288,7 +292,7 @@ abstract class BaseChartPainter extends CustomPainter {
   }
 
   // translate x
-  double xToTranslateX(double x) => -mTranslateX + x / scaleX;
+  double xToTranslateX(double x) => -mTranslateX + x;
 
   int indexOfTranslateX(double translateX) => _indexOfTranslateX(translateX, 0, mItemCount - 1);
 
@@ -332,9 +336,12 @@ abstract class BaseChartPainter extends CustomPainter {
   /// scrollX convert to TranslateX
   void setTranslateXFromScrollX(double scrollX) => mTranslateX = scrollX + getMinTranslateX();
 
-  /// get the minimum value of translation
+  /// get the minimum value of translation (screen pixels)
+  /// mDataLen/mPointWidth are already scaled; xFrontPadding is kept in data
+  /// units so the front gap zooms together with the candles like before.
   double getMinTranslateX() {
-    var x = -mDataLen + mWidth / scaleX - mPointWidth / 2 - xFrontPadding;
+    // var x = -mDataLen + mWidth - mPointWidth / 2 - xFrontPadding * scaleX;
+    var x = -mDataLen + mWidth - mPointWidth / 2 - xFrontPadding;
     return x >= 0 ? 0.0 : x;
   }
 
@@ -351,7 +358,7 @@ abstract class BaseChartPainter extends CustomPainter {
   }
 
   /// translateX is converted to X in view
-  double translateXtoX(double translateX) => (translateX + mTranslateX) * scaleX;
+  double translateXtoX(double translateX) => translateX + mTranslateX;
 
   /// define text style
   TextStyle getTextStyle(Color color) {
