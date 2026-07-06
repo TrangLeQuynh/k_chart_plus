@@ -179,7 +179,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
     canvas.drawPath(
       mLinePath!,
-      mLinePaint..strokeWidth = (mLineStrokeWidth / scaleX).clamp(0.1, 1.0),
+      mLinePaint..strokeWidth = mLineStrokeWidth,
     );
     mLinePath!.reset();
   }
@@ -189,8 +189,10 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     var low = getY(curPoint.low);
     var open = getY(curPoint.open);
     var close = getY(curPoint.close);
-    double r = mCandleWidth / 2;
-    double lineR = mCandleLineWidth / 2;
+    // Horizontal sizes follow the zoom explicitly (the canvas itself is not
+    // scaled); vertical minimum-body checks below stay in plain pixels.
+    double r = mCandleWidth / 2 * scaleX;
+    double lineR = mCandleLineWidth / 2 * scaleX;
     if (open >= close) {
       // 实体高度>= CandleLineWidth
       if (open - close < mCandleLineWidth) {

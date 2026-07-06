@@ -16,13 +16,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blueAccent,
         scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarThemeData(
-          surfaceTintColor: Colors.transparent,
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(
-            size: 22,
-          ),
-        ),
+        // appBarTheme: const AppBarThemeData(
+        //   surfaceTintColor: Colors.transparent,
+        //   backgroundColor: Colors.white,
+        //   iconTheme: IconThemeData(
+        //     size: 22,
+        //   ),
+        // ),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
