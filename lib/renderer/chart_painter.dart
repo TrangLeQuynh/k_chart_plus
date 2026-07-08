@@ -39,12 +39,10 @@ class ChartPainter extends BaseChartPainter {
     required datas,
     required scaleX,
     required scrollX,
-    required isLongPass,
+    required interactionMode,
     required selectX,
     required xFrontPadding,
     required this.baseDimension,
-    isOnTap,
-    isTapShowInfoDialog,
     required this.verticalTextAlignment,
     mainIndicators,
     volHidden,
@@ -57,10 +55,8 @@ class ChartPainter extends BaseChartPainter {
             datas: datas,
             scaleX: scaleX,
             scrollX: scrollX,
-            isLongPress: isLongPass,
+            interactionMode: interactionMode,
             baseDimension: baseDimension,
-            isOnTap: isOnTap,
-            isTapShowInfoDialog: isTapShowInfoDialog,
             selectX: selectX,
             mainIndicators: mainIndicators,
             volHidden: volHidden,
@@ -199,7 +195,7 @@ class ChartPainter extends BaseChartPainter {
       });
     }
 
-    if (isLongPress == true || (isTapShowInfoDialog && isOnTap)) {
+    if (interactionMode == InteractionMode.crosshair) {
       drawCrossLine(canvas, size);
     }
     canvas.restore();
@@ -348,7 +344,7 @@ class ChartPainter extends BaseChartPainter {
   @override
   void drawText(Canvas canvas, KLineEntity data, double x) {
     //Long press to display the data in the press
-    if (isLongPress || (isTapShowInfoDialog && isOnTap)) {
+    if (interactionMode == InteractionMode.crosshair) {
       var index = calculateSelectedX(selectX);
       data = getItem(index);
     }
