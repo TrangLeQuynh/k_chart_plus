@@ -73,7 +73,6 @@ KChartWidget(
   kchartColors, // Required for styling purposes
   mBaseHeight: 350, // height of chart (not contain Vol and Secondary) 
   mSecondaryHeight: 80, // height of secondary chart
-  isTrendLine: false, // You can use Trendline by long-pressing and moving your finger after setting true to isTrendLine property. 
   volHidden: _volHidden, // hide volume
   mainIndicators: _mainIndicators, // [mainIndicators] Decide what the main view shows
   secondaryIndicators: _secondaryIndicators, // [secondaryIndicators] Decide what the sub view shows
@@ -155,7 +154,6 @@ KChartColors kchartColors = KChartColors(
   volDnColor: const Color(0xFFFF476B), //0x4DE93057
   nowPriceUpColor: const Color(0xFF1EBB43),
   nowPriceDnColor: const Color(0xFFFF476B),
-  trendLineColor: const Color(0xFFF89215),
   selectBorderColor: themeData.dividerColor,
   selectFillColor: themeData.inputDecorationTheme.fillColor ?? Colors.white,
   gridColor: themeData.dividerColor,

@@ -12,26 +12,7 @@ import 'main_renderer.dart';
 import 'secondary_renderer.dart';
 import 'vol_renderer.dart';
 
-class TrendLine {
-  final Offset p1;
-  final Offset p2;
-  final double maxHeight;
-  final double scale;
-
-  TrendLine(this.p1, this.p2, this.maxHeight, this.scale);
-}
-
-double? trendLineX;
-
-double getTrendLineX() {
-  return trendLineX ?? 0;
-}
-
 class ChartPainter extends BaseChartPainter {
-  final List<TrendLine> lines; //For TrendLine
-  final bool isTrendLine; //For TrendLine
-  bool isrecordingCord = false; //For TrendLine
-  final double selectY; //For TrendLine
   static get maxScrollX => BaseChartPainter.maxScrollX;
   late BaseChartRenderer mMainRenderer;
   BaseChartRenderer? mVolRenderer;
@@ -54,9 +35,6 @@ class ChartPainter extends BaseChartPainter {
   ChartPainter(
     this.chartStyle,
     this.chartColors, {
-    required this.lines, //For TrendLine
-    required this.isTrendLine, //For TrendLine
-    required this.selectY, //For TrendLine
     required this.sink,
     required datas,
     required scaleX,
@@ -221,10 +199,9 @@ class ChartPainter extends BaseChartPainter {
       });
     }
 
-    if ((isLongPress == true || (isTapShowInfoDialog && isOnTap)) && isTrendLine == false) {
+    if (isLongPress == true || (isTapShowInfoDialog && isOnTap)) {
       drawCrossLine(canvas, size);
     }
-    if (isTrendLine == true) drawTrendLines(canvas, size);
     canvas.restore();
   }
 
@@ -497,64 +474,6 @@ class ChartPainter extends BaseChartPainter {
       canvas,
       Offset(offsetX + paddingX, top),
     );
-  }
-
-  //For TrendLine
-  void drawTrendLines(Canvas canvas, Size size) {
-    var index = calculateSelectedX(selectX);
-    Paint paintY = Paint()
-      ..color = chartColors.trendLineColor
-      ..strokeWidth = 1
-      ..isAntiAlias = true;
-    double x = getX(index);
-    // Stored in data units (independent of the current zoom) so lines placed
-    // at one zoom level keep tracking their candle after re-scaling.
-    trendLineX = x / scaleX;
-
-    double y = selectY;
-    // getMainY(point.close);
-
-    // K-line chart vertical line
-    canvas.drawLine(
-      Offset(x, mTopPadding),
-      Offset(x, size.height),
-      paintY,
-    );
-    Paint paintX = Paint()
-      ..color = chartColors.trendLineColor
-      ..strokeWidth = 1
-      ..isAntiAlias = true;
-    Paint paint = Paint()
-      ..color = chartColors.trendLineColor
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(
-      Offset(-mTranslateX, y),
-      Offset(-mTranslateX + mWidth, y),
-      paintX,
-    );
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), height: 15.0, width: 15.0),
-      paint,
-    );
-    if (lines.isNotEmpty) {
-      lines.forEach((element) {
-        var y1 = -((element.p1.dy - 35) / element.scale) + element.maxHeight;
-        var y2 = -((element.p2.dy - 35) / element.scale) + element.maxHeight;
-        var a = (trendLineMax! - y1) * trendLineScale! + trendLineContentRec!;
-        var b = (trendLineMax! - y2) * trendLineScale! + trendLineContentRec!;
-        // p*.dx is stored in data units — scale to the current zoom.
-        var p1 = Offset(element.p1.dx * scaleX, a);
-        var p2 = Offset(element.p2.dx * scaleX, b);
-        canvas.drawLine(
-          p1,
-          element.p2 == Offset(-1, -1) ? Offset(x, y) : p2,
-          Paint()
-            ..color = Colors.yellow
-            ..strokeWidth = 2);
-      });
-    }
   }
 
   ///draw cross lines
