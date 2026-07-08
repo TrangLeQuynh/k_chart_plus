@@ -34,9 +34,6 @@ class KChartColors {
   final Color nowPriceUpColor;
   final Color nowPriceDnColor;
 
-  /// trend color
-  final Color trendLineColor;
-
   ///value border color after selection
   final Color selectBorderColor;
 
@@ -76,9 +73,6 @@ class KChartColors {
     this.defaultTextColor = const Color(0xFF909196),
     this.nowPriceUpColor = const Color(0xFF14AD8F),
     this.nowPriceDnColor = const Color(0xFFD5405D),
-
-    /// trend color
-    this.trendLineColor = const Color(0xFFF89215),
 
     ///value border color after selection
     this.selectBorderColor = const Color(0xFF222223),

@@ -75,7 +75,6 @@ class _KlineExampleState extends State<KlineExample> {
             chartColors,
             mBaseHeight: constraint.maxHeight,
             mSecondaryHeight: mSecondaryHeight,
-            isTrendLine: false,
             mainIndicators: _mainIndicators,
             volHidden: _volHidden,
             secondaryIndicators: _secondaryIndicators,
