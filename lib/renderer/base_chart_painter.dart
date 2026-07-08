@@ -6,6 +6,14 @@ import '../styles/k_chart_style.dart' show KChartStyle;
 import '../entity/k_line_entity.dart';
 import 'base_dimension.dart';
 
+
+enum InteractionMode {
+  /// No active interaction is occurring
+  none,
+  /// User is interacting with the crosshair
+  crosshair,
+}
+
 /// BaseChartPainter
 abstract class BaseChartPainter extends CustomPainter {
   static double maxScrollX = 0.0;
@@ -16,10 +24,8 @@ abstract class BaseChartPainter extends CustomPainter {
   List<SecondaryIndicator> secondaryIndicators;
 
   bool volHidden;
-  bool isTapShowInfoDialog;
   double scaleX = 1.0, scrollX = 0.0, selectX;
-  bool isLongPress = false;
-  bool isOnTap;
+  InteractionMode interactionMode;
   bool isLine;
 
   late Rect mMainLabelRect;
@@ -65,14 +71,12 @@ abstract class BaseChartPainter extends CustomPainter {
     this.datas,
     required this.scaleX,
     required this.scrollX,
-    required this.isLongPress,
+    required this.interactionMode,
     required this.selectX,
     required this.xFrontPadding,
     required this.baseDimension,
-    this.isOnTap = false,
     this.mainIndicators = const [],
     this.volHidden = false,
-    this.isTapShowInfoDialog = false,
     this.secondaryIndicators = const [],
     this.isLine = false,
   }) {
@@ -142,7 +146,7 @@ abstract class BaseChartPainter extends CustomPainter {
       drawMaxAndMin(canvas);
       drawNowPrice(canvas);
 
-      if (isLongPress == true || (isTapShowInfoDialog && isOnTap)) {
+      if (interactionMode == InteractionMode.crosshair) {
         drawCrossLineText(canvas, size);
       }
     }

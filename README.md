@@ -79,7 +79,6 @@ KChartWidget(
   fixedLength: 6,
   showNowPrice: true,// show now price
   timeFormat: TimeFormat.YEAR_MONTH_DAY,
-  isOnDrag: (isDrag){}, // true is on Drag.Don't load data while Draging.
   xFrontPadding: 100 // padding in front
   detailBuilder: (entity) { // show detail popup 
     return PopupInfoView(
