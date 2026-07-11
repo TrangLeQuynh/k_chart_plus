@@ -4,8 +4,6 @@ import '../entity/candle_entity.dart';
 import '../utils/number_util.dart';
 import 'base_chart_renderer.dart';
 
-enum VerticalTextAlignment { left, right }
-
 class MainRenderer extends BaseChartRenderer<CandleEntity> {
   late double mCandleWidth;
   late double mCandleLineWidth;
@@ -20,7 +18,6 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   final double mLineStrokeWidth = 1.0;
   double scaleX;
   late Paint mLinePaint;
-  final VerticalTextAlignment verticalTextAlignment;
   final double mBottomPadding;
 
   MainRenderer(
@@ -34,7 +31,6 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
     this.chartStyle,
     this.chartColors,
     this.scaleX,
-    this.verticalTextAlignment,
     this.mBottomPadding,
   ) : super(
     chartRect: mainRect,
@@ -231,15 +227,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
       tp.layout();
 
-      double offsetX;
-      switch (verticalTextAlignment) {
-        case VerticalTextAlignment.left:
-          offsetX = this.chartStyle.space;
-          break;
-        case VerticalTextAlignment.right:
-          offsetX = chartRect.width - tp.width - this.chartStyle.space;
-          break;
-      }
+      // VerticalTextAlignment.right
+      double offsetX = chartRect.width - tp.width - this.chartStyle.space;
 
       if (i == 0) {
         tp.paint(canvas, Offset(offsetX, topPadding));

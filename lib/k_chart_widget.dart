@@ -45,7 +45,6 @@ class KChartWidget extends StatefulWidget {
   final Function(bool)? isOnDrag;
   final KChartColors chartColors;
   final KChartStyle chartStyle;
-  final VerticalTextAlignment verticalTextAlignment;
   final double xFrontPadding;
   final WidgetDetailBuilder? detailBuilder;
 
@@ -68,7 +67,6 @@ class KChartWidget extends StatefulWidget {
     this.flingRatio = 0.5,
     this.flingCurve = Curves.decelerate,
     this.isOnDrag,
-    this.verticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
     this.mSecondaryHeight,
   });
@@ -141,7 +139,6 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       hideGrid: widget.hideGrid,
       showNowPrice: widget.showNowPrice,
       fixedLength: widget.fixedLength,
-      verticalTextAlignment: widget.verticalTextAlignment,
     );
 
     return GestureDetector(
