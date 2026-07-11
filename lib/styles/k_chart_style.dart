@@ -34,20 +34,18 @@ class KChartColors {
   final Color nowPriceUpColor;
   final Color nowPriceDnColor;
 
-  ///value border color after selection
-  final Color selectBorderColor;
-
-  ///background color when value selected
-  final Color selectFillColor;
-
   ///color of grid
   final Color gridColor;
 
-  /// color of the horizontal & vertical cross line
+  /// Crosshair style
+  /// - crossColor: color of the horizontal & vertical cross line drawn
+  /// - crossTextColor: text color of the value labels (price/time/indicator)
+  /// - crossBgColor: background color of the value labels (price/time/indicator)
+  /// - crossBorderColor: border color of the value labels (price/time/indicator)
   final Color crossColor;
-
-  /// text color
   final Color crossTextColor;
+  final Color crossBorderColor;
+  final Color crossBgColor;
 
   ///The color of the maximum and minimum values in the current display
   final Color maxColor;
@@ -71,21 +69,18 @@ class KChartColors {
     this.volUpColor = const Color(0xFF14AD8F),
     this.volDnColor = const Color(0xFFD5405D),
     this.defaultTextColor = const Color(0xFF909196),
-    this.nowPriceUpColor = const Color(0xFF14AD8F),
-    this.nowPriceDnColor = const Color(0xFFD5405D),
 
-    ///value border color after selection
-    this.selectBorderColor = const Color(0xFF222223),
-
-    ///background color when value selected
-    this.selectFillColor = const Color(0xffffffff),
+    this.nowPriceUpColor = const Color(0xFF191919), //0xFF14AD8F
+    this.nowPriceDnColor = const Color(0xFF191919), //0xFFD5405D
 
     ///color of grid
     this.gridColor = const Color(0xFFD1D3DB),
 
     ///color of annotation content
     this.crossColor = const Color(0xFF191919),
-    this.crossTextColor = const Color(0xFF222223),
+    this.crossTextColor = const Color(0xffffffff),
+    this.crossBorderColor = const Color(0xFF191919),
+    this.crossBgColor = const Color(0xFF191919),
 
     ///The color of the maximum and minimum values in the current display
     this.maxColor = const Color(0xFF222223),
@@ -114,6 +109,7 @@ class KChartStyle {
 
   ///vertical-horizontal cross line width
   final double crossWidth = 0.8;
+  final double crossRadius = 3.0;
 
   ///(line length - space line - thickness) of the current price
   // final double nowPriceLineLength = 4.5;

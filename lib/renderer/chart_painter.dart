@@ -24,12 +24,11 @@ class ChartPainter extends BaseChartPainter {
   Color? macdColor, difColor, deaColor, jColor;
   int fixedLength;
   final KChartColors chartColors;
-  late Paint paintCross, selectPointPaint, selectorBorderPaint;
+  late Paint crossLinePaint, selectPointPaint, selectorBorderPaint;
   late Paint nowPriceSelectorPaint, nowPriceSelectorBorderPaint, nowPriceLinePaint;
   final KChartStyle chartStyle;
   final bool hideGrid;
   final bool showNowPrice;
-  final VerticalTextAlignment verticalTextAlignment;
   final BaseDimension baseDimension;
 
   ChartPainter(
@@ -43,7 +42,6 @@ class ChartPainter extends BaseChartPainter {
     required selectX,
     required xFrontPadding,
     required this.baseDimension,
-    required this.verticalTextAlignment,
     mainIndicators,
     volHidden,
     secondaryIndicators,
@@ -63,18 +61,18 @@ class ChartPainter extends BaseChartPainter {
             secondaryIndicators: secondaryIndicators,
             xFrontPadding: xFrontPadding,
             isLine: isLine) {
-    paintCross = Paint()
+    crossLinePaint = Paint()
       ..color = this.chartColors.crossColor
       ..strokeWidth = this.chartStyle.crossWidth
       ..isAntiAlias = true;
     selectPointPaint = Paint()
       ..isAntiAlias = true
-      ..color = this.chartColors.selectFillColor;
+      ..color = this.chartColors.crossBgColor;
     selectorBorderPaint = Paint()
       ..isAntiAlias = true
       ..strokeWidth = this.chartStyle.borderWidth
       ..style = PaintingStyle.stroke
-      ..color = this.chartColors.selectBorderColor;
+      ..color = this.chartColors.crossBgColor;
 
     nowPriceSelectorPaint = Paint()
       ..color = this.chartColors.bgColor
@@ -105,7 +103,6 @@ class ChartPainter extends BaseChartPainter {
       this.chartStyle,
       this.chartColors,
       this.scaleX,
-      verticalTextAlignment,
       mBottomPadding,
     );
     if (mVolRect != null) {
@@ -423,32 +420,32 @@ class ChartPainter extends BaseChartPainter {
     nowPriceSelectorBorderPaint.color = priceColor;
     nowPriceLinePaint.color = priceColor;
 
+    // The latest candle may have scrolled out of the visible range; when
+    // that happens there's no on-screen x left to anchor the line to.
+    int lastIndex = datas!.length - 1;
+    bool isLastCandleVisible = lastIndex <= mStopIndex;
+    double lineStartX = isLastCandleVisible ? translateXtoX(getX(lastIndex)) : 0;
+
     //first draw the horizontal line
     // Drawn outside the pan transform: plain screen coordinates.
     canvas.drawDashLine(
-      Offset(0, y),
-      Offset(-mTranslateX + mWidth, y),
+      Offset(lineStartX, y),
+      Offset(mWidth, y),
       nowPriceLinePaint,
     );
 
     //repaint the background and text
+    String priceText = NumberUtil.formatFixed(value, fixedLength) ?? '';
     TextPainter tp = getTextPainter(
-      NumberUtil.formatFixed(value, fixedLength) ?? '',
+      isLastCandleVisible ? priceText : '$priceText ›',
       priceColor,
     );
 
     double paddingX = 3, paddingY = 1.5;
     double space = 5.0;
-    double offsetX;
-    switch (verticalTextAlignment) {
-      case VerticalTextAlignment.left:
-        // offsetX = paddingX;
-        offsetX = space;
-        break;
-      case VerticalTextAlignment.right:
-        offsetX = mWidth - tp.width - paddingX * 2 - space;
-        break;
-    }
+
+    // VerticalTextAlignment.right
+    double offsetX = mWidth - tp.width - paddingX * 2 - space;
 
     double top = y - tp.height / 2;
     RRect rect = RRect.fromLTRBR(
@@ -483,21 +480,22 @@ class ChartPainter extends BaseChartPainter {
     canvas.drawDashLine(
       Offset(x, 0),
       Offset(x, size.height),
-      paintCross,
+      crossLinePaint,
     );
 
     // K-line chart horizontal line
     canvas.drawDashLine(
       Offset(-mTranslateX, y),
       Offset(-mTranslateX + mWidth, y),
-      paintCross,
+      crossLinePaint,
     );
 
     // The canvas is no longer scaled, so a plain circle stays a circle at
     // any zoom level.
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), height: 4.0, width: 4.0),
-      paintCross,
+    canvas.drawCircle(
+      Offset(x, y),
+      this.chartStyle.crossRadius,
+      crossLinePaint,
     );
   }
 

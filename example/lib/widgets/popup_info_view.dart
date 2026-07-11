@@ -19,8 +19,8 @@ class PopupInfoView extends StatelessWidget {
       width: 150,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: chartColors.selectFillColor,
-          border: Border.all(color: chartColors.selectBorderColor, width: 0.5),
+          color: Colors.white,
+          border: Border.all(color: Colors.black38, width: 0.5),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(6.0, 6.0, 6.0, 0.0),
