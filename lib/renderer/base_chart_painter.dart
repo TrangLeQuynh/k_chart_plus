@@ -230,6 +230,12 @@ abstract class BaseChartPainter extends CustomPainter {
     if (datas == null) return;
     if (datas!.isEmpty) return;
     maxScrollX = getMinTranslateX().abs();
+
+    // scrollX can be stale relative to the just-updated scaleX (e.g. right
+    // after a pinch-zoom), so re-clamp it here to the bounds computed for
+    // this frame instead of trusting the caller.
+    scrollX = scrollX.clamp(0.0, maxScrollX).toDouble();
+
     setTranslateXFromScrollX(scrollX);
     mStartIndex = indexOfTranslateX(xToTranslateX(0));
     mStopIndex = indexOfTranslateX(xToTranslateX(mWidth));
