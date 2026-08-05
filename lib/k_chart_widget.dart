@@ -32,27 +32,25 @@ class KChartWidget extends StatefulWidget {
   final List<String> timeFormat;
   final double mBaseHeight;
   final double? mSecondaryHeight;
-
-  // It will be called when the screen scrolls to the end.
-  // If true, it will be scrolled to the end of the right side of the screen.
-  // If it is false, it will be scrolled to the end of the left side of the screen.
-  final Function(bool)? onLoadMore;
-
-  final int fixedLength;
-  final int flingTime;
-  final double flingRatio;
-  final Curve flingCurve;
-  final Function(bool)? isOnDrag;
   final KChartColors chartColors;
   final KChartStyle chartStyle;
   final double xFrontPadding;
   final WidgetDetailBuilder? detailBuilder;
+  final int fixedLength;
+
+  /// Drives zoom / pan / crosshair from the outside.
+  ///
+  /// Leave it null to let the widget own a private controller. Pass one to
+  /// keep a handle on the chart — e.g. `controller.reset()` to go back to
+  /// `scaleX = 1.0` with no pan and no crosshair.
+  final InteractiveLayerController? controller;
 
   KChartWidget(
     this.datas,
     this.chartStyle,
     this.chartColors, {
     this.detailBuilder,
+    this.controller,
     this.xFrontPadding = 100,
     this.mainIndicators = const [],
     this.secondaryIndicators = const [],
@@ -61,12 +59,7 @@ class KChartWidget extends StatefulWidget {
     this.hideGrid = false,
     this.showNowPrice = true,
     this.timeFormat = TimeFormat.YEAR_MONTH_DAY,
-    this.onLoadMore,
     this.fixedLength = 2,
-    this.flingTime = 600,
-    this.flingRatio = 0.5,
-    this.flingCurve = Curves.decelerate,
-    this.isOnDrag,
     this.mBaseHeight = 360,
     this.mSecondaryHeight,
   });
@@ -77,43 +70,36 @@ class KChartWidget extends StatefulWidget {
 
 class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMixin {
   final StreamController<InfoWindowEntity?> _mInfoWindowStream = StreamController<InfoWindowEntity?>();
-  double _mScaleX = 1.0, _mScrollX = 0.0, _mSelectX = 0.0;
-  AnimationController? _controller;
-  Animation<double>? _aniX;
 
-  double getMinScrollX() {
-    return _mScaleX;
-  }
-
-  InteractionMode _interactionMode = InteractionMode.none;
-  double _lastScale = 1.0;
-  bool _isScale = false;
+  /// Only created when the caller did not supply one.
+  late InteractiveLayerController _controller =  widget.controller ?? InteractiveLayerController();
 
   @override
   void initState() {
     super.initState();
+    _controller.attach(this);
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didUpdateWidget(covariant KChartWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A fresh (or emptied) data set invalidates the current zoom / pan.
+    if ((widget.datas?.isEmpty ?? true) != (oldWidget.datas?.isEmpty ?? true)) {
+      _controller.reset();
+    }
   }
 
   @override
   void dispose() {
+    _controller.detach();
+    if (widget.controller == null) _controller.dispose();
     _mInfoWindowStream.sink.close();
     _mInfoWindowStream.close();
-    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.datas != null && widget.datas!.isEmpty) {
-      _mScrollX = _mSelectX = 0.0;
-      _mScaleX = 1.0;
-      _lastScale = 1.0;
-    }
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
       mSecondaryHeight: widget.mSecondaryHeight ?? widget.mBaseHeight * .2,
@@ -128,10 +114,9 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       sink: _mInfoWindowStream.sink,
       xFrontPadding: widget.xFrontPadding,
       datas: widget.datas,
-      scaleX: _mScaleX,
-      scrollX: _mScrollX,
-      selectX: _mSelectX,
-      interactionMode: _interactionMode,
+      // The painter reads the view port live and repaints on its
+      // notifications; interacting with the chart never rebuilds this widget.
+      pointViewPort: _controller.pointViewPort,
       mainIndicators: widget.mainIndicators,
       volHidden: widget.volHidden,
       secondaryIndicators: widget.secondaryIndicators,
@@ -141,70 +126,33 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
       fixedLength: widget.fixedLength,
     );
 
-    return GestureDetector(
-      onTapUp: (details) {
-        if (_interactionMode == InteractionMode.crosshair) {
-          // Dismiss the crosshair when tapping again.
-          _interactionMode = InteractionMode.none;
-          notifyChanged();
-          return;
-        }
-        // Show the crosshair when tapping first
-        _interactionMode = InteractionMode.crosshair;
-        if (_mSelectX != details.localPosition.dx) {
-          _mSelectX = details.localPosition.dx;
-          notifyChanged();
-        }
+    return RawGestureDetector(
+      behavior: HitTestBehavior.opaque,
+      gestures: <Type, GestureRecognizerFactory>{
+        ChartGestureRecognizer: GestureRecognizerFactoryWithHandlers<ChartGestureRecognizer>(
+          () => ChartGestureRecognizer(debugOwner: this),
+          (ChartGestureRecognizer instance) {
+            instance
+              ..onTap = _controller.handleTap
+              ..onLongPressStart = _controller.handleLongPressStart
+              ..onLongPressUpdate = _controller.handleLongPressUpdate
+              ..onLongPressEnd = _controller.handleLongPressEnd
+              ..onPanStart = _controller.handlePanStart
+              ..onPanUpdate = _controller.handlePanUpdate
+              ..onPanEnd = _controller.handlePanEnd
+              ..onScaleStart = _controller.handleScaleStart
+              ..onScaleUpdate = _controller.handleScaleUpdate
+              ..onScaleEnd = _controller.handleScaleEnd;
+          },
+        ),
       },
-      onScaleStart: (details) {
-        _interactionMode = InteractionMode.none;
-        _stopAnimation();
-        _onDragChanged(true);
-      },
-      onScaleUpdate: (details) {
-        if (details.pointerCount >= 2) {
-          _interactionMode = InteractionMode.none;
-          _isScale = true;
-          _mScaleX = (_lastScale * details.scale).clamp(0.25, 2.5);
-          notifyChanged();
-        } else if (!_isScale) {
-          _interactionMode = InteractionMode.none;
-          // scrollX is in screen pixels now (zoom lives in the point width),
-          // so the finger delta is applied 1:1.
-          _mScrollX = (details.focalPointDelta.dx + _mScrollX)
-              .clamp(0.0, ChartPainter.maxScrollX)
-              .toDouble();
-          notifyChanged();
-        }
-      },
-      onScaleEnd: (details) {
-        if (_isScale) {
-          _lastScale = _mScaleX;
-          _isScale = false;
-        } else {
-          _onFling(details.velocity.pixelsPerSecond.dx);
-        }
-        _onDragChanged(false);
-      },
-      onLongPressStart: (details) {
-        _interactionMode = InteractionMode.crosshair;
-        if (_mSelectX != details.localPosition.dx) {
-          _mSelectX = details.localPosition.dx;
-          notifyChanged();
-        }
-      },
-      onLongPressMoveUpdate: (details) {
-        if (_mSelectX != details.localPosition.dx) {
-          _mSelectX = details.localPosition.dx;
-          notifyChanged();
-        }
-      },
-      onLongPressEnd: (details) {},
       child: Stack(
         children: <Widget>[
-          CustomPaint(
-            size: Size(double.infinity, baseDimension.mDisplayHeight),
-            painter: _painter,
+          RepaintBoundary(
+            child: CustomPaint(
+              size: Size(double.infinity, baseDimension.mDisplayHeight),
+              painter: _painter,
+            ),
           ),
           if (widget.detailBuilder != null) _buildInfoDialog()
         ],
@@ -212,66 +160,11 @@ class _KChartWidgetState extends State<KChartWidget> with TickerProviderStateMix
     );
   }
 
-  void _stopAnimation({bool needNotify = true}) {
-    if (_controller != null && _controller!.isAnimating) {
-      _controller!.stop();
-      _onDragChanged(false);
-      if (needNotify) {
-        notifyChanged();
-      }
-    }
-  }
-
-  void _onDragChanged(bool isOnDrag) {
-    // isDrag = isOnDrag;
-    // if (widget.isOnDrag != null) {
-    //   widget.isOnDrag!(isDrag);
-    // }
-  }
-
-  void _onFling(double x) {
-    _controller = AnimationController(duration: Duration(milliseconds: widget.flingTime), vsync: this);
-    _aniX = null;
-    _aniX = Tween<double>(begin: _mScrollX, end: x * widget.flingRatio + _mScrollX).animate(
-      CurvedAnimation(parent: _controller!.view, curve: widget.flingCurve),
-    );
-    _aniX!.addListener(() {
-      _mScrollX = _aniX!.value;
-      if (_mScrollX <= 0) {
-        _mScrollX = 0;
-        if (widget.onLoadMore != null) {
-          widget.onLoadMore!(true);
-        }
-        _stopAnimation();
-      } else if (_mScrollX >= ChartPainter.maxScrollX) {
-        _mScrollX = ChartPainter.maxScrollX;
-        if (widget.onLoadMore != null) {
-          widget.onLoadMore!(false);
-        }
-        _stopAnimation();
-      }
-      notifyChanged();
-    });
-    _aniX!.addStatusListener((status) {
-      if (status == AnimationStatus.completed ||
-          status == AnimationStatus.dismissed) {
-        _onDragChanged(false);
-        notifyChanged();
-      }
-    });
-    _controller!.forward();
-  }
-
-  void notifyChanged() => setState(() {});
-
-  late List<String> infos;
-
   Widget _buildInfoDialog() {
     return StreamBuilder<InfoWindowEntity?>(
       stream: _mInfoWindowStream.stream,
       builder: (context, snapshot) {
-        if (_interactionMode == InteractionMode.none ||
-          widget.isLine == true ||
+        if (widget.isLine == true ||
           !snapshot.hasData ||
           snapshot.data?.kLineEntity == null
         ) {
