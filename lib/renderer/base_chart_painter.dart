@@ -2,17 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart' show Color, TextStyle, Rect, Canvas, Size, CustomPainter;
 import 'package:k_chart_plus/indicator/indicator_template.dart';
 import 'package:k_chart_plus/utils/date_format_util.dart';
+import '../interactive_layer/interactive_layer.dart';
 import '../styles/k_chart_style.dart' show KChartStyle;
 import '../entity/k_line_entity.dart';
 import 'base_dimension.dart';
 
-
-enum InteractionMode {
-  /// No active interaction is occurring
-  none,
-  /// User is interacting with the crosshair
-  crosshair,
-}
+export '../interactive_layer/viewport/point_view_port.dart' show InteractionMode;
 
 /// BaseChartPainter
 abstract class BaseChartPainter extends CustomPainter {
@@ -24,8 +19,17 @@ abstract class BaseChartPainter extends CustomPainter {
   List<SecondaryIndicator> secondaryIndicators;
 
   bool volHidden;
-  double scaleX = 1.0, scrollX = 0.0, selectX;
-  InteractionMode interactionMode;
+
+  /// Zoom + pan + crosshair model. Read at paint time, never snapshotted in
+  /// the constructor: the painter repaints on its notifications without the
+  /// widget being rebuilt.
+  final PointViewPort pointViewPort;
+
+  double get scaleX => pointViewPort.scaleX;
+  double get scrollX => pointViewPort.scrollX;
+  double get selectX => pointViewPort.selectX;
+  InteractionMode get interactionMode => pointViewPort.mode;
+
   bool isLine;
 
   late Rect mMainLabelRect;
@@ -69,29 +73,21 @@ abstract class BaseChartPainter extends CustomPainter {
   BaseChartPainter(
     this.chartStyle, {
     this.datas,
-    required this.scaleX,
-    required this.scrollX,
-    required this.interactionMode,
-    required this.selectX,
+    required this.pointViewPort,
     required this.xFrontPadding,
     required this.baseDimension,
     this.mainIndicators = const [],
     this.volHidden = false,
     this.secondaryIndicators = const [],
     this.isLine = false,
-  }) {
+  }) : super(repaint: pointViewPort) {
     mItemCount = datas?.length ?? 0;
-    // Effective step between two data points in screen pixels. Zoom is
-    // expressed by widening/narrowing this step instead of canvas.scale, so
-    // strokes, dots and dash patterns keep their intended size (see
-    // ChartPainter.drawChart).
-    mPointWidth = this.chartStyle.pointWidth * scaleX;
     mTopPadding = this.chartStyle.topPadding + baseDimension.totalLabelHeight; // space to display text of main chart
     mBottomPadding = this.chartStyle.bottomPadding;
     mChildPadding = this.chartStyle.childPadding;
     mGridRows = this.chartStyle.gridRows;
     mGridColumns = this.chartStyle.gridColumns;
-    mDataLen = mItemCount * mPointWidth;
+    updateMetrics();
     initFormats();
   }
 
@@ -129,6 +125,7 @@ abstract class BaseChartPainter extends CustomPainter {
     canvas.clipRect(Rect.fromLTRB(0, 0, size.width, size.height));
     mDisplayHeight = size.height - mTopPadding - mBottomPadding;
     mWidth = size.width;
+    updateMetrics();
     initRect(size);
     calculateValue();
     initChartRenderer();
@@ -148,6 +145,8 @@ abstract class BaseChartPainter extends CustomPainter {
 
       if (interactionMode == InteractionMode.crosshair) {
         drawCrossLineText(canvas, size);
+      } else {
+        hideCrossLineText();
       }
     }
     canvas.restore();
@@ -186,6 +185,9 @@ abstract class BaseChartPainter extends CustomPainter {
   /// draw text of the cross line
   void drawCrossLineText(Canvas canvas, Size size);
 
+  /// the crosshair is down: drop whatever [drawCrossLineText] published
+  void hideCrossLineText() {}
+
   /// init the rectangle box to draw chart
   void initRect(Size size) {
     double volHeight = baseDimension.mVolumeHeight;
@@ -223,6 +225,8 @@ abstract class BaseChartPainter extends CustomPainter {
         ),
       ));
     }
+
+    resetMaxMinValue();
   }
 
   /// calculate values
@@ -232,9 +236,10 @@ abstract class BaseChartPainter extends CustomPainter {
     maxScrollX = getMinTranslateX().abs();
 
     // scrollX can be stale relative to the just-updated scaleX (e.g. right
-    // after a pinch-zoom), so re-clamp it here to the bounds computed for
-    // this frame instead of trusting the caller.
-    scrollX = scrollX.clamp(0.0, maxScrollX).toDouble();
+    // after a pinch-zoom), so publish the bounds computed for this frame and
+    // let the view port re-clamp itself. Silent on purpose — notifying from
+    // inside paint would schedule another paint for the frame being drawn.
+    pointViewPort.updateBounds(maxScrollX: maxScrollX);
 
     setTranslateXFromScrollX(scrollX);
     mStartIndex = indexOfTranslateX(xToTranslateX(0));
@@ -247,6 +252,37 @@ abstract class BaseChartPainter extends CustomPainter {
         getSecondaryMaxMinValue(idx, item);
       }
     }
+  }
+
+  /// Recomputes everything that depends on the zoom.
+  ///
+  /// Runs on every frame instead of once in the constructor, because the
+  /// painter now outlives the interactions: the view port can change scale
+  /// several times without the widget ever being rebuilt.
+  ///
+  /// [mPointWidth] is the effective step between two data points in screen
+  /// pixels. Zoom is expressed by widening/narrowing this step instead of
+  /// canvas.scale, so strokes, dots and dash patterns keep their intended
+  /// size (see ChartPainter.drawChart).
+  void updateMetrics() {
+    mPointWidth = chartStyle.pointWidth * scaleX;
+    mDataLen = mItemCount * mPointWidth;
+  }
+
+  /// Re-initializes the maximum/minimum values of the main and vol charts.
+  ///
+  /// Called on every frame, before folding in the window
+  /// `mStartIndex..mStopIndex`: the painter is reused across repaints, so
+  /// without this the previous window's values would carry over.
+  void resetMaxMinValue() {
+    mMainMaxValue = double.minPositive;
+    mMainMinValue = double.maxFinite;
+    mVolMaxValue = double.minPositive;
+    mVolMinValue = double.maxFinite;
+    mMainHighMaxValue = double.minPositive;
+    mMainLowMinValue = double.maxFinite;
+    mMainMaxIndex = 0;
+    mMainMinIndex = 0;
   }
 
   /// compute maximum and minimum value

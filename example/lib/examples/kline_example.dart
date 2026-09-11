@@ -15,6 +15,7 @@ class KlineExample extends StatefulWidget {
 }
 
 class _KlineExampleState extends State<KlineExample> {
+  late final InteractiveLayerController _controller;
   List<KLineEntity>? datas;
   bool showLoading = true;
   bool _volHidden = false;
@@ -41,13 +42,37 @@ class _KlineExampleState extends State<KlineExample> {
   @override
   void initState() {
     super.initState();
+    _controller = InteractiveLayerController(
+      minScaleX: .2,
+      maxScaleX: 3.5,
+      flingTime: 600,
+      flingRatio: .5,
+      flingCurve: Curves.decelerate,
+    )..onLoadMore = _onLoadMore;
     getData('1day');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Kline chart')),
+      appBar: AppBar(
+        title: const Text('Kline chart'),
+        actions: [
+          IconButton(
+            tooltip: 'Reset chart',
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              _controller.reset();
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -73,6 +98,7 @@ class _KlineExampleState extends State<KlineExample> {
             datas,
             chartStyle,
             chartColors,
+            controller: _controller,
             mBaseHeight: constraint.maxHeight,
             mSecondaryHeight: mSecondaryHeight,
             mainIndicators: _mainIndicators,
@@ -220,4 +246,6 @@ class _KlineExampleState extends State<KlineExample> {
     showLoading = false;
     setState(() {});
   }
+
+  Future<void> _onLoadMore(bool isRightEdge) async {}
 }

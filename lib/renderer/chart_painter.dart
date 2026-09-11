@@ -4,6 +4,7 @@ import 'package:k_chart_plus/extension/canvas_extension.dart';
 import 'package:k_chart_plus/utils/number_util.dart';
 import '../entity/info_window_entity.dart';
 import '../entity/k_line_entity.dart';
+import '../interactive_layer/interactive_layer.dart';
 import '../utils/date_format_util.dart';
 import 'base_chart_painter.dart';
 import 'base_chart_renderer.dart';
@@ -36,10 +37,7 @@ class ChartPainter extends BaseChartPainter {
     this.chartColors, {
     required this.sink,
     required datas,
-    required scaleX,
-    required scrollX,
-    required interactionMode,
-    required selectX,
+    required PointViewPort pointViewPort,
     required xFrontPadding,
     required this.baseDimension,
     mainIndicators,
@@ -51,11 +49,8 @@ class ChartPainter extends BaseChartPainter {
     this.fixedLength = 2,
   }) : super(chartStyle,
             datas: datas,
-            scaleX: scaleX,
-            scrollX: scrollX,
-            interactionMode: interactionMode,
+            pointViewPort: pointViewPort,
             baseDimension: baseDimension,
-            selectX: selectX,
             mainIndicators: mainIndicators,
             volHidden: volHidden,
             secondaryIndicators: secondaryIndicators,
@@ -88,10 +83,6 @@ class ChartPainter extends BaseChartPainter {
 
   @override
   void initChartRenderer() {
-    // if (datas != null && datas!.isNotEmpty) {
-    //   var t = datas![0];
-    //   fixedLength = NumberUtil.getMaxDecimalLength(t.open, t.close, t.high, t.low);
-    // }
     mMainRenderer = MainRenderer(
       mMainRect,
       mMainMaxValue,
@@ -336,6 +327,11 @@ class ChartPainter extends BaseChartPainter {
 
     //Long press to display the details of this data
     sink.add(InfoWindowEntity(point, isLeft: isLeft));
+  }
+
+  @override
+  void hideCrossLineText() {
+    sink.add(null);
   }
 
   @override
